@@ -1,4 +1,4 @@
-Group Name: The Party People
+Group Name: The Party People (temporary)
 Open Project Option
 
 Group Members:
