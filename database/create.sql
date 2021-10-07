@@ -1,6 +1,5 @@
 -- Modify the CREATE TABLE statements as needed to add constraints.
 -- Do not otherwise change the column names or types.
--- COLLABORATED WITH CHRIS THEODORE
 CREATE TABLE Users
 (spotify_username VARCHAR(256) NOT NULL,
  fun_name VARCHAR(256) NOT NULL,
