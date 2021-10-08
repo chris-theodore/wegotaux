@@ -13,5 +13,4 @@ Ezra: This week, I worked on setting up the React file for our project and popul
 
 Chris: This week, I worked on creating our Git Repo for the team, as well as organizing team meetings. Aside from administrative tasks, I began working on mock-ups for frontend design ideas with Ezra. We started working together on Figma to create possible layouts for how we envision the app working on the frontend and paired it with notes that we can consider when working with the backend team as well as the frontend code.
 
-Clara/Preston/Kenny: This week we worked as a group on the backend database setup for our project. We created an E/R diagram. translated it into schema, and implemented in SQL. In the process of creating the SQL script, we discussed and documented many constraints and edge cases. Specifically, Preston and Clara worked on writing the SQL script while Kenny wrote the proposal. 
-
+Clara/Preston/Kenny: This week we worked as a group on the backend database setup for our project. We created an E/R diagram, translated it into schema, and implemented in SQL. In the process of creating the SQL script, we discussed and documented many constraints and edge cases. Specifically, Preston and Clara worked on writing the SQL script while Kenny wrote the proposal. 
