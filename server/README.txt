@@ -9,3 +9,10 @@ within the /routes folders
         -authentication.js, spotify authentication code
         -database.js, http requests to database
         -spotify_api.js, calls to spotify api for various info
+
+
+general tips:
+
+-in order to update dependencies in backend make sure you run:
+'npm install' in the terminal at the folder level where
+server/package.json file is located
