@@ -8,18 +8,18 @@ module.exports = function(app){
 }
 
 
+//post
+//get
 
-//API functions
-function getAPI(request, response) {
-    response.json(family);
-}
 
-function postAPI(request, response) {
-    family[request.body.isbn] = {
-        name: request.body.name,
-        relationship: request.body.relationship,
-        age: request.body.age
+
+router.get("/test", async (req, res, next) => {
+    console.log("'/test' call");
+    try {
+      const res = await axios.get("https://api.neoscan.io/api/main_net/v1/get_all_nodes");
+      res.json(data);
     }
-
-    response.json({message: 'Success'});
-}
+    catch (err) {
+      next(err)
+    }
+  })

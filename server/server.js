@@ -7,9 +7,9 @@ const express = require("express"),
 app.use(cors());
 
 //init routes
-require('../routes/spotify_api')(app);
-require('../routes/authentication')(app);
-require('../routes/database')(app);
+//require('../routes/spotify_api')(app);
+//require('../routes/authentication')(app);
+//require('../routes/database')(app);
 
 //start server
 app.listen(port, () => console.log("Backend server live on " + port));
