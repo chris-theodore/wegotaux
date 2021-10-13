@@ -1,8 +1,12 @@
 // package that allows certain URLs to access the server
 const querystring = require('querystring');
 const axios = require('axios');
-const SPOTIFY_API_TOKEN = "BQA42swMXclJZQzxWa70PdVW2B-2hfQ1okiWWR6peCXdF2etOR0mBo6HdxlQMpVRg_mGNosPxIQYaV7o2IH9FDGUsodfUR6cmVtO5QXKSHxoP-7J0fZkff5xrQ89UZCzn3IUPYcLExDrcJnUBXqwLKkX8jdzV4hkzaSQAhxXtERHvdS18ZhUu2RJNkCaQD0L5eH8zyBz1cCxNQ220kRcP9OcFpNrlCBdhPJUpvHp";
-const SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1";
+const SPOTIFY_API_TOKEN = "BQBV6bLloqpWlvvVTFuNnHbUTYY9nCRiGd-l3fhDrxNB8JLouZQKmxnHtYyOOYKrAjHQLHPMJYI_VjvaIHJi7HfGtoVVOn5Eop08BB1lJvFDwc602Cn4x6LJIEFHC14X0ecu8uMcwFi4TNCjZNl8IXNk-63mz2zrScLlMbeSqsWtrl1RWx8G8uLCposKNtFGSS1LATlZqY_XVy3h5V8J_bfNxIBUR5mvU200-9Bo";
+const SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1/";
+//axios.defaults.baseURL = SPOTIFY_API_BASE_URL;
+axios.defaults.headers.common = {'Authorization' : `Bearer ${SPOTIFY_API_TOKEN}`};
+
+
 
 const spotifyClient = {
     searchAPI: async (song, artistq) => {
@@ -17,11 +21,7 @@ const spotifyClient = {
             const urlWithParameters = `${SPOTIFY_API_BASE_URL}${'search'}${parameters}`;
             console.log(urlWithParameters);
          
-            const result = await axios.get(urlWithParameters, {
-                headers: {
-                    'Authorization': `Bearer ${SPOTIFY_API_TOKEN}`
-                }
-            });
+            const result = await axios.get(urlWithParameters);
             if (result.ok) {
                 const currSong = await result.json();
                 if (currSong.tracks.items.length > 5) {

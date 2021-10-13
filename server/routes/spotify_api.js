@@ -17,8 +17,8 @@ function initialAPI(request, response){
 
 async function searchAPI(request, response, next) {
         try {
-            console.log(req.query.track, req.query.artist, req)
-            const songData = await spotifyClient.searchAPI(req.query.track, req.query.artist);
+            console.log(request.query.track, request.query.artist, request)
+            const songData = await spotifyClient.searchAPI(request.query.track, request.query.artist);
             results = []
             songData.forEach(song => results.push({
                 title: song.name,
