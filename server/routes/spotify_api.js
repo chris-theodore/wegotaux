@@ -28,7 +28,7 @@ async function searchAPI(request, response, next) {
                 extUrl: song.external_urls,
             }));
             console.log(results);
-            res.json(results);
+            response.json(results);
         }
         catch (error) {
             console.log(error);
@@ -38,16 +38,3 @@ async function searchAPI(request, response, next) {
         }
     };
 
-
-
-
-
-function postAPI(request, response) {
-    family[request.body.isbn] = {
-        name: request.body.name,
-        relationship: request.body.relationship,
-        age: request.body.age
-    }
-
-    response.json({message: 'Success'});
-}
