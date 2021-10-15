@@ -1,5 +1,3 @@
-const axios = require('axios');
-
 const spotifyClient = require('./spotify_helper_api');
 
 module.exports = function(app){

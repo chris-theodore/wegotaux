@@ -1,11 +1,9 @@
-// package that allows certain URLs to access the server
 const querystring = require('querystring');
 const axios = require('axios');
-const SPOTIFY_API_TOKEN = "BQBV6bLloqpWlvvVTFuNnHbUTYY9nCRiGd-l3fhDrxNB8JLouZQKmxnHtYyOOYKrAjHQLHPMJYI_VjvaIHJi7HfGtoVVOn5Eop08BB1lJvFDwc602Cn4x6LJIEFHC14X0ecu8uMcwFi4TNCjZNl8IXNk-63mz2zrScLlMbeSqsWtrl1RWx8G8uLCposKNtFGSS1LATlZqY_XVy3h5V8J_bfNxIBUR5mvU200-9Bo";
-const SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1/";
-//axios.defaults.baseURL = SPOTIFY_API_BASE_URL;
-axios.defaults.headers.common = {'Authorization' : `Bearer ${SPOTIFY_API_TOKEN}`};
 
+
+const dotenv = require('dotenv');
+dotenv.config({ path: '../.env' });
 
 
 const spotifyClient = {
@@ -18,10 +16,14 @@ const spotifyClient = {
             };
             console.log('in search');
             const parameters = `?${querystring.stringify(parameterSong)}`;
-            const urlWithParameters = `${SPOTIFY_API_BASE_URL}${'search'}${parameters}`;
+            const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'search'}${parameters}`;
             console.log(urlWithParameters);
          
-            const result = await axios.get(urlWithParameters);
+            const result = await axios.get(urlWithParameters, {
+                headers: {
+                    'Authorization' : `Bearer ${process.env.ACCESS_TOKEN}`
+                }
+            });
             if (result.ok) {
                 const currSong = await result.json();
                 if (currSong.tracks.items.length > 5) {

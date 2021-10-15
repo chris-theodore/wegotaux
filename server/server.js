@@ -4,13 +4,12 @@ const express = require('express'),
   session = require('express-session'),
   port = process.env.PORT || 5000,
   passport = require('passport'),
+  users = {},
   SpotifyStrategy = require('passport-spotify').Strategy,
   cors = require('cors');
 
-
 require('dotenv').config();
   
-const users = {}
 
 app.use(cors());
 app.use(session({secret: "secret"}));
@@ -27,6 +26,8 @@ passport.use(
       // asynchronous verification, for effect...
       process.nextTick(function () {
         console.log('successful token retrieval');
+        process.env.ACCESS_TOKEN = accessToken;
+        process.env.REFRESH_TOKEN = refreshToken;
         users[profile.id] = profile;
         return done(null, profile);
       });
@@ -58,84 +59,16 @@ app.get('/auth/spotify',
       })
   );
 
-  app.get('/auth/spotify/redirect',
-    passport.authenticate('spotify'),
-    function (req, res) {
-        res.redirect('/');
-       // Successful authentication
-      //res.send(`<script>window.close();</script>`);
-    }
-  );
-
-  app.get(
-    '/auth/spotify',
-      passport.authenticate('spotify', {
-        scope: ['user-read-email', 'user-read-playback-state','user-modify-playback-state', 'playlist-modify-private', 'playlist-modify-public','ugc-image-upload'],
-        showDialog: true,
-      })
-  );
-  
-  // GET /auth/spotify/callback
-  //   request. If authentication fails, the user will be redirected back to the
-  //   login page. Otherwise, the primary route function function will be called,
-  //   which, in this example, will redirect the user to the home page.
-  app.get(
-    '/auth/spotify/redirect',
-    passport.authenticate('spotify'),
-    function (req, res) {
-       // Successful authentication
-      res.send(`<script>window.close();</script>`);
-    }
-  );
-
-  app.get(
-    '/auth/external',
-    passport.authenticate('spotify'),
-    function (req, res) {
-       // Successful authentication
-      res.send(`<script>window.close();</script>`);
-    }
-  );
-
-app.get(
-    '/auth/spotify',
-      passport.authenticate('spotify', {
-        scope: ['user-read-email', 'user-read-playback-state','user-modify-playback-state', 'playlist-modify-private', 'playlist-modify-public','ugc-image-upload'],
-        showDialog: true,
-      })
-  );
-  
-  // GET /auth/spotify/callback
-  //   Use passport.authenticate() as route middleware to authenticate the
-  //   request. If authentication fails, the user will be redirected back to the
-  //   login page. Otherwise, the primary route function function will be called,
-  //   which, in this example, will redirect the user to the home page.
-  app.get(
-    '/auth/spotify/redirect',
-    passport.authenticate('spotify'),
-    function (req, res) {
-       // Successful authentication
-      res.send(`<script>window.close();</script>`);
-    }
-  );
-
-  app.get(
-    '/auth/external',
-    passport.authenticate('spotify'),
-    function (req, res) {
-       // Successful authentication
-      res.send(`<script>window.close();</script>`);
-    }
-  );
-
-
-  
-
+app.get('/auth/spotify/redirect',
+  passport.authenticate('spotify'),
+  function (req, res) {
+      res.redirect('/');
+  }
+);
 
 
 //init routes
 require('./routes/spotify_api')(app);
-//require('./routes/authentication')(app);
 //require('./routes/database')(app);
 
 //start server
