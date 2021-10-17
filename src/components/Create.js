@@ -9,7 +9,7 @@ export default function Create() {
 
     return (
         <section id="create">
-           
+           CREATE
 
         </section>
     );

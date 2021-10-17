@@ -1,11 +1,17 @@
-import logo from './logo.svg';
 import './App.css';
-import Landing from './components/Landing';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Landing, Create, Code } from "./components";
 
 function App() {
   return (
     <div className="App">
-      <Landing/>
+      <Router>
+        <Switch>
+          <Route path="/" exact component={() => <Landing />} />
+          <Route path="/create" exact component={() => <Create />} />
+          <Route path="/code" exact component={() => <Code />} />
+        </Switch>
+      </Router>
     </div>
   );
 }

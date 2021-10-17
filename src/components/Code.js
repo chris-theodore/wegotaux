@@ -9,7 +9,7 @@ export default function Code() {
 
     return (
         <section id="code">
-           
+           CODE
 
         </section>
     );
