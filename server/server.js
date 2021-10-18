@@ -69,6 +69,7 @@ app.get('/auth/spotify/redirect',
 
 //init routes
 require('./routes/spotify_api')(app);
+require('./routes/id_generator')(app);
 //require('./routes/database')(app);
 
 //start server
