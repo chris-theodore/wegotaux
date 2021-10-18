@@ -4,6 +4,9 @@ module.exports = function(app){
     app.route('/song/search')
     .get(searchAPI);
 
+    app.route('/find/device')
+    .get(deviceAPI);
+
     app.route('/')
     .get(initialAPI);
 }
@@ -37,4 +40,17 @@ async function searchAPI(request, response, next) {
             next(err);
         }
     };
+
+async function deviceAPI(request, response, next) {
+    try {
+        const results = await spotifyClient.deviceAPI();
+        response.json(results);
+    }
+    catch (error) {
+        console.log(error);
+        const err = new Error('Error: Check server --- one or more APIs are currently unavailable.');
+        err.status = 503;
+        next(err);
+    }
+};
 
