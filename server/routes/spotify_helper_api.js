@@ -48,47 +48,30 @@ const spotifyClient = {
             throw new Error(`API Access Error ${result.status} for URL: ${urlWithParameters}`);
         }
     },
-    // newplaylistAPI: async (name, description) => {
-    //       const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'users/'}${process.env.SPOTIFY_API_USER_PROFILE_ID}${'/playlists'}`;
-    //       const result = await axios.post(
-    //         urlWithParameters,
-    //         {
-    //             'name': name,
-    //             'description': descrip,
-    //             'public': true,
-    //         },
-    //         {
-    //         headers: {
-    //             'Accept': 'application/json',
-    //             'Content-Type': 'application/json',
-    //             'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
-    //             },
-    //         }
-    //       );
-    //       const 
-         
-    //               console.log(data);
-    //               if(data){
-    //                 SPOTIFY_API.PLAYLIST_INFO = data;
-    
-    //                 //modResp = await modifyExistingPlaylist();
-    //                 res.status(200).json(SPOTIFY_API.PLAYLIST_INFO);
-    //                   //res.json(SPOTIFY_API.PLAYLIST_INFO);
-    //                 }
-    //                 else{
-    //                   res.sendStatus(503);
-    //                 }
-    //               }
-    //       catch (error) {
-    //           console.log(error);
-    //           // create error object with useful message
-    //           const err = new Error('Error: Check server --- one or more APIs are currently unavailable.');
-    //           // set status code to return with response
-    //           err.status = 503;
-    //           // forward error on to next middleware handler (the error handler defined below)
-    //           next(err);
-    //       }
-    //   },
+    create_playlistAPI: async (name, description) => {
+          const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'users/'}${process.env.SPOTIFY_API_USER_PROFILE_ID}${'/playlists'}`;
+          const result = await axios.post(
+            urlWithParameters,
+            {
+                'name': name,
+                'description': description,
+                'public': true,
+            },
+            {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
+                },
+            });
+            const playlistData = await result.data;
+                  if(playlistData.status = 200){
+                        return playlistData;
+                    }
+                    else{
+                        throw new Error(`API Access Error ${result.status} for URL: ${urlWithParameters}`);
+                    }
+            }
 
     }
 module.exports = spotifyClient;

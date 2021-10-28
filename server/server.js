@@ -1,6 +1,7 @@
 //bare minimum code to activate express server w CORS
 const express = require('express'),
   app = express(),
+  mysql = require('mysql'),
   session = require('express-session'),
   port = process.env.PORT || 5000,
   passport = require('passport'),
@@ -14,6 +15,20 @@ require('dotenv').config();
 app.use(cors());
 app.use(session({secret: "secret"}));
 
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  database: process.env.DB_INSTANCE,
+  password: ''
+});
+
+db.connect(function(err) {
+if (err) {
+  console.error('Error connecting: ' + err.stack);
+  return;
+}
+console.log('MySql connected');
+});
 
 passport.use(
   new SpotifyStrategy(
@@ -70,7 +85,8 @@ app.get('/auth/spotify/redirect',
 //init routes
 require('./routes/spotify_api')(app);
 require('./routes/id_generator')(app);
-//require('./routes/database')(app);
+require('./routes/create_database')(app,db);
+require('./routes/database')(app, db);
 
 //start server
 app.listen(port, () => console.log("Backend server live on " + port));

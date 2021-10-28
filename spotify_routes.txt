@@ -1,0 +1,20 @@
+SPOTIFY API ROUTES
+
+
+BACKEND SERVER URL PATHS
+'/song/search'
+--> query parameters: request.query.track, request.query.artist
+--> returns: top five Spotify song search hits for given search parameters
+  
+'/find/device'
+--> query parameters: no query params needed
+--> returns: information about current users devices detected by Spotify
+
+'/'
+--> query parameters: none needed
+--> returns JSON message 'We made it', dummy call to confirm that server is working basically 
+
+
+'/new/playlist'
+--> query parameters: request.query.name, request.query.descrip (name and description of the playlist)
+--> info about newly created playlist, including the playlists unique look-up id 
