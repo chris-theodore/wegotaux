@@ -12,9 +12,7 @@ export default function Code() {
 
     function handleSubmit(){
         if(true) { // replace true with back end check to validate code
-            history.push("/listener");
-        } else {
-            alert("The code you entered is invalid, please try again.");
+            history.push("/host");
         }
     }
     return (

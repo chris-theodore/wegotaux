@@ -16,7 +16,7 @@ function App() {
           <Route path="/queue" exact component={() => <Queue />} />
           <Route path="/search" exact component={() => <Search />} />
           <Route path="/signIn" exact component={() => <SignIn />} />
-        </Switch>
+          <Route path="*" exact component={() => <Landing />} /> </Switch>
       </Router>
     </div>
   );

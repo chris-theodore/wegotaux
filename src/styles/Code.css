@@ -1,4 +1,4 @@
-#code {
+#host-landing {
     height: 100vh;
     width: 100%;
     display: flex;
@@ -14,7 +14,7 @@ form {
     justify-content: center;
 }
 
-#code-input {
+#party-name-input {
     width: 10em;
     padding: 10px;
     margin-bottom: 10px;
