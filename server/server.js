@@ -1,6 +1,7 @@
 //bare minimum code to activate express server w CORS
 const express = require('express'),
   app = express(),
+  //bodyParser = require('body-parser');
   mysql = require('mysql'),
   session = require('express-session'),
   port = process.env.PORT || 5000,
@@ -10,8 +11,14 @@ const express = require('express'),
   cors = require('cors');
 
 require('dotenv').config();
-  
 
+
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true
+}));
+//app.use(bodyParser.json()); // support json encoded bodies
+//app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 app.use(session({secret: "secret"}));
 
@@ -41,8 +48,12 @@ passport.use(
       // asynchronous verification, for effect...
       process.nextTick(function () {
         console.log('successful token retrieval');
+        console.log(expires_in);
+        console.log("refresh token");
+        console.log(refreshToken);
         process.env.ACCESS_TOKEN = accessToken;
         process.env.REFRESH_TOKEN = refreshToken;
+        process.env.SPOTIFY_API_USER_ID = profile.id;
         users[profile.id] = profile;
         return done(null, profile);
       });
@@ -69,7 +80,7 @@ app.use(passport.session());
 //authentication
 app.get('/auth/spotify',
       passport.authenticate('spotify', {
-        scope: ['user-read-email', 'user-read-playback-state','user-modify-playback-state', 'playlist-modify-private', 'playlist-modify-public','ugc-image-upload'],
+        scope: ['user-read-email', 'user-read-playback-state', 'playlist-modify-private', 'playlist-modify-public','ugc-image-upload', 'user-modify-playback-state'],
         showDialog: true,
       })
   );
