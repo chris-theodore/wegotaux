@@ -33,7 +33,7 @@ function initialAPI(request, response){
 
 async function searchAPI(request, response, next) {
         try {
-            console.log(request.query.track, request.query.artist, request)
+            console.log(request.query.type, request.query.search, request.query.artist, request)
             const songData = await spotifyClient.searchAPI(request.query.track, request.query.artist);
             results = []
             songData.forEach(song => results.push({
