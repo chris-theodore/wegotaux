@@ -1,7 +1,9 @@
 const querystring = require('querystring');
+const qs = require('qs');
 const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config({ path: '../.env' });
+
 
 const spotifyClient = {
     searchAPI: async (song, artistq) => {
@@ -49,7 +51,7 @@ const spotifyClient = {
         }
     },
     create_playlistAPI: async (name, description) => {
-          const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'users/'}${process.env.SPOTIFY_API_USER_PROFILE_ID}${'/playlists'}`;
+          const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'users/'}${process.env.SPOTIFY_API_USER_ID}${'/playlists'}`;
           const result = await axios.post(
             urlWithParameters,
             {
@@ -59,19 +61,133 @@ const spotifyClient = {
             },
             {
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
                 },
             });
             const playlistData = await result.data;
+            console.log(playlistData);
                   if(playlistData.status = 200){
                         return playlistData;
                     }
                     else{
                         throw new Error(`API Access Error ${result.status} for URL: ${urlWithParameters}`);
                     }
+            },
+    enqueueAPI: async (trackuri, device) => {
+        const parameterQueue = {
+            uri: "spotify:track:".concat(trackuri),
+            device_id: device,
+          };
+        console.log('in queue');
+        const parameters = `?${qs.stringify(parameterQueue)}`;
+        const headers = {
+            headers: {
+                'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             }
-
+          };
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'queue'}${parameters}`;
+        //const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'queue'}`;
+        try {
+            const response = await axios.post(
+              urlWithParameters,
+               null,
+               headers
+            );
+            console.log(response.data);
+            return response.data;
+          } catch (error) {
+            console.log(error);
+          }
+    },
+    start_playbackAPI: async (songs, did) => {
+        //where songs is a json array
+        //{"songs": [
+            //{"song" : "{id}"},
+            //{"song" : "{id}"},
+            //{"song" : "{id}"}
+      //   ]
+   //     }
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'play'}${'?device_id='}${did}`;
+        let song_uris = [];
+        songs.forEach(function(selection) {
+            song_uris.push("spotify:track:".concat(selection));
+        });
+        const test = JSON.stringify({
+            uris: song_uris
+        });
+        try{
+        const res = await axios.put(urlWithParameters, 
+            test,
+        {
+        headers: {
+            'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        }).then(function(response){
+            console.log(response.data)
+        });
+           return true;
+        } catch(err){
+            return false;
+        }
+    },
+    add_playlistAPI: async (songs, pid) => {
+        //where songs is a json array
+        //{"songs": [
+            //{"song" : "{id}"},
+            //{"song" : "{id}"},
+            //{"song" : "{id}"}
+         //   ]
+          //     }
+        let song_uris = [];
+        songs.forEach(function(selection) {
+            song_uris.push("spotify:track:".concat(selection));
+        });
+        const test = JSON.stringify({
+            uris: song_uris
+        });
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/'}${pid}${'/tracks'}`;
+        console.log(urlWithParameters);
+        try{
+        const res = await axios.post(urlWithParameters, 
+            test,
+        {
+        headers: {
+            'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        }).then(function(response){
+            console.log(response.data)
+        });
+           return true;
+        } catch(err){
+            console.log(err);
+            return false;
+        }
+    },
+    playback_stateAPI: async () => {
+        //first url get user's current playback state
+        //const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player'}`;
+        //second url gets user's currently playing song
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'currently-playing'}`;
+        const result = await axios.get(urlWithParameters, {
+            headers: {
+                'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        const currState = await result.data;
+        if (result.status = 200) {
+            return currState;
+        } else {
+            throw new Error(`API Access Error ${result.status} for URL: ${urlWithParameters}`);
+        }
     }
+}
 module.exports = spotifyClient;
