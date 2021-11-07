@@ -26,13 +26,13 @@ PRIMARY KEY(spotify_id, time_added)
 
 
 CREATE TABLE Voting_Record
-(spotify_username VARCHAR(64) NOT NULL REFERENCES Users(spotify_username),
+(fun_name VARCHAR(64) NOT NULL REFERENCES Users(fun_name),
  id INTEGER NOT NULL REFERENCES Listening_Party(id),
  vote INTEGER NOT NULL CHECK (vote >= -1 AND vote != 0 AND vote <= 1),
  vote_time TIMESTAMP NOT NULL, 
  spotify_id VARCHAR(32) NOT NULL REFERENCES Song(spotify_id),
  time_added TIMESTAMP NOT NULL REFERENCES Song(time_added),
- PRIMARY KEY(spotify_username, id, spotify_id, time_added)
+ PRIMARY KEY(fun_name, id, spotify_id, time_added)
 );
 
 /*
@@ -159,20 +159,7 @@ CREATE TRIGGER TG_Remove_From_Voting_Block
 -- prevent blacklisted users from joining listening party
 
 
-DELIMITER //
-CREATE TRIGGER TG_Enforce_Blacklist
-  BEFORE INSERT ON Users
-  FOR EACH ROW
-  BEGIN
-     IF EXISTS (SELECT * FROM Blacklist
-    WHERE Blacklist.spotify_username = NEW.spotify_username AND 
-    Blacklist.id = New.id) THEN
-    SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO=30001,         MESSAGE_TEXT='This user is blacklisted';
- 
-  END IF;
-  END
 
-//
 -- user can only vote on a song once (this might be covered by key constraints)
 
 
@@ -184,7 +171,7 @@ CREATE TRIGGER TG_One_Vote
   FOR EACH ROW
   BEGIN
    IF EXISTS (SELECT * FROM Voting_Record
-    WHERE Voting_Record.spotify_username = NEW.spotify_username AND 
+    WHERE Voting_Record.fun_name = NEW.fun_name AND 
     Voting_Record.id = New.id AND Voting_Record.spotify_id = NEW.spotify_id
     AND Voting_Record.time_added = NEW.time_added) THEN
       SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO=30001,         MESSAGE_TEXT='This user has already voted on this song';
