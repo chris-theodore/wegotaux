@@ -37,6 +37,7 @@ async function searchAPI(request, response, next) {
             const songData = await spotifyClient.searchAPI(request.query.track, request.query.artist);
             results = []
             songData.forEach(song => results.push({
+                id: song.id,
                 title: song.name,
                 artist: song.artists[0].name,
                 picUrl: song.album.images[1].url,
