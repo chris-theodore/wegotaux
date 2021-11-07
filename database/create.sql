@@ -17,11 +17,12 @@ CREATE TABLE Listening_Party
  
 CREATE TABLE Song
 (spotify_id VARCHAR(32) NOT NULL,
+ id INTEGER NOT NULL REFERENCES Listening_Party(id),
  song_length INTEGER NOT NULL,
  time_added TIMESTAMP NOT NULL,
  time_removed TIMESTAMP,
  playlist_position INTEGER, 
-PRIMARY KEY(spotify_id, time_added)
+PRIMARY KEY(spotify_id, id, time_added)
 );
 
 
