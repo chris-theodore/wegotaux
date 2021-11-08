@@ -18,6 +18,7 @@ export default function Code() {
     return (
         <section id="code">
             <form onSubmit={handleSubmit}>
+                <input id="id-input" placeholder="Enter Name..."/>
                 <input id="code-input" placeholder="Enter Party Code..."/>
                 <button class="join-buttons glow-on-hover">Join</button>
             </form>
