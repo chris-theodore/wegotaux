@@ -3,7 +3,7 @@ const connection = config.connection;
 
 
 module.exports = function(app){
-  app.get("/createemployee", (req, res) => {
+  app.get("/test/database", (req, res) => {
     let sql =
       "CREATE TABLE employee(id int AUTO_INCREMENT, name VARCHAR(255), designation VARCHAR(255), PRIMARY KEY(id))";
     connection.query(sql, (err) => {
@@ -14,7 +14,3 @@ module.exports = function(app){
     });
   });
 }
-
-   
-
-      

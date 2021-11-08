@@ -86,7 +86,9 @@ app.get('/auth/spotify/redirect',
 //init routes
 require('./routes/spotify_api')(app);
 require('./routes/id_generator')(app);
-require('./routes/database')(app);
+require('./routes/clara_database')(app);
+require('./routes/kenny_database')(app);
+require('./routes/preston_database')(app);
 
 //start server
 app.listen(port, () => console.log("Backend server live on " + port));
