@@ -7,13 +7,13 @@ CREATE TABLE Users
 
  
 CREATE TABLE Listening_Party
-(spotify_playlist_name VARCHAR(32) NOT NULL,
+(spotify_playlist_name VARCHAR(32),
  id INTEGER NOT NULL PRIMARY KEY,
  time_created TIMESTAMP NOT NULL,
  currently_playing INTEGER,
- device_id VARCHAR(64) NOT NULL,
- spotify_user_id VARCHAR(64) NOT NULL,
- playlist_id VARCHAR(64) NOT NULL
+ device_id VARCHAR(64),
+ spotify_user_id VARCHAR(64),
+ playlist_id VARCHAR(64)
 );
  
 CREATE TABLE Song
