@@ -13,7 +13,13 @@ form {
     align-items: center;
     justify-content: center;
 }
-
+#id-input{
+    width: 10em;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid black;  
+}
 #party-name-input {
     width: 10em;
     padding: 10px;
