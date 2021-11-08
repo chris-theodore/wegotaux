@@ -12,7 +12,8 @@ CREATE TABLE Listening_Party
  time_created TIMESTAMP NOT NULL,
  currently_playing INTEGER,
  device_id VARCHAR(64) NOT NULL,
- spotify_user_id VARCHAR(64) NOT NULL
+ spotify_user_id VARCHAR(64) NOT NULL,
+ playlist_id VARCHAR(64) NOT NULL
 );
  
 CREATE TABLE Song
