@@ -4,6 +4,7 @@ import { useHistory } from "react-router";
 import {Button} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import querystring from "query-string"
 import '../styles/Create.css' // CSS imported
 
 // Javascript Zone
@@ -13,8 +14,11 @@ export default function Create() {
 
 
     const [deviceName, setDeviceName] = React.useState(null);
+    const [deviceID, setDeviceID] = React.useState(null);
     const [codeB, setCode] = React.useState(null);
     const [deviceB, setDevice] = React.useState([]);
+    const [id, setId] = React.useState(null);
+    const [uid, setUID] = React.useState(null);
     const [values, setValues] = useState({
         party_name:'', party_host_name:''})
     const set = name => {
@@ -27,7 +31,9 @@ export default function Create() {
         event.preventDefault();
         try{
             await sendPlaylist();
+            await sendDB();
             alert("Let's get this party started!")
+            await sendDB();
             setValues({
                 party_name:'', party_host_name:''});
         } catch (e){
@@ -38,11 +44,29 @@ export default function Create() {
             history.push("/host");
         }
     }
+    async function sendDB(){
+        const parameterDB = {
+            deviceid: deviceID,
+            playlistid: id,
+            userid: uid,
+            codeid: codeB.code,
+            playlistname: values.party_name
+        };
+        console.log('in send');
+        const parameters = `?${querystring.stringify(parameterDB)}`;
+        console.log(parameters)
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'intializeparty'}${parameters}`;
+        // const sender = await axios.get()
+    }
     async function sendPlaylist(){
         const description = 'this is a test '
         const request = await axios.get(`http://localhost:5000/new/playlist${'?name='}${values.party_name}&${'descrip='}${description}`)
         console.log(request)
         console.log(request.data)
+        console.log(request.data.id)
+        console.log(request.data.owner.id)
+        setId(request.data.id);
+        setUID(request.data.owner.id);
     }
     React.useEffect(()=>{
         
@@ -70,6 +94,7 @@ export default function Create() {
     }, []);    
         async function sendDevice(party_id, device_id,device_name){
             setDeviceName(device_name);
+            setDeviceID(device_id);
             // const request = await axios.post(`http://localhost:5000/chosen/device${'?device_id='}${device_id}&${'party_id='}${party_id}`)
             // console.log(request)
             // console.log(request.data)
