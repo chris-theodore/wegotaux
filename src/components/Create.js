@@ -10,16 +10,40 @@ import '../styles/Create.css' // CSS imported
 
 // HTML Zone 
 export default function Create() {
+
+
+    const [deviceName, setDeviceName] = React.useState(null);
+    const [codeB, setCode] = React.useState(null);
+    const [deviceB, setDevice] = React.useState([]);
+    const [values, setValues] = useState({
+        party_name:'', party_host_name:''})
+    const set = name => {
+        return({target: {value}}) => {
+            setValues(oldValues => ({...oldValues, [name]: value}));
+        }
+    };
     const history = useHistory();
-    function handlePartyNameSubmit(){
+    const handlePartySubmit = async (event) =>{
+        event.preventDefault();
+        try{
+            await sendPlaylist();
+            alert("Let's get this party started!")
+            setValues({
+                party_name:'', party_host_name:''});
+        } catch (e){
+            alert(`Party registration failed! ${e.message}`)
+        }
+        // send
         if(true) { // replace true with back end check to validate code
             history.push("/host");
         }
     }
-    const [deviceName, setDeviceName] = React.useState(null);
-    const [codeB, setCode] = React.useState(null);
-    const [deviceB, setDevice] = React.useState([]);
-
+    async function sendPlaylist(){
+        const description = 'this is a test '
+        const request = await axios.get(`http://localhost:5000/new/playlist${'?name='}${values.party_name}&${'descrip='}${description}`)
+        console.log(request)
+        console.log(request.data)
+    }
     React.useEffect(()=>{
         
         async function getCode(){
@@ -46,18 +70,15 @@ export default function Create() {
     }, []);    
         async function sendDevice(party_id, device_id,device_name){
             setDeviceName(device_name);
-            const request = await axios.post(`http://localhost:5000/chosen/device${'?device_id='}${device_id}&${'party_id='}${party_id}`)
-            console.log(request)
-            console.log(request.data)
+            // const request = await axios.post(`http://localhost:5000/chosen/device${'?device_id='}${device_id}&${'party_id='}${party_id}`)
+            // console.log(request)
+            // console.log(request.data)
         }
     if (!codeB) return "No chris!"
     if (!deviceB) return "No devices!"
     return (
         <section id="create">
             <h1>Party Code: {codeB.code}</h1>
-            {/* <Button onClick={()=>getDevice()} variant="info" type="submit">
-          Select Device for Party!
-        </Button> */}
             <React.Fragment>
             <ul>
                 {
@@ -66,14 +87,13 @@ export default function Create() {
             </ul>
             </React.Fragment>
             <h1 id="device-selected"> Device Selected: {deviceName}</h1>
-                <form onSubmit={handlePartyNameSubmit}>
-                <input id="party-name-input" placeholder="Enter Party Name..."/>
+                <form onSubmit={handlePartySubmit}>
+                    <label htmlFor="party-name-input"></label>
+                <input id="party-name-input" required value={values.party_name} onChange={set('party_name')} placeholder="Enter Party Name..."/>
+                <label htmlFor="party-host-input"></label>
+                <input id="party-host-input" type="text" required value={values.party_host_name} onChange={set('party_host_name')} placeholder="Enter Host Name..."/>
+                <button type="submit" class="start-button glow-on-hover">Let's Start The Party</button>
                 </form>
-                <form>
-                <input id="party-host-input" placeholder="Enter Host Name..."/>
-                </form>
-                {/* <label style={{marginRight: '10px'}}>Number of Attendees:</label> */}
-                <Link class="start-button glow-on-hover"to="/host">Let's Start The Party</Link>
                 {/* <button onClick={getCode()}>Test</button> */}
                 {/* <a class="sign-in-button change-on-hover" href="http://localhost:5000/create/party"> Code</a> */}
                 <button onClick={history.goBack}>Go Back</button>
