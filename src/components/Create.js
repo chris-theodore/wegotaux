@@ -11,8 +11,6 @@ import '../styles/Create.css' // CSS imported
 
 // HTML Zone 
 export default function Create() {
-
-
     const [deviceName, setDeviceName] = React.useState(null);
     const [deviceID, setDeviceID] = React.useState(null);
     const [codeB, setCode] = React.useState(null);
@@ -31,9 +29,7 @@ export default function Create() {
         event.preventDefault();
         try{
             await sendPlaylist();
-            await sendDB();
             alert("Let's get this party started!")
-            await sendDB();
             setValues({
                 party_name:'', party_host_name:''});
         } catch (e){
@@ -41,25 +37,11 @@ export default function Create() {
         }
         // send
         if(true) { // replace true with back end check to validate code
-            history.push("/host");
+            history.push("/hostselect");
         }
     }
-    async function sendDB(){
-        const parameterDB = {
-            deviceid: deviceID,
-            playlistid: id,
-            userid: uid,
-            codeid: codeB.code,
-            playlistname: values.party_name
-        };
-        console.log('in send');
-        const parameters = `?${querystring.stringify(parameterDB)}`;
-        console.log(parameters)
-        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'intializeparty'}${parameters}`;
-        // const sender = await axios.get()
-    }
     async function sendPlaylist(){
-        const description = 'this is a test '
+        const description = `WeGotAux party hosted by: ${values.party_host_name}`; 
         const request = await axios.get(`http://localhost:5000/new/playlist${'?name='}${values.party_name}&${'descrip='}${description}`)
         console.log(request)
         console.log(request.data)
@@ -67,6 +49,20 @@ export default function Create() {
         console.log(request.data.owner.id)
         setId(request.data.id);
         setUID(request.data.owner.id);
+        //set up parameters to send to DB
+        const parameterDB = {
+            deviceid: deviceID,
+            playlistid: request.data.id,
+            userid: request.data.owner.id,
+            codeid: codeB.code,
+            playlistname: values.party_name
+        };
+        console.log('in send');
+        const parameters = `?${querystring.stringify(parameterDB)}`;
+        console.log(parameters)
+        const urlWithParameters = `${'http://localhost:5000/'}${'init/party'}${parameters}`;
+        const response = await axios.get(urlWithParameters);
+        console.log(response);
     }
     React.useEffect(()=>{
         
@@ -117,7 +113,7 @@ export default function Create() {
                 <input id="party-name-input" required value={values.party_name} onChange={set('party_name')} placeholder="Enter Party Name..."/>
                 <label htmlFor="party-host-input"></label>
                 <input id="party-host-input" type="text" required value={values.party_host_name} onChange={set('party_host_name')} placeholder="Enter Host Name..."/>
-                <button type="submit" class="start-button glow-on-hover">Let's Start The Party</button>
+                <button onClick={sendPlaylist} type="submit" class="start-button glow-on-hover">Let's Start The Party</button>
                 </form>
                 {/* <button onClick={getCode()}>Test</button> */}
                 {/* <a class="sign-in-button change-on-hover" href="http://localhost:5000/create/party"> Code</a> */}
