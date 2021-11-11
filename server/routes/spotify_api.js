@@ -1,4 +1,6 @@
 const spotifyClient = require('./spotify_helper_api');
+const dotenv = require('dotenv');
+dotenv.config({ path: '../.env' });
 
 module.exports = function(app){
     app.route('/song/search')
@@ -10,11 +12,14 @@ module.exports = function(app){
     app.route('/')
     .get(initialAPI);
 
+    app.route('/init/party')
+    .get(saveEnv);
+
     app.route('/new/playlist')
     .get(create_playlistAPI);
 
     app.route('/start/playback')
-    .get(start_playbackAPI);
+    .post(start_playbackAPI);
 
     app.route('/add/queue').
     get(enqueueAPI);
@@ -30,6 +35,15 @@ module.exports = function(app){
 function initialAPI(request, response){
     response.json({message: 'we did it'});
 }
+
+function saveEnv(request, response){
+    console.log("SAVING ENV VARIABLES");
+    console.log(request.query);
+    process.env.DEVICE_ID = request.query.deviceid;
+    console.log(process.env.DEVICE_ID);
+    response.json({message: 'we saved the variable'});
+}
+
 
 async function searchAPI(request, response, next) {
         try {
@@ -74,7 +88,11 @@ async function start_playbackAPI(request, response, next) {
     try {
         //request.body.songs is an array of track uris that the 
         //host user has selected as the initial songs to start the party
+        console.log("in playback function");
+        console.log("device_id:");
+        console.log(request.query.device_id);
         const results = await spotifyClient.start_playbackAPI(request.body.songs, request.query.device_id);
+        console.log(results);
         response.json(results);
     }
     catch (error) {

@@ -78,7 +78,7 @@ app.get('/auth/spotify',
 app.get('/auth/spotify/redirect',
   passport.authenticate('spotify'),
   function (req, res) {
-      res.redirect('/');
+      res.redirect('http://localhost:3000/create');
   }
 );
 
