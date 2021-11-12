@@ -9,7 +9,7 @@ Clara Savchik
 Chris Theodore
 
 Milestone 3: 
-Kenny: During this milestone, I worked with the group to make progress on the back end.  We had many meetings to move forward and get on the same page.  These meetings were productive and I tried to take the lead on keeping notes.  There were multiple problems with the environment during the past couple weeks.  When we had to switch the git website we were using, I went to office hours to clarify an issue, as well as create a cheat sheet for git commands.  I think this knowledge helped the team as a whole.  Finally, my environment with XAMPP was giving me trouble.  Despite me working with the team to try and fix, as well as going to office hours, the problem could not be fixed.  I wrote drafts of database url calls, but they are untested.  Going forward I am going to be helping more with the front end.  
+Kenny: During this milestone, I worked with the group to make progress on the back end.  We had many meetings to move forward and get on the same page.  These meetings were productive and I tried to take the lead on keeping notes.  There were multiple problems with the environment during the past couple weeks.  When we had to switch the git website we were using, I went to office hours to clarify an issue, as well as create a cheat sheet for git commands.  I think this knowledge helped the team as a whole.  Finally, my environment with XAMPP was giving me trouble.  Despite me working with the team to try and fix, as well as going to office hours, the problem could not be fixed.  I wrote drafts of database sql calls, but they are untested.  Going forward I am going to be helping more with the front end.  
 
 
 Milestone 2: 
