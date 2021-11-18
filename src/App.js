@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { Landing,Code, Create, Details, HostLanding, ListenerLanding, Queue, Search, SignIn } from "./components";
+import { Landing,Code, Create, Details, HostLanding, HostSongSelect, ListenerLanding, Queue, Search, SignIn } from "./components";
 
 function App() {
   return (
@@ -16,6 +16,7 @@ function App() {
           <Route path="/queue" exact component={() => <Queue />} />
           <Route path="/search" exact component={() => <Search />} />
           <Route path="/signIn" exact component={() => <SignIn />} />
+          <Route path="/hostselect" exact component={() => <HostSongSelect />}/>
           <Route path="*" exact component={() => <Landing />} /> </Switch>
       </Router>
     </div>

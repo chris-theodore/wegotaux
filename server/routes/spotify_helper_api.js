@@ -68,7 +68,7 @@ const spotifyClient = {
             });
             const playlistData = await result.data;
             console.log(playlistData);
-                  if(playlistData.status = 200){
+                  if(playlistData.status == 200){
                         return playlistData;
                     }
                     else{
@@ -111,14 +111,19 @@ const spotifyClient = {
             //{"song" : "{id}"}
       //   ]
    //     }
-        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'play'}${'?device_id='}${did}`;
+
+        //const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'play'}${'?device_id='}${did}`;
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'play'}${'?device_id='}${process.env.DEVICE_ID}`;
+        console.log(urlWithParameters);
+        console.log(process.env.DEVICE_ID);
         let song_uris = [];
         songs.forEach(function(selection) {
-            song_uris.push("spotify:track:".concat(selection));
+            song_uris.push("spotify:track:".concat(selection.song));
         });
         const test = JSON.stringify({
             uris: song_uris
         });
+        console.log(test);
         try{
         const res = await axios.put(urlWithParameters, 
             test,
@@ -145,13 +150,16 @@ const spotifyClient = {
          //   ]
           //     }
         let song_uris = [];
+   
         songs.forEach(function(selection) {
+            
             song_uris.push("spotify:track:".concat(selection));
         });
         const test = JSON.stringify({
             uris: song_uris
         });
-        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/'}${pid}${'/tracks'}`;
+        //const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/'}${pid}${'/tracks'}`;
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/'}${process.env.PLAYLIST_ID}${'/tracks'}`;
         console.log(urlWithParameters);
         try{
         const res = await axios.post(urlWithParameters, 

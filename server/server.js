@@ -2,14 +2,11 @@
 const express = require('express'),
   app = express(),
   //bodyParser = require('body-parser');
-  mysql = require('mysql'),
   session = require('express-session'),
   port = process.env.PORT || 5000,
   passport = require('passport'),
   users = {},
   SpotifyStrategy = require('passport-spotify').Strategy,
-  config = require('./config.js');
-  connection = config.connection;
   cors = require('cors');
 
 require('dotenv').config();
@@ -78,7 +75,7 @@ app.get('/auth/spotify',
 app.get('/auth/spotify/redirect',
   passport.authenticate('spotify'),
   function (req, res) {
-      res.redirect('/');
+      res.redirect('http://localhost:3000/create');
   }
 );
 
@@ -86,9 +83,9 @@ app.get('/auth/spotify/redirect',
 //init routes
 require('./routes/spotify_api')(app);
 require('./routes/id_generator')(app);
-require('./routes/clara_database')(app);
-require('./routes/kenny_database')(app);
-require('./routes/preston_database')(app);
+require('./routes/database_api')(app);
+//require('./routes/kenny_database')(app);
+//require('./routes/preston_database')(app);
 
 //start server
 app.listen(port, () => console.log("Backend server live on " + port));

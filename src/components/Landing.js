@@ -10,7 +10,7 @@ export default function Landing() {
     return (
         <section id="landing">
            <Link class="join-buttons glow-on-hover" to="/code">Join Exisiting Party</Link>
-           <Link class="join-buttons glow-on-hover"to="/create">Create New Party</Link>
+           <Link class="join-buttons glow-on-hover"to="/signIn">Create New Party</Link>
         </section>
     );
 }

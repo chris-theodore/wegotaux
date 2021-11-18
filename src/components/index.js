@@ -8,6 +8,7 @@ export { default as Landing } from "./Landing";
 export { default as Queue } from "./Queue";
 export { default as Search } from "./Search";
 export { default as SignIn } from "./SignIn";
+export { default as HostSongSelect} from "./HostSongSelect";
 
 
 
