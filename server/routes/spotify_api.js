@@ -1,4 +1,5 @@
 const spotifyClient = require('./spotify_helper_api');
+const dbClient = require('./clara_database');
 const dotenv = require('dotenv');
 dotenv.config({ path: '../.env' });
 
@@ -21,14 +22,14 @@ module.exports = function(app){
     app.route('/start/playback')
     .post(start_playbackAPI);
 
-    app.route('/add/queue').
-    get(enqueueAPI);
+    app.route('/add/queue')
+    .get(enqueueAPI);
 
-    app.route('/add/playlist').
-    get(add_playlistAPI);
+    app.route('/add/playlist')
+    .get(add_playlistAPI);
 
-    app.route('/currently/playing').
-    get(playback_stateAPI);
+    app.route('/currently/playing')
+    .get(playback_stateAPI);
 
 }
 
@@ -36,20 +37,20 @@ function initialAPI(request, response){
     response.json({message: 'we did it'});
 }
 
+
+
 function saveEnv(request, response){
-    console.log("SAVING ENV VARIABLES");
-    console.log(request.query);
     process.env.DEVICE_ID = request.query.deviceid;
-    console.log(process.env.DEVICE_ID);
+    process.env.PLAYLIST_ID = request.query.playlistid;
+    dbClient.Listening_Party_Create(request.query.playlistname, request.query.deviceid, request.query.userid, request.query.playlistid);
     response.json({message: 'we saved the variable'});
 }
-
 
 async function searchAPI(request, response, next) {
         try {
             console.log(request.query.type, request.query.search, request.query.artist, request)
             const songData = await spotifyClient.searchAPI(request.query.track, request.query.artist);
-            results = []
+            let results = []
             songData.forEach(song => results.push({
                 id: song.id,
                 title: song.name,

@@ -68,7 +68,7 @@ const spotifyClient = {
             });
             const playlistData = await result.data;
             console.log(playlistData);
-                  if(playlistData.status = 200){
+                  if(playlistData.status == 200){
                         return playlistData;
                     }
                     else{
@@ -158,7 +158,8 @@ const spotifyClient = {
         const test = JSON.stringify({
             uris: song_uris
         });
-        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/'}${pid}${'/tracks'}`;
+        //const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/'}${pid}${'/tracks'}`;
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/'}${process.env.PLAYLIST_ID}${'/tracks'}`;
         console.log(urlWithParameters);
         try{
         const res = await axios.post(urlWithParameters, 
