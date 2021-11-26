@@ -11,8 +11,8 @@ import '../styles/Create.css' // CSS imported
 
 // HTML Zone 
 export default function Create() {
-    const [deviceName, setDeviceName] = React.useState(null);
     const [deviceID, setDeviceID] = React.useState(null);
+    const [deviceName, setDeviceName] = React.useState(null);
     const [codeB, setCode] = React.useState(null);
     const [deviceB, setDevice] = React.useState([]);
     const [id, setId] = React.useState(null);
@@ -61,8 +61,11 @@ export default function Create() {
         const parameters = `?${querystring.stringify(parameterDB)}`;
         console.log(parameters)
         const urlWithParameters = `${'http://localhost:5000/'}${'init/party'}${parameters}`;
+        // const dbSend = `${'http://localhost:5000/'}${'test/db'}${parameters}`
         const response = await axios.get(urlWithParameters);
+        // const dbresponse = await axios.get(dbSend);
         console.log(response);
+        // console.log(dbresponse);
     }
     React.useEffect(()=>{
         
