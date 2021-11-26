@@ -33,8 +33,8 @@ CREATE TABLE Voting_Record
  vote INTEGER NOT NULL CHECK (vote >= -1 AND vote != 0 AND vote <= 1),
  vote_time TIMESTAMP NOT NULL, 
  spotify_id VARCHAR(32) NOT NULL REFERENCES Song(spotify_id),
- time_added TIMESTAMP NOT NULL REFERENCES Song(time_added),
- PRIMARY KEY(fun_name, id, spotify_id, time_added)
+ song_id VARCHAR(40) NOT NULL REFERENCES Song(song_id),
+ PRIMARY KEY(fun_name, id, song_id)
 );
 
 /*
