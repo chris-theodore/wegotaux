@@ -12,11 +12,14 @@ module.exports = function(app){
     app.route('/test/db/users')
     .get(create_user_API);
 
-    app.route('/test/db/vote_record')
+    app.route('/test/db/voterecord')
     .get(create_vote_record_API);
 
-    app.route('/test/db/songs')
+    app.route('/test/db/songs/add')
     .get(create_song_API);
+
+    //app.route('/test/db/songs/remove')
+    //.get(update_song_API);
 }
 
 function create_listening_party_API(request, response){
@@ -26,12 +29,13 @@ function create_listening_party_API(request, response){
 
 function create_song_API(request, response){
     //(spotify_id, id, song_length, new Date().toISOString().slice(0, 19).replace('T', ' '), null, playlist_position)
-    let result = dbClient.Song_Create(request.query.sid, request.query.id, request.query.songlength, request.query.play_pos);
+    //spotify_id, party_id, song_id, song_length, is_removed, playlist_position
+    let result = dbClient.Song_Create(request.query.sid, request.query.lid, request.query.songlength);
     response.json(result);
 }
 
 function create_vote_record_API(request, response){
-    let result = dbClient.Voting_Record_Create(request.query.fname, request.query.utype, request.query.uid);
+    let result = dbClient.Voting_Record_Create(request.query.fname, request.query.uid, request.query.vote, request.query.sid, request.query.timeadded);
     response.json(result);
 }
 
