@@ -32,7 +32,7 @@ CREATE TABLE Voting_Record
  id INTEGER NOT NULL REFERENCES Listening_Party(id),
  vote INTEGER NOT NULL CHECK (vote >= -1 AND vote != 0 AND vote <= 1),
  vote_time TIMESTAMP NOT NULL, 
- spotify_id VARCHAR(32) NOT NULL REFERENCES Song(spotify_id),
+--  spotify_id VARCHAR(32) REFERENCES Song(spotify_id), WE NEED TO RE LOOK AT THIS
  song_id VARCHAR(40) NOT NULL REFERENCES Song(song_id),
  PRIMARY KEY(fun_name, id, song_id)
 );
