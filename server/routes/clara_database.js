@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require('uuid');
 const config = require('../config.js');
 const connection = config.connection;
 
@@ -29,12 +30,12 @@ const User = function(fun_name, user_type, id){
   this.id = id;
 }
 
-const Song = function(spotify_id, id, song_length, time_added, time_removed, playlist_position){
+const Song = function(spotify_id, party_id, song_id, song_length, is_removed, playlist_position){
   this.spotify_id = spotify_id;
-  this.id = id;
+  this.party_id = party_id;
+  this.song_id = song_id;
   this.song_length = song_length;
-  this.time_added = time_added;
-  this.time_removed = time_removed;
+  this.is_removed = is_removed;
   this.playlist_position = playlist_position;
 }
 
@@ -91,19 +92,23 @@ Voting_Record_Create: (fun_name, id, vote, spotify_id, time_added) => {
     //result(null, { id: result.id, ...newRecord });
   });
 },
-Song_Create: (spotify_id, id, song_length, playlist_position) => {
-  const newSong = new Song(spotify_id, id, song_length, new Date().toISOString().slice(0, 19).replace('T', ' '), null, playlist_position)
-  const lastPos = new Song(spotify_id, id, song_length, new Date().toISOString().slice(0, 19).replace('T', ' '), null, playlist_position)
-  
+Song_Create: (spotify_id, party_id, song_length) => {
+  let position;
+  connection.query("SELECT COALESCE(MAX(playlist_position),0) AS value FROM Song WHERE party_id = "+parseInt(party_id)+"")
+  .then(position => {
+    const newSong = new Song(spotify_id, party_id, uuidv4(), song_length, 0, position);
   connection.query("INSERT INTO Song SET ?", newSong, (err, result) =>{
     if (err) {
       console.log("error: ", err);
-      result(err, null);
-      return;
+      return err;
     }
-    console.log("created user: ", { ...newSong });
-    result(null, { id: result.id, ...newSong });
+    console.log("created song: ", { ...newSong });
+    return result;
   });
+  });
+  
+  console.log(position);
+  
 },
 
 //READ
@@ -196,100 +201,22 @@ Listening_Party_Lookup: (id) => {
 });
 },
 
-
 };
 
 
-// Customer.findById = (partyId, result) => {
-//   sql.query(`SELECT * FROM Listening_Party WHERE id = ${partyId}`, (err, res) => {
-//     if (err) {
-//       console.log("error: ", err);
-//       result(err, null);
-//       return;
-//     }
-
-//     if (res.length) {
-//       console.log("found party: ", res[0]);
-//       result(null, res[0]);
-//       return;
-//     }
-
-//     // not found Customer with the id
-//     result({ kind: "not_found" }, null);
-//   });
-// };
+  function Find_Playlist_Position (id) {
+    connection.query("SELECT COALESCE(MAX(playlist_position),0) AS value FROM Song WHERE party_id = "+parseInt(id)+"", (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return err;
+      }
+      //console.log(result[0].value);
+      return result[0].value;
+    });
+  }
 
 
 
-// Customer.updateById = (id, new_song, result) => {
-//   sql.query(
-//     "UPDATE listening_party SET currently_playing = ? WHERE id = ?",
-//     [new_song, id],
-//     (err, res) => {
-//       if (err) {
-//         console.log("error: ", err);
-//         result(null, err);
-//         return;
-//       }
-
-//       if (res.affectedRows == 0) {
-//         // not found Customer with the id
-//         result({ kind: "not_found" }, null);
-//         return;
-//       }
-
-//       console.log("updated party");
-//       result(null, { PermissionStatus });
-//     }
-//   );
-// };
-
-// Customer.remove = (id, result) => {
-//   sql.query("DELETE FROM customers WHERE id = ?", id, (err, res) => {
-//     if (err) {
-//       console.log("error: ", err);
-//       result(null, err);
-//       return;
-//     }
-
-//     if (res.affectedRows == 0) {
-//       // not found Customer with the id
-//       result({ kind: "not_found" }, null);
-//       return;
-//     }
-
-//     console.log("deleted customer with id: ", id);
-//     result(null, res);
-//   });
-// };
-
-// Customer.removeAll = result => {
-//   sql.query("DELETE FROM customers", (err, res) => {
-//     if (err) {
-//       console.log("error: ", err);
-//       result(null, err);
-//       return;
-//     }
-
-//     console.log(`deleted ${res.affectedRows} customers`);
-//     result(null, res);
-//   });
-// };
-
-// module.exports = Customer;
-
-// module.exports = function(app){
-//   app.get("/test/database", (req, res) => {
-//     let sql =
-//       "CREATE TABLE employee(id int AUTO_INCREMENT, name VARCHAR(255), designation VARCHAR(255), PRIMARY KEY(id))";
-//     connection.query(sql, (err) => {
-//       if (err) {
-//         throw err;
-//       }
-//       res.send("Employee table created");
-//     });
-//   });
-// }
 
 
 module.exports = db_client;
