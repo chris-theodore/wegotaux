@@ -66,10 +66,8 @@ const spotifyClient = {
                 'Content-Type': 'application/json'
                 },
             });
-            const playlistData = await result.data;
-            console.log(playlistData);
-                  if(playlistData.status == 200){
-                        return playlistData;
+                  if(result.status == 200 || result.status == 201){
+                        return result.data;
                     }
                     else{
                         throw new Error(`API Access Error ${result.status} for URL: ${urlWithParameters}`);
