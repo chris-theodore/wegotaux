@@ -3,19 +3,19 @@ const dotenv = require('dotenv');
 dotenv.config({ path: '../.env' });
 
 module.exports = function(app){
-    app.route('/test/db')
+    app.route('/db/create/party')
     .get(create_listening_party_API);
 
-    app.route('/test/db/alt')
+    app.route('/db/alter/party')
     .get(change_listening_party_API);
 
-    app.route('/test/db/users')
+    app.route('/db/create/user')
     .get(create_user_API);
 
-    app.route('/test/db/voterecord')
+    app.route('/db/create/voterecord')
     .get(create_vote_record_API);
 
-    app.route('/test/db/songs/add')
+    app.route('/db/add/song')
     .get(create_song_API);
 
     //app.route('/test/db/songs/remove')
