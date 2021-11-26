@@ -6,6 +6,14 @@
     align-items: center;
     justify-content: center;
 }
+#album-art{
+    border: 5px solid black;
+}
+#song-name{
+    color: white;
+    text-shadow: 2px 2px 4px #000000;
+    alignment: center;
+}
 #player {
     display: flex;
     flex-direction: column;

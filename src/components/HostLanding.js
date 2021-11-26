@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { ExitOutline, PauseOutline, PlaySkipBackOutline, PlaySkipForwardOutline, MenuOutline, PeopleOutline, InformationCircleOutline } from 'react-ionicons'
 import '../styles/HostLanding.css' // CSS imported
+import axios from 'axios';
 
 // Javascript Zone
 
-
+let playbackState =[];
+let currentsongname= '';
+// let currentartist = '';
+let currentlength= 0;
 // HTML Zone 
 export default function HostLanding() {
+    const [currentImage, setCurrentImage] = React.useState(null);
+    const [currentSongID, setCurrentSong] = React.useState(null);
+    const [songLength, setSongLength] = React.useState(0);
+    const [currentSongName, setCurrentName] = React.useState(null);
    const history = useHistory();
 
     function handleSubmit(direction){
@@ -22,12 +30,58 @@ export default function HostLanding() {
             // need to do an api call here to remove the user from the database.
         } 
     }
+    async function getPlayback2(){
+        let incoming_songid = {}
+        const response = await axios.get("http://localhost:5000/currently/playing");
+        // console.log(response)
+        // console.log(response.data)
+        // console.log(response);
+        incoming_songid = response.data.item.id;
+        if(currentSongID != incoming_songid){
+            setCurrentSong(incoming_songid);
+            setCurrentImage(response.data.item.album.images[1].url);
+            setSongLength(response.data.item.duration_ms);
+            // currentlength = response.data.item.duration_ms;
+            setCurrentName(response.data.item.name);
+        }
+        
 
-
+        
+    }
+    React.useEffect(()=>{
+        
+        async function getPlayback(){
+            const response = await axios.get("http://localhost:5000/currently/playing");
+            // console.log(response)
+            // console.log(response.data)
+            // console.log(response);
+            setSongLength(response.data.item.duration_ms);
+            // console.log(response.data.item.duration_ms);
+            // currentlength = response.data.item.duration_ms;
+            // currentsongname = response.data.item.name;
+            // console.log(currentlength);
+            // console.log(songLength);
+            setCurrentSong(response.data.item.id);
+            setCurrentImage(response.data.item.album.images[1].url);
+            setCurrentName(response.data.item.name);
+        }
+        
+        getPlayback();
+    }, []);
+    useEffect(() => {
+        const interval = setInterval(() => {
+          getPlayback2();
+        }, 1000);
+        return () => clearInterval(interval);
+      }, []);
     return (
-        <section id="listener-landing">
+        
+        <section id="host-landing">
             <div id="player">
-                <img id="album-art" src="../data/images/albumcover-placeholder.jpg"/>
+                <img id="album-art" src={currentImage}/>
+                <div id="song-name">
+                    {currentSongName}
+                </div>
                 <div id="player-actions">
                     <PlaySkipBackOutline class="p-action" color={'#00000'} title={"back"} height="25px" width="25px"/>
                     <PauseOutline  class="p-action" color={'#00000'} title={"pause"} height="25px" width="25px"/>
