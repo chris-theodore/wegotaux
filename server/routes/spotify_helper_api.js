@@ -121,7 +121,8 @@ const spotifyClient = {
             song_uris.push("spotify:track:".concat(selection.song));
         });
         const test = JSON.stringify({
-            uris: song_uris
+            uris: song_uris,
+            offset: { "position": 0 }
         });
         console.log(test);
         try{
