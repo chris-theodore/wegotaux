@@ -94,7 +94,7 @@ Voting_Record_Create: (fun_name, id, vote, spotify_id, time_added) => {
 },
 Song_Create: (spotify_id, party_id, song_length) => {
   let position;
-  connection.query("SELECT COALESCE(MAX(playlist_position),0) AS value FROM Song WHERE party_id = "+parseInt(party_id)+"")
+  connection.query("SELECT COALESCE(MAX(playlist_position),0) AS value FROM Song WHERE party_id = party_id") //BUG HERE//
   .then(position => {
     const newSong = new Song(spotify_id, party_id, uuidv4(), song_length, 0, position);
   connection.query("INSERT INTO Song SET ?", newSong, (err, result) =>{
