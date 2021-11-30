@@ -89,8 +89,8 @@ input[type=text]:focus {
 }
 
 .voter-album-art {
-    height: 25px;
-    width: 25px;
+    height: 60px;
+    width: 60px;
 }
 
 .vote-tools:hover{

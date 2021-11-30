@@ -6,9 +6,7 @@ import axios from 'axios';
 import querystring from 'querystring';
 import '../styles/Search.css' // CSS imported
 import Queue from "./Queue";
-let songnamearray = [];
 export default function Search (){
-  var globalqueue = [];
     const[dataB, setData] = React.useState([]);
   const [songsName, setSongsTerm] = React.useState([]);
   const [queueSongName, setSongQueue] = React.useState([]);
@@ -60,8 +58,6 @@ export default function Search (){
   function addSong(song_uri, song_img, song_title){
       console.log("HERE");
       console.log(song_uri);
-      songnamearray.push(song_title);
-      console.log(songnamearray);
       handleSubmit()
       
   }

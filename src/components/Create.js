@@ -1,16 +1,17 @@
 import { render } from "@testing-library/react";
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, createContext} from "react";
 import { useHistory } from "react-router";
 import {Button} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import querystring from "query-string"
+import querystring from "query-string";
 import '../styles/Create.css' // CSS imported
 
 // Javascript Zone
 
 // HTML Zone 
 export default function Create() {
+    
     const [deviceID, setDeviceID] = React.useState(null);
     const [deviceName, setDeviceName] = React.useState(null);
     const [codeB, setCode] = React.useState(null);
@@ -37,7 +38,7 @@ export default function Create() {
         }
         // send
         if(true) { // replace true with back end check to validate code
-            history.push("/hostselect");
+            history.push(`/hostselect${'/'}${codeB.code}`);
         }
     }
     async function sendPlaylist(){
@@ -54,18 +55,18 @@ export default function Create() {
             deviceid: deviceID,
             playlistid: request.data.id,
             userid: request.data.owner.id,
-            codeid: codeB.code,
-            playlistname: values.party_name
+            playlistname: values.party_name,
+            id: codeB.code
         };
         console.log('in send');
         const parameters = `?${querystring.stringify(parameterDB)}`;
         console.log(parameters)
         const urlWithParameters = `${'http://localhost:5000/'}${'init/party'}${parameters}`;
-        // const dbSend = `${'http://localhost:5000/'}${'test/db'}${parameters}`
+        const dbSend = `${'http://localhost:5000/'}${'db/create/party'}${parameters}`
         const response = await axios.get(urlWithParameters);
-        // const dbresponse = await axios.get(dbSend);
+        const dbresponse = await axios.get(dbSend);
         console.log(response);
-        // console.log(dbresponse);
+        console.log(dbresponse);
     }
     React.useEffect(()=>{
         

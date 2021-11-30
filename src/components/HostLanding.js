@@ -1,26 +1,37 @@
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { ExitOutline, PauseOutline, PlaySkipBackOutline, PlaySkipForwardOutline, MenuOutline, PeopleOutline, InformationCircleOutline } from 'react-ionicons'
 import '../styles/HostLanding.css' // CSS imported
 import axios from 'axios';
-
+import * as io from 'socket.io-client';
 // Javascript Zone
 
 let playbackState =[];
-let currentsongname= '';
-// let currentartist = '';
-let currentlength= 0;
+const socket = io.connect(`http://localhost:5000`);
+
 // HTML Zone 
 export default function HostLanding() {
+    
     const [currentImage, setCurrentImage] = React.useState(null);
     const [currentSongID, setCurrentSong] = React.useState(null);
     const [songLength, setSongLength] = React.useState(0);
     const [currentSongName, setCurrentName] = React.useState(null);
    const history = useHistory();
-
+   let {lid} = useParams();
+   React.useEffect(() => {
+       socket.emit('join', lid);
+       return () => {
+           socket.emit('leave room', 
+             lid
+           )
+       }
+     }, []);
+     async function skipSong(){
+         const response = await axios.post("http://localhost:5000/skip/song")
+     }
     function handleSubmit(direction){
         if(direction === "queue"){
-            history.push("queue");
+            history.push(`/queue${'/'}${lid}`);
         } else if(direction === "listeners"){
             history.push("listeners");
         } else if(direction === "details"){
@@ -43,7 +54,16 @@ export default function HostLanding() {
             setSongLength(response.data.item.duration_ms);
             // currentlength = response.data.item.duration_ms;
             setCurrentName(response.data.item.name);
-        }
+        
+        socket.emit('song event', {
+            room: lid,
+            socketSong: incoming_songid,
+            socketImage: response.data.item.album.images[1].url,
+            socketLength: response.data.item.duration_ms,
+            socketName: response.data.item.name
+        })
+        
+    }
         
 
         
@@ -52,18 +72,17 @@ export default function HostLanding() {
         
         async function getPlayback(){
             const response = await axios.get("http://localhost:5000/currently/playing");
-            // console.log(response)
-            // console.log(response.data)
-            // console.log(response);
             setSongLength(response.data.item.duration_ms);
-            // console.log(response.data.item.duration_ms);
-            // currentlength = response.data.item.duration_ms;
-            // currentsongname = response.data.item.name;
-            // console.log(currentlength);
-            // console.log(songLength);
             setCurrentSong(response.data.item.id);
             setCurrentImage(response.data.item.album.images[1].url);
             setCurrentName(response.data.item.name);
+            socket.emit('song event', {
+                room: lid,
+                socketSong: response.data.item.id,
+                socketImage: response.data.item.album.images[1].url,
+                socketLength: response.data.item.duration_ms,
+                socketName: response.data.item.name
+            })
         }
         
         getPlayback();
@@ -85,7 +104,9 @@ export default function HostLanding() {
                 <div id="player-actions">
                     <PlaySkipBackOutline class="p-action" color={'#00000'} title={"back"} height="25px" width="25px"/>
                     <PauseOutline  class="p-action" color={'#00000'} title={"pause"} height="25px" width="25px"/>
-                    <PlaySkipForwardOutline  class="p-action" color={'#00000'} title={"forwards"} height="25px" width="25px"/>
+                    <button name= 'skip' onClick={() => skipSong() } >
+                    <PlaySkipForwardOutline  class="p-action" color={'#00000'} title={"forwards"} onClick={() => skipSong() } height="25px" width="25px"/>
+                    </button>
                 </div>
             </div>
 

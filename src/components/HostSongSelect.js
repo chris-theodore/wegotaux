@@ -1,19 +1,23 @@
-import React, {useState} from "react";
-import { useHistory } from "react-router-dom";
+import React, {useContext, useState} from "react";
+import { useHistory, useParams } from "react-router-dom";
 import {Form, Button} from "react-bootstrap";
 import '../styles/HostSongSelect.css' // CSS imported
 import axios from 'axios';
 import querystring from 'querystring';
 import Create from './Create.js';
 import '../styles/CopySearch.css' // CSS imported
+import CodeContext from "./Create";
+
 
 // Search Code
 let songnameArray = [];
 let songIDArray = [];
 let songPicArray = [];
+
 // HTML Zone 
 export default function HostSongSelect() {
     //Search Code
+    let {lid} = useParams();
     const[dataB, setData] = React.useState([]);
     const [songsName, setSongsTerm] = React.useState([]);
     const [artistsName, setArtistsTerm] = useState([]);
@@ -37,7 +41,7 @@ export default function HostSongSelect() {
         setData(response.data);
         console.log(setData);
     }
-    async function addSong(song_uri, song_img, song_title){
+    async function addSong(song_uri, song_img, song_title,song_length, song_artist, party_code){
         console.log(song_uri);
         songnameArray.push(song_title);
         songPicArray.push(song_img);
@@ -48,13 +52,23 @@ export default function HostSongSelect() {
         tempArray.forEach(id => songs_formatted.push({
             song: song_uri
         }))
+        // const parametersDB = {
+        //     sid: song_uri,
+        //     lid: party_code.lid,
+        //     songlength: song_length,
+        // };
         let req_body = {songs: songs_formatted}
         console.log(req_body);
+        // const parameters = `?${querystring.stringify(parametersDB)}`;
         const urlOther = `${'http://localhost:5000/add/playlist?playlist_id='}${Create.playlistid}`;
         let otherdata = await axios.post(urlOther, req_body);
+        // const dbSend = `${'http://localhost:5000/'}${'db/add/song'}${parameters}`
+        // const dbAddSong = await axios.get(dbSend);
+        // console.log(dbAddSong);
         console.log(song_img);
         console.log(songPicArray);
         console.log(songnameArray);
+        // alert("Song added!");
         setSongsTerm([]);
     }
     async function finalAdd(song_array){
@@ -82,12 +96,13 @@ export default function HostSongSelect() {
 
     function handleSubmit(){
         if(true) {
-            history.push("/host");
+            history.push(`/host${'/'}${lid}`);
         }
     }
 
     return (
         <section id="host-select">
+            <h1> Party Code: {lid} </h1>
             <h1>Select 3 songs to kick off your party!</h1>
             <div>
         <div className = "search-inputs">
@@ -104,7 +119,7 @@ export default function HostSongSelect() {
         <React.Fragment>
             <ul>
                 {
-                dataB.map(data => <li key = {data.id}> <img src={data.picUrl} alt="Album Cover"/> Song Name: {data.title} {"\n"} Artist: {data.artist} <Button onClick={()=>addSong(data.id, data.picUrl, data.title)}> Add me! </Button></li>)
+                dataB.map(data => <li key = {data.id}> <img src={data.picUrl} alt="Album Cover"/> Song Name: {data.title} {"\n"} Artist: {data.artist} <Button onClick={()=>addSong(data.id, data.picUrl, data.title, data.artist, data.songlength, {lid})}> Add me! </Button></li>)
 }     
             </ul>
             </React.Fragment>
