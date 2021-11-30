@@ -1,7 +1,7 @@
 CREATE TABLE Users
 (fun_name VARCHAR(64) NOT NULL,
  user_type VARCHAR(32) NOT NULL CHECK(user_type IN ('host', 'attendee')),
- id INTEGER NOT NULL REFERENCES Listening_Party(id),
+ id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
  PRIMARY KEY (fun_name, id)
 );
 
@@ -18,7 +18,7 @@ CREATE TABLE Listening_Party
  
 CREATE TABLE Song
 (spotify_id VARCHAR(32) NOT NULL,
- party_id INTEGER NOT NULL REFERENCES Listening_Party(id),
+ party_id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
  song_id VARCHAR(40) DEFAULT uuid(),
  song_length INTEGER NOT NULL,
  is_removed INTEGER NOT NULL CHECK (is_removed >= 0 AND is_removed <= 1),
