@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import '../styles/Queue.css' // CSS imported
-import { ArrowBackCircleOutline, ArrowUpCircleOutline,ArrowDownCircleOutline } from 'react-ionicons'
+import { ArrowBackCircleOutline, ArrowUpCircleOutline,ArrowDownCircleOutline, ReturnUpBackOutline } from 'react-ionicons'
 import { useHistory, useParams, useLocation } from "react-router-dom";
 import {Form, Button} from "react-bootstrap";
 
@@ -10,6 +10,7 @@ import axios from "axios";
 import querystring from 'querystring';
 import { Socket } from "dgram";
 import * as io from 'socket.io-client';
+import { nextTick } from "process";
 const socket = io.connect(`http://localhost:5000`);
 
 // Search Code
@@ -29,18 +30,27 @@ export default function Queue() {
     const [errorMsg, setErrorMsg] = useState('');
     const history = useHistory();
     let {lid} = useParams();
-
+    let {utype} =useParams();
     React.useEffect(() => {
         socket.emit('queue room', lid);
         console.log("upon init!!");
-        console.log(location.state.song_id, location.state.song_pic, location.state.song_name);
-        addSongToBlock(location.state.song_id, location.state.song_pic, location.state.song_name);
+        // console.log(location.state.song_id, location.state.song_pic, location.state.song_name)
+        if (utype === "listener"){
+            console.log("hello listener");
+            socket.on("receive qdata", (data) => {
+                console.log("receieved data");
+                console.log(data);
+                    });
+        } else {
+            getFirstSong(location.state.song_id, location.state.song_pic, location.state.song_name);
+        }
         return () => {
             socket.emit('leave queue room', 
               lid
             )
         }
       }, []);
+    
     async function getSong(song,artist){
         const parameterSong = {
             track: song, artist,
@@ -62,9 +72,36 @@ export default function Queue() {
         setData(response.data);
         console.log(setData);
     }
-    socket.on("receive qdata", (data) => {
-        console.log(data);
-            });
+
+    async function getFirstSong(song_uri,song_img, song_title){
+        if (songnameArray.length == 0){
+            console.log("This is the first song being added")
+            console.log(song_uri);
+            songnameArray.push(song_title);
+            songPicArray.push(song_img);
+            songIDArray.push(song_uri);
+            const tempArray = []
+            tempArray.push(song_uri)
+            let songs_formatted = []
+            tempArray.forEach(id => songs_formatted.push({
+                song: song_uri
+            }))
+            let req_body = {songs: songs_formatted}
+            console.log(req_body);
+            console.log(song_img);
+            console.log(songPicArray);
+            console.log(songnameArray);
+            socket.emit('add to block', {
+                room: lid,
+                socketImageArray: {songPicArray},
+                socketNameArray: {songnameArray}
+            })
+            setSongsTerm([]);
+            setData([]);
+        }else{
+            return;
+        }
+    }
     async function addSongToBlock(song_uri, song_img, song_title){
         console.log(song_uri);
         songnameArray.push(song_title);

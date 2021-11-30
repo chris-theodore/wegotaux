@@ -1,5 +1,5 @@
-import { useHistory, useParams } from "react-router-dom";
 import React, { useEffect} from "react";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { ExitOutline, PauseOutline, PlaySkipBackOutline, PlaySkipForwardOutline, MenuOutline, PeopleOutline, InformationCircleOutline } from 'react-ionicons'
 import axios from 'axios';
 
@@ -16,8 +16,10 @@ export default function ListenerLanding() {
     const [currentSongID, setCurrentSong] = React.useState(null);
     const [songLength, setSongLength] = React.useState(0);
     const [currentSongName, setCurrentName] = React.useState(null);
+    const location = useLocation();
     const history = useHistory();
     let {lid} = useParams();
+    const utype = "listener";
     React.useEffect(() => {
         socket.emit('join', lid);
 
@@ -37,7 +39,8 @@ export default function ListenerLanding() {
                 });
     function handleSubmit(direction){
         if(direction === "queue"){
-            history.push(`/queue${'/'}${lid}`);
+            // console.log(location.state.path_name)
+            history.push(`/queue${'/'}${utype}${'/'}${lid}`);
         } else if(direction === "listeners"){
             history.push("/listeners");
         } else if(direction === "/details"){

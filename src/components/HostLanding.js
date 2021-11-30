@@ -12,12 +12,14 @@ const socket = io.connect(`http://localhost:5000`);
 // HTML Zone 
 export default function HostLanding() {
     const location = useLocation();
+    const pathname = "host";
     const [currentImage, setCurrentImage] = React.useState(null);
     const [currentSongID, setCurrentSong] = React.useState(null);
     const [songLength, setSongLength] = React.useState(0);
     const [currentSongName, setCurrentName] = React.useState(null);
    const history = useHistory();
    let {lid} = useParams();
+   const utype = "host";
    React.useEffect(() => {
        socket.emit('join', lid);
        return () => {
@@ -32,9 +34,9 @@ export default function HostLanding() {
      }
     function handleSubmit(direction){
         if(direction === "queue"){
-            console.log(location.state.dummy);
-            console.log(location.state.song);
-            history.push(`/queue${'/'}${lid}`, {song_id: location.state.song_id, song_name: location.state.song_name, song_pic : location.state.song_pic, song_length: location.state.song_length});
+            // console.log(location.state.dummy);
+            // console.log(location.state.song);
+            history.push(`/queue${'/'}${utype}${'/'}${lid}`, {path: location.state.pathname, song_id: location.state.song_id, song_name: location.state.song_name, song_pic : location.state.song_pic, song_length: location.state.song_length});
         } else if(direction === "listeners"){
             history.push("listeners");
         } else if(direction === "details"){
@@ -100,6 +102,7 @@ export default function HostLanding() {
     return (
         
         <section id="host-landing">
+            Party Code: {lid}
             <div id="player">
                 <img id="album-art" src={currentImage}/>
                 <div id="song-name">
