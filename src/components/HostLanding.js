@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, useLocation } from "react-router-dom";
 import { ExitOutline, PauseOutline, PlaySkipBackOutline, PlaySkipForwardOutline, MenuOutline, PeopleOutline, InformationCircleOutline } from 'react-ionicons'
 import '../styles/HostLanding.css' // CSS imported
 import axios from 'axios';
@@ -11,7 +11,7 @@ const socket = io.connect(`http://localhost:5000`);
 
 // HTML Zone 
 export default function HostLanding() {
-    
+    const location = useLocation();
     const [currentImage, setCurrentImage] = React.useState(null);
     const [currentSongID, setCurrentSong] = React.useState(null);
     const [songLength, setSongLength] = React.useState(0);
@@ -27,11 +27,14 @@ export default function HostLanding() {
        }
      }, []);
      async function skipSong(){
+         //need to post this with unique id of the listening party as query parameter
          const response = await axios.post("http://localhost:5000/skip/song")
      }
     function handleSubmit(direction){
         if(direction === "queue"){
-            history.push(`/queue${'/'}${lid}`);
+            console.log(location.state.dummy);
+            console.log(location.state.song);
+            history.push(`/queue${'/'}${lid}`, {song_id: location.state.song_id, song_name: location.state.song_name, song_pic : location.state.song_pic, song_length: location.state.song_length});
         } else if(direction === "listeners"){
             history.push("listeners");
         } else if(direction === "details"){
@@ -48,7 +51,7 @@ export default function HostLanding() {
         // console.log(response.data)
         // console.log(response);
         incoming_songid = response.data.item.id;
-        if(currentSongID != incoming_songid){
+        if(currentSongID !== incoming_songid){
             setCurrentSong(incoming_songid);
             setCurrentImage(response.data.item.album.images[1].url);
             setSongLength(response.data.item.duration_ms);
@@ -72,6 +75,7 @@ export default function HostLanding() {
         
         async function getPlayback(){
             const response = await axios.get("http://localhost:5000/currently/playing");
+            console.log(response);
             setSongLength(response.data.item.duration_ms);
             setCurrentSong(response.data.item.id);
             setCurrentImage(response.data.item.album.images[1].url);

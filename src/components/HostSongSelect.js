@@ -13,10 +13,12 @@ import CodeContext from "./Create";
 let songnameArray = [];
 let songIDArray = [];
 let songPicArray = [];
+let songlengthArray = [];
 
 // HTML Zone 
 export default function HostSongSelect() {
     //Search Code
+    let transfer_song;
     let {lid} = useParams();
     const[dataB, setData] = React.useState([]);
     const [songsName, setSongsTerm] = React.useState([]);
@@ -39,10 +41,12 @@ export default function HostSongSelect() {
             setData([])
         }
         setData(response.data);
-        console.log(setData);
+        console.log("HEREEE");
+        console.log(dataB.data);
     }
     async function addSong(song_uri, song_img, song_title,song_length, song_artist, party_code){
         console.log(song_uri);
+        songlengthArray.push(song_length);
         songnameArray.push(song_title);
         songPicArray.push(song_img);
         songIDArray.push(song_uri);
@@ -72,11 +76,13 @@ export default function HostSongSelect() {
         setSongsTerm([]);
     }
     async function finalAdd(song_array){
-        if(song_array != 3){
+        if(song_array !== 3){
             console.log("chris test")
         }
+        let playback_init = song_array.slice(0,2);
+        let voting_init = song_array.slice(-1)[0];
         let songs_formatted = []
-        song_array.forEach(id => songs_formatted.push({
+        playback_init.forEach(id => songs_formatted.push({
             song: id
         }))
         console.log("TEST HERE")
@@ -96,7 +102,11 @@ export default function HostSongSelect() {
 
     function handleSubmit(){
         if(true) {
-            history.push(`/host${'/'}${lid}`);
+            //history.push(`/host${'/'}${lid}`);
+            console.log("test within submit");
+            console.log(songIDArray.slice(-1)[0]);
+            history.push(`/host${'/'}${lid}`,
+                  {song_id: songIDArray.slice(-1)[0], song_name: songnameArray.slice(-1)[0], song_pic : songPicArray.slice(-1)[0], song_length: songlengthArray.slice(-1)[0]});
         }
     }
 

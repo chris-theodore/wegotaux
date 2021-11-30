@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import '../styles/Queue.css' // CSS imported
 import { ArrowBackCircleOutline, ArrowUpCircleOutline,ArrowDownCircleOutline } from 'react-ionicons'
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, useLocation } from "react-router-dom";
 import {Form, Button} from "react-bootstrap";
 
 import Search from "./Search.js"
@@ -19,6 +19,8 @@ let songPicArray = [];
 
 // HTML Zone 
 export default function Queue() {
+    const location = useLocation();
+    //const init_song = location.state.song;
     const[dataB, setData] = React.useState([]);
     const [songsName, setSongsTerm] = React.useState([]);
     const [queueSongName, setSongQueue] = React.useState([]);
@@ -30,6 +32,9 @@ export default function Queue() {
 
     React.useEffect(() => {
         socket.emit('queue room', lid);
+        console.log("upon init!!");
+        console.log(location.state.song_id, location.state.song_pic, location.state.song_name);
+        addSongToBlock(location.state.song_id, location.state.song_pic, location.state.song_name);
         return () => {
             socket.emit('leave queue room', 
               lid
@@ -41,6 +46,10 @@ export default function Queue() {
             track: song, artist,
             // artist: artist
         };
+        console.log("testing");
+        console.log(location.state);
+        console.log(location);
+        console.log(location.state.song);
         const parameters = `?${querystring.stringify(parameterSong)}`;
         const urlWithParameters = `${'http://localhost:5000/song/search'}${parameters}`;
         console.log(urlWithParameters);
@@ -94,6 +103,7 @@ export default function Queue() {
             // use react useState hook to increment votes and push to db
             // make sure to connect to the given song can use dom stuff to retrieve song name/id
             console.log("vote +1");
+            //console.log(location.state);
         } else if(direction === "down"){
             // use react useState hook to decrement votes and push to db 
             // make sure to connect to the given song can use dom stuff to retrieve song name/id
@@ -105,9 +115,13 @@ export default function Queue() {
     // gonna need to add the songs to song view with a for loop later from database, place holders for now.
     // gonna need to add the songs to polls div with a for loop later from database, place holders for now.
     // polls section would probs be scrollable later
+    //  <p>{location.state.song}</p>
     return (
         <section id="queue">
-                
+            <div>
+              
+                <p>"This is an excellent test."</p>
+            </div>  
 
            <div id="header">
                 <ArrowBackCircleOutline onClick={() => handlePageChange("back")}color={'#00000'}  title={"back"} height="40px" width="40px"/>
