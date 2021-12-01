@@ -1,4 +1,4 @@
-const dbClient = require('./clara_database');
+const dbClient = require('./database_helper_api');
 const dotenv = require('dotenv');
 dotenv.config({ path: '../.env' });
 

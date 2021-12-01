@@ -58,7 +58,7 @@ socket.on('song event', (data) =>{
 });
 
 // socket room connection
-io.on("join", (roomName) => {
+io.on("join", (roomName,socket) => {
   console.log("join: " + roomName);
   socket.join(roomName);
 });
@@ -138,8 +138,7 @@ app.get('/auth/spotify/redirect',
 require('./routes/spotify_api')(app);
 require('./routes/id_generator')(app);
 require('./routes/database_api')(app);
-//require('./routes/kenny_database')(app);
-//require('./routes/preston_database')(app);
+
 
 //start server
 server.listen(port, () => console.log(`Listening on port ${port}`));
