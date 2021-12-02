@@ -183,3 +183,17 @@ async function skip_songAPI(request, response, next) {
 };
 
 
+async function getCredentials(id){
+    const param = {
+        id: id
+    };
+    const parameters = `?${querystring.stringify(param)}`;
+    const urlWithParameters = `${'http://localhost:5000'}${'/db/read/listening_party'}${parameters}`;
+    const result = await axios.get(urlWithParameters);
+    return result.data;
+}
+
+
+
+
+
