@@ -1,5 +1,7 @@
 const spotifyClient = require('./spotify_helper_api');
 const dotenv = require('dotenv');
+const axios = require('axios');
+const querystring = require('querystring');
 dotenv.config({ path: '../.env' });
 
 module.exports = function(app){
@@ -42,18 +44,14 @@ function initialAPI(request, response){
 
 function saveEnv(request, response){
     console.log("SAVING ENV VARIABLES");
-    console.log(request.query);
     process.env.DEVICE_ID = request.query.deviceid;
     process.env.PLAYLIST_ID = request.query.playlistid;
-    console.log(process.env.DEVICE_ID);
-    console.log(process.env.PLAYLIST_ID);
     response.json({message: 'we saved the variable'});
 }
 
 
 async function searchAPI(request, response, next) {
         try {
-            console.log(request.query.type, request.query.search, request.query.artist, request)
             const songData = await spotifyClient.searchAPI(request.query.track, request.query.artist);
             let results = []
             songData.forEach(song => results.push({

@@ -11,6 +11,8 @@ import querystring from 'querystring';
 import { Socket } from "dgram";
 import * as io from 'socket.io-client';
 import { nextTick } from "process";
+import { notStrictEqual } from "assert";
+import { DH_NOT_SUITABLE_GENERATOR } from "constants";
 const socket = io.connect(`http://localhost:5000`);
 
 // Search Code
@@ -50,22 +52,15 @@ export default function Queue() {
             )
         }
       }, []);
-    
+
+
     async function getSong(song,artist){
         const parameterSong = {
-            track: song, artist,
-            // artist: artist
+            track: song,
         };
-        console.log("testing");
-        console.log(location.state);
-        console.log(location);
-        console.log(location.state.song);
         const parameters = `?${querystring.stringify(parameterSong)}`;
         const urlWithParameters = `${'http://localhost:5000/song/search'}${parameters}`;
-        console.log(urlWithParameters);
         const response = await axios.get(urlWithParameters);
-        console.log(response)
-        console.log(response.data)
         if (setData != []) {
             setData([])
         }
@@ -141,10 +136,13 @@ export default function Queue() {
             // make sure to connect to the given song can use dom stuff to retrieve song name/id
             console.log("vote +1");
             //console.log(location.state);
+              
+                socket.emit('new vote', {vote: 1, name: location.state.user, song: idk, });
         } else if(direction === "down"){
             // use react useState hook to decrement votes and push to db 
             // make sure to connect to the given song can use dom stuff to retrieve song name/id
             console.log("vote -1");
+            socket.emit('new vote', {vote: 1});
         }
     }
 

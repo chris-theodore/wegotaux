@@ -10,7 +10,8 @@ module.exports = function(app){
 
 function makeID(request, response) {
     let result  = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    //ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+    const characters = '0123456789';
     let charactersLength = characters.length;
     for ( let i = 0; i < process.env.ID_LENGTH; i++ ) {
       result += characters.charAt(Math.floor(Math.random() * 
