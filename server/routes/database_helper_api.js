@@ -106,13 +106,24 @@ Listening_Party_Read: (id) => {
 });
 },
 
-User_Read: (fun_name, id) => {
+User_Read: (id) => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT * FROM Users WHERE fun_name = ? and id = ?", [fun_name, parseInt(id)], async (err, result) =>{
+    connection.query("SELECT * FROM Users WHERE id = ?", [id], async (err, result) =>{
      if (err) {
        return reject(err);
      }
-     return resolve(result[0]);
+     return resolve(result);
+ });
+});
+},
+
+User_Check: (fun_name, id) => {
+  return new Promise((resolve, reject) => {
+    connection.query("SELECT * FROM Users WHERE fun_name = ? and id = ?", [fun_name, id], async (err, result) =>{
+     if (err) {
+       return reject(err);
+     }
+     return resolve(result);
  });
 });
 },
