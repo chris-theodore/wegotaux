@@ -29,7 +29,7 @@ CREATE TABLE Song
 CREATE TABLE Voting_Record
 (fun_name VARCHAR(64) NOT NULL REFERENCES Users(fun_name),
  id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
- vote INTEGER NOT NULL CHECK (vote >= -1 AND vote != 0 AND vote <= 1),
+ vote INTEGER NOT NULL CHECK (vote >= -1 AND vote <= 1),
  vote_time TIMESTAMP NOT NULL, 
 --  spotify_id VARCHAR(32) REFERENCES Song(spotify_id), WE NEED TO RE LOOK AT THIS
  song_id VARCHAR(40) NOT NULL REFERENCES Song(song_id),
