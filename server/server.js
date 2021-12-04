@@ -1,34 +1,98 @@
 //bare minimum code to activate express server w CORS
-const express = require('express'),
-  app = express(),
-  mysql = require('mysql'),
-  session = require('express-session'),
-  port = process.env.PORT || 5000,
-  passport = require('passport'),
-  users = {},
-  SpotifyStrategy = require('passport-spotify').Strategy,
-  cors = require('cors');
+const express = require('express');
+const app = express();
+//bodyParser = require('body-parser');
+const session = require('express-session');
+const port = process.env.PORT || 5000;
+const passport = require('passport');
+const users = {};
+const SpotifyStrategy = require('passport-spotify').Strategy;
+const http = require("http");
+const cors = require('cors');
+const dbClient = require('./routes/database_helper_api');
 
 require('dotenv').config();
-  
 
-app.use(cors());
+const {Server}= require("socket.io");
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
+
+// socket connection
+io.on("connection", (socket) =>{
+  console.log(`User Connected: ${socket.id}`);
+socket.on('disconnect', () =>
+  console.log(`Disconnected: ${socket.id}`));
+socket.on('join', (room) => {
+  console.log(`Socket ${socket.id} joining ${room}`);
+  socket.join(room);
+});
+socket.on('queue room', (room) => {
+  console.log(`Socket ${socket.id} joining queue ${room}`);
+  socket.join(room)
+})
+socket.on('add to block', (data) => {
+  console.log("add to block")
+  console.log(data);
+  console.log(data.songPicArray);
+  console.log(data.songnamerray);
+  socket.to(data.room).emit('recieve qdata',
+  (data))
+})
+socket.on('leave room', (room) => {
+  console.log(`Socket ${socket.id} leaving ${room}`);
+  socket.leave(room)
+}) 
+socket.on('leave queue room', (room) => {
+  console.log(`Socket ${socket.id} leaving ${room}`);
+  socket.leave(room)
+})
+socket.on('song change', (data) =>{
+
+  socket.to(data.room).emit('song update',({data:data}));
+})
+
+
+socket.on('add to block', (data) =>{
+  //request.query.sid, request.query.lid, request.query.songlength
+  dbClient.Song_Create(data.song_id, data.room)
+  socket.to(data.room).emit('song update',({data:data}));
+})
+
+
+socket.on('vote', (data) =>{
+  dbClient.Voting_Record_Create(data.fname, data.uid, data.vote, data.sid)
+  socket.to(data.room).emit('song update',({data:data}));
+})
+});
+
+// socket room connection
+io.on("join", (roomName,socket) => {
+  console.log("join: " + roomName);
+  socket.join(roomName);
+});
+
+
+
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true
+}));
+//app.use(bodyParser.json()); // support json encoded bodies
+//app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors({
+  origin: '*'
+}));
+
+
+
 app.use(session({secret: "secret"}));
 
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  database: process.env.DB_INSTANCE,
-  password: ''
-});
 
-db.connect(function(err) {
-if (err) {
-  console.error('Error connecting: ' + err.stack);
-  return;
-}
-console.log('MySql connected');
-});
 
 passport.use(
   new SpotifyStrategy(
@@ -41,8 +105,12 @@ passport.use(
       // asynchronous verification, for effect...
       process.nextTick(function () {
         console.log('successful token retrieval');
+        console.log(expires_in);
+        console.log("refresh token");
+        console.log(refreshToken);
         process.env.ACCESS_TOKEN = accessToken;
         process.env.REFRESH_TOKEN = refreshToken;
+        process.env.SPOTIFY_API_USER_ID = profile.id;
         users[profile.id] = profile;
         return done(null, profile);
       });
@@ -69,7 +137,7 @@ app.use(passport.session());
 //authentication
 app.get('/auth/spotify',
       passport.authenticate('spotify', {
-        scope: ['user-read-email', 'user-read-playback-state','user-modify-playback-state', 'playlist-modify-private', 'playlist-modify-public','ugc-image-upload'],
+        scope: ['user-read-email', 'user-read-playback-state', 'playlist-modify-private', 'playlist-modify-public','ugc-image-upload', 'user-modify-playback-state'],
         showDialog: true,
       })
   );
@@ -77,7 +145,7 @@ app.get('/auth/spotify',
 app.get('/auth/spotify/redirect',
   passport.authenticate('spotify'),
   function (req, res) {
-      res.redirect('/');
+      res.redirect('http://localhost:3000/create');
   }
 );
 
@@ -85,9 +153,10 @@ app.get('/auth/spotify/redirect',
 //init routes
 require('./routes/spotify_api')(app);
 require('./routes/id_generator')(app);
-require('./routes/create_database')(app,db);
-require('./routes/database')(app, db);
+require('./routes/database_api')(app);
+
 
 //start server
-app.listen(port, () => console.log("Backend server live on " + port));
+server.listen(port, () => console.log(`Listening on port ${port}`));
+// app.listen(port, () => console.log("Backend server live on " + port));
 
