@@ -98,7 +98,9 @@ export default function HostSongSelect() {
         if(true) {
             let parameterDB = {
                 lid: lid,
-                sid: songIDArray[2]
+                sid: songIDArray[2],
+                img: songPicArray[2],
+                title: songnameArray[2]
             };
             const parameters = `?${querystring.stringify(parameterDB)}`;
             const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;

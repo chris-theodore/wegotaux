@@ -27,33 +27,30 @@ const User = function(fun_name, user_type, id){
   this.id = id;
 }
 
-const Song = function(spotify_id, party_id, song_id, is_removed){
+const Song = function(spotify_id, party_id, song_id, is_removed, img, title){
   this.spotify_id = spotify_id;
   this.party_id = party_id;
   this.song_id = song_id;
   this.is_removed = is_removed;
+  this.img = img;
+  this.title = title;
 }
 
 
-//INSERT INTO Listening_Party (spotify_playlist_name,id, time_created, currently_playing, device_id, spotify_user_id, playlist_id) VALUES(playlist_name,unique_id, time_created, NULL, device_id, spotify_user_id, playlist_id);
 
 
 const db_client = {
 
  //CREATE
- //we will not be inserting a current_img attribute at this point
-
 
   Listening_Party_Create: (pname, did, uid, pid, id) => {
     const newParty = new Listening_Party(pname, new Date().toISOString().slice(0, 19).replace('T', ' '), did, uid, pid, parseInt(id))
     connection.query("INSERT INTO Listening_Party SET ?", newParty, (err, res) =>{
       if (err) {
         console.log("error: ", err);
-        //result(err, null);
         return err;
       }
       console.log("created party: ", { ...newParty });
-      //result(null, { id: res.id, ...newParty });
       return res;
     });
 },
@@ -81,9 +78,9 @@ Voting_Record_Create: (fun_name, id, vote, song_id) => {
     return result;
   });
 },
-Song_Create: async (spotify_id, party_id) => {
+Song_Create: async (spotify_id, party_id, img, title) => {
   let new_sid = uuidv4();
-    const newSong = new Song(spotify_id, party_id, new_sid, 0);
+    const newSong = new Song(spotify_id, party_id, new_sid, 0, img, title);
     connection.query("INSERT INTO Song SET ?", newSong, (err, result) =>{
       if (err) {
         console.log("error: ", err);
@@ -226,24 +223,16 @@ Listening_Party_Lookup: (id) => {
  });
 });
 },
-Generate_Voting_Block: (id) => {
+Generate_Voting_Block: async (id) => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT Voting_Record.song_id, SUM(Voting_Record.vote) AS total_votes FROM Voting_Record, Song WHERE Voting_Record.id = ? GROUP BY Voting_Record.song_id", [parseInt(id)], async (err, result) =>{
+    connection.query("SELECT Song.spotify_id AS spotify_uid, Song.song_id AS song_id, SUM(Voting_Record.vote) AS total_votes, Song.img AS img, Song.title AS title FROM Voting_Record, Song WHERE (Voting_Record.id = ? AND Voting_Record.song_id = Song.song_id AND Song.is_removed = 0) GROUP BY Voting_Record.song_id ORDER BY total_votes DESC", [parseInt(id)], async (err, result) =>{
      if (err) {
-       //console.log("error: ", err);
        return reject(err);
      }
-     console.log(result);
-     return resolve(result[0]);
+     return resolve(result);
  });
 });
 }
 };
-
-
-
-
-
-
 
 module.exports = db_client;

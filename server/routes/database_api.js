@@ -88,7 +88,7 @@ async function read_vote_record_API(request, response){
 async function create_song_API(request, response){
     //(spotify_id, id, song_length, new Date().toISOString().slice(0, 19).replace('T', ' '), null, playlist_position)
     //spotify_id, party_id, song_id, song_length, is_removed, playlist_position
-    let result = await dbClient.Song_Create(request.query.sid, request.query.lid);
+    let result = await dbClient.Song_Create(request.query.sid, request.query.lid, request.query.img, request.query.title);
     console.log(result);
     response.json({code: result});
 }
@@ -137,9 +137,11 @@ function delete_song_API(request, response){
 }
 
 
-function generate_voting_block_API(request, response){
-    let result = dbClient.Generate_Voting_Block(request.query.id);
-    response.json(result);
+async function generate_voting_block_API(request, response){
+    let result = await dbClient.Generate_Voting_Block(request.query.id);
+    console.log("heyyyyyooooooo");
+    console.log(result);
+    response.send(result);
 }
 
 
