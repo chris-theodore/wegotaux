@@ -2,6 +2,7 @@ import React, { useEffect} from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { ExitOutline, PauseOutline, PlaySkipBackOutline, PlaySkipForwardOutline, MenuOutline, PeopleOutline, InformationCircleOutline } from 'react-ionicons'
 import axios from 'axios';
+import querystring from 'query-string'
 
 import '../styles/ListenerLanding.css' // CSS imported
 import * as io from 'socket.io-client';
@@ -18,45 +19,74 @@ export default function ListenerLanding() {
     const [currentSongName, setCurrentName] = React.useState(null);
     const location = useLocation();
     const history = useHistory();
-    let {uid, lid} = useParams();
+    let {lid} = useParams();
+    let {uid} = useParams();
     const utype = "listener";
     React.useEffect(() => {
-        socket.emit('join', lid);
-
-        return () => {
-            socket.emit('leave room', 
-              lid
-            )
-        }
+        socket.emit('join', {uid, lid});
+        
       }, []);
+    socket.on("user kick", (data) => {
+        handleUserLeave();
+    });
     socket.on("receive code", (data) => {
-            console.log(data);
+            // console.log(data);
             setCurrentImage(data.socketImage);
             setCurrentSong(data.socketSong);
             setCurrentName(data.socketName);
             setSongLength(data.socketLength);
                 });
-    socket.on("song update", (data) => {
-        console.log(data);
-        setCurrentImage(data.data.socketImage);
-        setCurrentSong(data.data.socketSong);
-        setCurrentName(data.data.socketName);
-        setSongLength(data.data.socketLength);
-            });
-    
     function handleSubmit(direction){
         if(direction === "queue"){
             // console.log(location.state.path_name)
-            history.push(`/queue${'/'}${utype}${'/'}${uid}${'/'}${lid}`);
+            history.push(`/queue${'/'}${utype}${'/'}${lid}`);
         } else if(direction === "listeners"){
-            history.push(`/listeners${'/'}${lid}`);
+            history.push(`/listeners${'/'}${lid}`, {utype: "listener"});
         } else if(direction === "/details"){
             history.push("details");
-        } else if(direction === "/leave"){
-            history.push("/");
-            // need to do an api call here to remove the user from the database.
-        } 
+        }
     }
+    const handleUserLeave = async (event) =>{
+        try{
+            await UserLeave();
+            alert("Hope you enjoyed the party!")
+        } catch (e){
+            alert(`Party leave failed! ${e.message}`)
+        }
+    }
+    async function validUser(){
+        const parameterDB = {
+            fname: uid,
+            id: lid
+        };
+        const parameters = `?${querystring.stringify(parameterDB)}`;
+        console.log(parameters)
+        const dbSend = `${'http://localhost:5000/'}${'db/check/user'}${parameters}`
+        const dbresponse = await axios.get(dbSend);
+        console.log(dbresponse);
+        if(dbresponse.data.length == 0){
+            alert("You have been kicked from the party!");
+            history.push(`/`);
+        }
+}
+    async function UserLeave(){
+            const parameterDB = {
+                fname: uid,
+                id: parseInt(lid)
+            };
+            const parameters = `?${querystring.stringify(parameterDB)}`;
+            console.log(parameters)
+            const dbSend = `${'http://localhost:5000/'}${'db/delete/user'}${parameters}`
+            const dbresponse = await axios.get(dbSend);
+            console.log(dbresponse);
+            history.push(`/`);
+    }
+    useEffect(() => {
+        const interval = setInterval(() => {
+          validUser();
+        }, 1000);
+        return () => clearInterval(interval);
+      }, []);
     return (
         <section id="listen-landing">
             <div id="player">
@@ -79,8 +109,10 @@ export default function ListenerLanding() {
                     <InformationCircleOutline color={'#00000'}  title={"party-details"} height="25px" width="25px"/>                    
                     <p>Party Details</p>
                 </div>
-                <div class="u-action" onClick={() => handleSubmit("leave")}>
-                <ExitOutline color={'#00000'}  title={"exit"} height="25px" width="25px"/>
+                <div class="u-action" onClick={() => handleUserLeave()}>
+                <ExitOutline color={'#00000'}  title={"exit"} height="25px" width="25px"
+/>
+
                     <p>Leave Party</p>
                 </div>
             </div>
