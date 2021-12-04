@@ -220,6 +220,28 @@ export default function Queue() {
         }
     }
 
+    async function updateExistingVote(uid, lid, custom_id, direction){
+        //check if voting record exists
+        //request.query.vote, request.query.fun_name,request.query.id,request.query.sid
+        let decision = -1;
+        if(direction === "up"){
+            decision = 1
+        }
+    
+        let parameterDB_modify = {
+            fun_name: uid,
+            id: lid,
+            sid: custom_id,
+            vote: decision
+        };
+        const parameters_modify = `?${querystring.stringify(parameterDB_modify)}`;
+        const dbSend2 = `${'http://localhost:5000/'}${'db/change/vote'}${parameters_modify}`;
+        const dbresponse2 = await axios.get(dbSend2);
+        console.log(dbresponse2);
+        const test = await refreshBlock2();
+
+    }
+
     async function handleVote(direction, uri, custom_id) {
         let parameterDB;
         //check if voting record exists
@@ -235,30 +257,36 @@ export default function Queue() {
         console.log(dbSend2);
         const dbresponse2 = await axios.get(dbSend2);
         console.log(dbresponse2.data);
-
-        if(direction === "up"){
-            // use react useState hook to increment votes and push to db
-            // make sure to connect to the given song can use dom stuff to retrieve song name/id
-            console.log("vote +1");
-            parameterDB = {
-                fname: uid,
-                uid: lid,
-                vote: 1,
-                sid: custom_id
-            };
+        if(dbresponse2.data.exists === 1){
+            updateExistingVote(uid, lid, custom_id, direction);
+            return;
         }
-       
-        else if(direction === "down"){
-            // use react useState hook to decrement votes and push to db 
-            // make sure to connect to the given song can use dom stuff to retrieve song name/id
-            console.log("vote -1");
-            parameterDB = {
-                fname: uid,
-                uid: lid,
-                vote: -1,
-                sid: custom_id
-            };
+        else{
+            if(direction === "up"){
+                // use react useState hook to increment votes and push to db
+                // make sure to connect to the given song can use dom stuff to retrieve song name/id
+                console.log("vote +1");
+                parameterDB = {
+                    fname: uid,
+                    uid: lid,
+                    vote: 1,
+                    sid: custom_id
+                };
+            }
+           
+            else if(direction === "down"){
+                // use react useState hook to decrement votes and push to db 
+                // make sure to connect to the given song can use dom stuff to retrieve song name/id
+                console.log("vote -1");
+                parameterDB = {
+                    fname: uid,
+                    uid: lid,
+                    vote: -1,
+                    sid: custom_id
+                };
+            }
         }
+        
         console.log("in helper");
         console.log(lid);
         const parameters = `?${querystring.stringify(parameterDB)}`;
