@@ -11,7 +11,6 @@ import '../styles/Create.css' // CSS imported
 
 // HTML Zone 
 export default function Create() {
-    
     const [deviceID, setDeviceID] = React.useState(null);
     const [deviceName, setDeviceName] = React.useState(null);
     const [codeB, setCode] = React.useState(null);
@@ -38,16 +37,12 @@ export default function Create() {
         }
         // send
         if(true) { // replace true with back end check to validate code
-            history.push(`/hostselect${'/'}${codeB.code}`);
+            history.push(`/hostselect${'/'}${values.party_host_name}${'/'}${codeB.code}`, {id: id, name: values.party_host_name});
         }
     }
     async function sendPlaylist(){
         const description = `WeGotAux party hosted by: ${values.party_host_name}`; 
         const request = await axios.get(`http://localhost:5000/new/playlist${'?name='}${values.party_name}&${'descrip='}${description}`)
-        console.log(request)
-        console.log(request.data)
-        console.log(request.data.id)
-        console.log(request.data.owner.id)
         setId(request.data.id);
         setUID(request.data.owner.id);
         //set up parameters to send to DB
@@ -69,14 +64,12 @@ export default function Create() {
         console.log(dbresponse);
     }
     React.useEffect(()=>{
-        
         async function getCode(){
             const response = await axios.get("http://localhost:5000/create/party");
             console.log(response)
             console.log(response.data)
             setCode(response.data);
         }
-        
         getCode();
     }, []);    
     React.useEffect(()=>{
@@ -106,9 +99,7 @@ export default function Create() {
             <h1>Party Code: {codeB.code}</h1>
             <React.Fragment>
             <ul>
-                {
-                deviceB.map(data => <li key = {data.id}> Device Name: {data.name} <Button id="device-button" onClick={()=>sendDevice(codeB.code, data.id, data.name)}> Use me! </Button></li>)
-}
+                {deviceB.map(data => <li key = {data.id}> Device Name: {data.name} <Button id="device-button" onClick={()=>sendDevice(codeB.code, data.id, data.name)}> Use me! </Button></li>)}
             </ul>
             </React.Fragment>
             <h1 id="device-selected"> Device Selected: {deviceName}</h1>
@@ -122,7 +113,6 @@ export default function Create() {
                 {/* <button onClick={getCode()}>Test</button> */}
                 {/* <a class="sign-in-button change-on-hover" href="http://localhost:5000/create/party"> Code</a> */}
                 <button onClick={history.goBack}>Go Back</button>
-
         </section>
     );
 }

@@ -19,7 +19,7 @@ let songlengthArray = [];
 export default function HostSongSelect() {
     //Search Code
     let transfer_song;
-    let {lid} = useParams();
+    let {uid, lid} = useParams();
     const[dataB, setData] = React.useState([]);
     const [songsName, setSongsTerm] = React.useState([]);
     const [artistsName, setArtistsTerm] = useState([]);
@@ -80,33 +80,32 @@ export default function HostSongSelect() {
             console.log("chris test")
         }
         let playback_init = song_array.slice(0,2);
-        let voting_init = song_array.slice(-1)[0];
         let songs_formatted = []
         playback_init.forEach(id => songs_formatted.push({
             song: id
         }))
-        console.log("TEST HERE")
-        console.log(songs_formatted);
         let req_body = {songs: songs_formatted}
-        console.log("HERE WE ARE");
-        console.log(Create.deviceID);
-        console.log(req_body);
+ 
         const urlWithParams = `${'http://localhost:5000/start/playback?device_id='}${Create.deviceID}`;
-        console.log(urlWithParams);
         let data = await axios.post(urlWithParams,req_body);
-        console.log(data);
+         
         handleSubmit();
     }
     //End of Search Code
     const history = useHistory();
 
-    function handleSubmit(){
+    async function handleSubmit(){
         if(true) {
-            //history.push(`/host${'/'}${lid}`);
-            console.log("test within submit");
-            console.log(songIDArray.slice(-1)[0]);
-            history.push(`/host${'/'}${lid}`,
-                  {song_id: songIDArray.slice(-1)[0], song_name: songnameArray.slice(-1)[0], song_pic : songPicArray.slice(-1)[0], song_length: songlengthArray.slice(-1)[0]});
+            let parameterDB = {
+                lid: lid,
+                sid: songIDArray[2]
+            };
+            const parameters = `?${querystring.stringify(parameterDB)}`;
+            const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
+            const dbresponse = await axios.get(dbSend);
+  
+            history.push(`/host${'/'}${uid}${'/'}${lid}`,
+                  {second:  {song_id: songIDArray[1], song_name: songnameArray[1], song_pic : songPicArray[1], song_length: songlengthArray[1]}, third: {song_id: songIDArray.slice(-1)[0], song_name: songnameArray.slice(-1)[0], song_pic : songPicArray.slice(-1)[0], song_length: songlengthArray.slice(-1)[0], custom_id: dbresponse.data.code}});
         }
     }
 

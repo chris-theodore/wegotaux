@@ -10,7 +10,6 @@ CREATE TABLE Listening_Party
 (spotify_playlist_name VARCHAR(32),
  id VARCHAR(5) NOT NULL PRIMARY KEY,
  time_created TIMESTAMP NOT NULL,
- currently_playing INTEGER,
  device_id VARCHAR(64),
  spotify_user_id VARCHAR(64),
  playlist_id VARCHAR(64)
@@ -20,9 +19,7 @@ CREATE TABLE Song
 (spotify_id VARCHAR(32) NOT NULL,
  party_id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
  song_id VARCHAR(40) DEFAULT uuid(),
- song_length INTEGER NOT NULL,
  is_removed INTEGER NOT NULL CHECK (is_removed >= 0 AND is_removed <= 1),
- playlist_position INTEGER,
  PRIMARY KEY(song_id)
 );
 

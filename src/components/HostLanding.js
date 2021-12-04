@@ -4,11 +4,9 @@ import { ExitOutline, PauseOutline, PlaySkipBackOutline, PlaySkipForwardOutline,
 import '../styles/HostLanding.css' // CSS imported
 import axios from 'axios';
 import * as io from 'socket.io-client';
-// Javascript Zone
 
 let playbackState =[];
 const socket = io.connect(`http://localhost:5000`);
-
 // HTML Zone 
 export default function HostLanding() {
     const location = useLocation();
@@ -18,7 +16,7 @@ export default function HostLanding() {
     const [songLength, setSongLength] = React.useState(0);
     const [currentSongName, setCurrentName] = React.useState(null);
    const history = useHistory();
-   let {lid} = useParams();
+   let {lid, uid} = useParams();
    const utype = "host";
    React.useEffect(() => {
        socket.emit('join', lid);
@@ -30,13 +28,27 @@ export default function HostLanding() {
      }, []);
      async function skipSong(){
          //need to post this with unique id of the listening party as query parameter
-         const response = await axios.post("http://localhost:5000/skip/song")
+        await axios.post("http://localhost:5000/skip/song");
      }
     function handleSubmit(direction){
         if(direction === "queue"){
-            // console.log(location.state.dummy);
-            // console.log(location.state.song);
-            history.push(`/queue${'/'}${utype}${'/'}${lid}`, {path: location.state.pathname, song_id: location.state.song_id, song_name: location.state.song_name, song_pic : location.state.song_pic, song_length: location.state.song_length});
+            history.push(`/queue${'/'}${utype}${'/'}${uid}${'/'}${lid}`, 
+                 {path: location.state.pathname, 
+                    second: {
+                        song_id: location.state.second.song_id,
+                        song_name: location.state.second.song_name, 
+                        song_pic : location.state.second.song_pic,
+                        song_length: location.state.second.song_length
+                    },
+                    third: {
+                        song_id: location.state.third.song_id,
+                        song_name: location.state.third.song_name, 
+                        song_pic : location.state.third.song_pic,
+                        song_length: location.state.third.song_length,
+                        custom_id: location.state.third.custom_id
+                    }
+                    }
+            );
         } else if(direction === "listeners"){
             history.push("listeners");
         } else if(direction === "details"){
@@ -49,9 +61,6 @@ export default function HostLanding() {
     async function getPlayback2(){
         let incoming_songid = {}
         const response = await axios.get("http://localhost:5000/currently/playing");
-        // console.log(response)
-        // console.log(response.data)
-        // console.log(response);
         incoming_songid = response.data.item.id;
         if(currentSongID !== incoming_songid){
             setCurrentSong(incoming_songid);
@@ -67,11 +76,7 @@ export default function HostLanding() {
             socketLength: response.data.item.duration_ms,
             socketName: response.data.item.name
         })
-        
     }
-        
-
-        
     }
     React.useEffect(()=>{
         
@@ -82,7 +87,7 @@ export default function HostLanding() {
             setCurrentSong(response.data.item.id);
             setCurrentImage(response.data.item.album.images[1].url);
             setCurrentName(response.data.item.name);
-            socket.emit('song event', {
+            socket.emit('song change', {
                 room: lid,
                 socketSong: response.data.item.id,
                 socketImage: response.data.item.album.images[1].url,
@@ -90,7 +95,6 @@ export default function HostLanding() {
                 socketName: response.data.item.name
             })
         }
-        
         getPlayback();
     }, []);
     useEffect(() => {
@@ -100,7 +104,6 @@ export default function HostLanding() {
         return () => clearInterval(interval);
       }, []);
     return (
-        
         <section id="host-landing">
             Party Code: {lid}
             <div id="player">

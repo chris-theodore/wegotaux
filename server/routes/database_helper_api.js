@@ -3,11 +3,10 @@ const config = require('../config.js');
 const connection = config.connection;
 
 //constructor
-const Listening_Party = function(spotify_playlist_name, time_created, currently_playing, device_id, spotify_user_id, playlist_id, id){
+const Listening_Party = function(spotify_playlist_name, time_created,device_id, spotify_user_id, playlist_id, id){
   this.spotify_playlist_name = spotify_playlist_name;
   this.id = id;
   this.time_created = time_created;
-  this.currently_playing = currently_playing;
   this.device_id = device_id;
   this.spotify_user_id = spotify_user_id;
   this.playlist_id = playlist_id;
@@ -28,13 +27,11 @@ const User = function(fun_name, user_type, id){
   this.id = id;
 }
 
-const Song = function(spotify_id, party_id, song_id, song_length, is_removed, playlist_position){
+const Song = function(spotify_id, party_id, song_id, is_removed){
   this.spotify_id = spotify_id;
   this.party_id = party_id;
   this.song_id = song_id;
-  this.song_length = song_length;
   this.is_removed = is_removed;
-  this.playlist_position = playlist_position;
 }
 
 
@@ -44,8 +41,11 @@ const Song = function(spotify_id, party_id, song_id, song_length, is_removed, pl
 const db_client = {
 
  //CREATE
-  Listening_Party_Create: (pname, did, uid, pid, id, result) => {
-    const newParty = new Listening_Party(pname, new Date().toISOString().slice(0, 19).replace('T', ' '), 1, did, uid, pid, parseInt(id))
+ //we will not be inserting a current_img attribute at this point
+
+
+  Listening_Party_Create: (pname, did, uid, pid, id) => {
+    const newParty = new Listening_Party(pname, new Date().toISOString().slice(0, 19).replace('T', ' '), did, uid, pid, parseInt(id))
     connection.query("INSERT INTO Listening_Party SET ?", newParty, (err, res) =>{
       if (err) {
         console.log("error: ", err);
@@ -81,16 +81,9 @@ Voting_Record_Create: (fun_name, id, vote, song_id) => {
     return result;
   });
 },
-Song_Create: async (spotify_id, party_id, song_length) => {
+Song_Create: async (spotify_id, party_id) => {
   let new_sid = uuidv4();
-  await connection.query("SELECT COALESCE(MAX(playlist_position),0) AS value FROM Song WHERE party_id = "+parseInt(party_id)+"", (err, result) =>{
-    if (err) {
-      console.log("error: ", err);
-      //result(err, null);
-      return err;
-    }
-    console.log(result[0].value);
-    const newSong = new Song(spotify_id, party_id, new_sid, song_length, 0, result[0].value);
+    const newSong = new Song(spotify_id, party_id, new_sid, 0);
     connection.query("INSERT INTO Song SET ?", newSong, (err, result) =>{
       if (err) {
         console.log("error: ", err);
@@ -101,9 +94,6 @@ Song_Create: async (spotify_id, party_id, song_length) => {
       //return song_id;
       return newSong.song_id;
     });
-    console.log("here2");
-    return newSong.song_id;
-  });
   return new_sid;
 },
 
@@ -144,8 +134,7 @@ Song_Read: (song_id) => {
 //SINGLE VOTING RECORD READ
 Voting_Read: (fun_name, id, song_id) => {
   return new Promise((resolve, reject) => {
-    //and id = ? and song_id = ?
-    //, parseInt(id), song_id
+
     connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? and id = ? and song_id = ?", [fun_name, parseInt(id), song_id], async (err, result) =>{
      if (err) {
        return reject(err);
@@ -170,17 +159,7 @@ Voting_Block_Read: (id) => {
 });
 },
 
-//UPDATE
-Listening_Party_Update_Curr_Playing: (id) => {
-  connection.query("UPDATE Listening_Party SET currently_playing = currently_playing + 1 WHERE id = ?", [parseInt(id)], (err, result) =>{
-    if (err) {
-      console.log("error: ", err);
-      return err;
-    }
-    console.log("updated listening_party");
-    return result;
-});
-},
+
 Song_Update_Removed: (song_id) => {
   connection.query("UPDATE Song SET is_removed = ? WHERE song_id = ?", [1, song_id], (err, result) =>{
     if (err) {

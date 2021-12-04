@@ -13,12 +13,12 @@ function App() {
           <Route path="/code/" exact component={() => <Code />} />
           <Route path="/create/" exact component={() => <Create />} />
           <Route path="/details" exact component={() => <Details />} />
-          <Route path="/host/:lid" exact component={() => <HostLanding />} />
-          <Route path="/listener/:lid" exact component={() => <ListenerLanding />} />
-          <Route path="/queue/:utype/:lid" exact component={() => <Queue />} />
+          <Route path="/host/:uid/:lid" exact component={() => <HostLanding />} />
+          <Route path="/listener/:uid/:lid" exact component={() => <ListenerLanding />} />
+          <Route path="/queue/:utype/:uid/:lid" exact component={() => <Queue />} />
           <Route path="/search" exact component={() => <Search />} />
           <Route path="/signIn" exact component={() => <SignIn />} />
-          <Route path="/hostselect/:lid" exact component={() => <HostSongSelect/>}/>
+          <Route path="/hostselect/:uid/:lid" exact component={() => <HostSongSelect/>}/>
           <Route path="*" exact component={() => <Landing />} /> </Switch>
       </Router>
     </div>

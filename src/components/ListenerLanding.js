@@ -18,7 +18,7 @@ export default function ListenerLanding() {
     const [currentSongName, setCurrentName] = React.useState(null);
     const location = useLocation();
     const history = useHistory();
-    let {lid} = useParams();
+    let {uid, lid} = useParams();
     const utype = "listener";
     React.useEffect(() => {
         socket.emit('join', lid);
@@ -28,7 +28,6 @@ export default function ListenerLanding() {
               lid
             )
         }
-        
       }, []);
     socket.on("receive code", (data) => {
             console.log(data);
@@ -37,12 +36,20 @@ export default function ListenerLanding() {
             setCurrentName(data.socketName);
             setSongLength(data.socketLength);
                 });
+    socket.on("song update", (data) => {
+        console.log(data);
+        setCurrentImage(data.data.socketImage);
+        setCurrentSong(data.data.socketSong);
+        setCurrentName(data.data.socketName);
+        setSongLength(data.data.socketLength);
+            });
+    
     function handleSubmit(direction){
         if(direction === "queue"){
             // console.log(location.state.path_name)
-            history.push(`/queue${'/'}${utype}${'/'}${lid}`);
+            history.push(`/queue${'/'}${utype}${'/'}${uid}${'/'}${lid}`);
         } else if(direction === "listeners"){
-            history.push("/listeners");
+            history.push(`/listeners${'/'}${lid}`);
         } else if(direction === "/details"){
             history.push("details");
         } else if(direction === "/leave"){
@@ -73,9 +80,7 @@ export default function ListenerLanding() {
                     <p>Party Details</p>
                 </div>
                 <div class="u-action" onClick={() => handleSubmit("leave")}>
-                <ExitOutline color={'#00000'}  title={"exit"} height="25px" width="25px"
-/>
-
+                <ExitOutline color={'#00000'}  title={"exit"} height="25px" width="25px"/>
                     <p>Leave Party</p>
                 </div>
             </div>

@@ -53,7 +53,7 @@ module.exports = function(app){
 function create_listening_party_API(request, response){
     console.log("in call!");
     console.log(request.query);
-    let result = dbClient.Listening_Party_Create(request.query.playlistname, request.query.deviceid, request.query.userid, request.query.playlistid, request.query.id, null);
+    let result = dbClient.Listening_Party_Create(request.query.playlistname, request.query.deviceid, request.query.userid, request.query.playlistid, request.query.id);
     response.json(result);
 }
 
@@ -88,7 +88,7 @@ async function read_vote_record_API(request, response){
 async function create_song_API(request, response){
     //(spotify_id, id, song_length, new Date().toISOString().slice(0, 19).replace('T', ' '), null, playlist_position)
     //spotify_id, party_id, song_id, song_length, is_removed, playlist_position
-    let result = await dbClient.Song_Create(request.query.sid, request.query.lid, request.query.songlength);
+    let result = await dbClient.Song_Create(request.query.sid, request.query.lid);
     console.log(result);
     response.json({code: result});
 }
@@ -120,7 +120,6 @@ function change_vote_API(request, response){
     let result = dbClient.Voting_Record_Update_Vote(request.query.vote, request.query.fun_name,request.query.id,request.query.sid);
     response.json(result);
 }
-
 
 function delete_listening_party_API(request, response){
     let result = dbClient.Listening_Party_Delete(request.query.id);

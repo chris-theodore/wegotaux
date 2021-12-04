@@ -19,6 +19,11 @@ const socket = io.connect(`http://localhost:5000`);
 let songnameArray = [];
 let songIDArray = [];
 let songPicArray = [];
+let block_data = [];
+let song1_img;
+let song2_img;
+let song1_name;
+let song2_name;
 
 // HTML Zone 
 export default function Queue() {
@@ -31,20 +36,22 @@ export default function Queue() {
     const [artistsName, setArtistsTerm] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
     const history = useHistory();
-    let {lid} = useParams();
+    let {uid, lid} = useParams();
     let {utype} =useParams();
     React.useEffect(() => {
         socket.emit('queue room', lid);
         console.log("upon init!!");
         // console.log(location.state.song_id, location.state.song_pic, location.state.song_name)
         if (utype === "listener"){
-            console.log("hello listener");
             socket.on("receive qdata", (data) => {
                 console.log("receieved data");
                 console.log(data);
                     });
         } else {
-            getFirstSong(location.state.song_id, location.state.song_pic, location.state.song_name);
+            song1_img = location.state.second.song_pic;
+            song1_name = location.state.second.song_name;
+            console.log(location.state.third);
+            getFirstSong(location.state.third.song_id, location.state.third.song_pic, location.state.third.song_name, location.state.third.custom_id);
         }
         return () => {
             socket.emit('leave queue room', 
@@ -53,6 +60,11 @@ export default function Queue() {
         }
       }, []);
 
+      socket.on("new song", (data) => {
+        console.log(data);
+    });
+
+    
 
     async function getSong(song,artist){
         const parameterSong = {
@@ -65,32 +77,28 @@ export default function Queue() {
             setData([])
         }
         setData(response.data);
+        socket.emit("new song", {data: response.data, id: lid});
         console.log(setData);
     }
 
-    async function getFirstSong(song_uri,song_img, song_title){
+    async function getFirstSong(song_uri,song_img, song_title, custom_id){
         if (songnameArray.length == 0){
             console.log("This is the first song being added")
-            console.log(song_uri);
-            songnameArray.push(song_title);
-            songPicArray.push(song_img);
-            songIDArray.push(song_uri);
+            console.log(song_img);
+            block_data.push({
+                title: song_title,
+                img: song_img, 
+                uri: song_uri,
+                vote_total: 0,
+                custom_id : custom_id
+            })
+          
             const tempArray = []
             tempArray.push(song_uri)
             let songs_formatted = []
             tempArray.forEach(id => songs_formatted.push({
                 song: song_uri
             }))
-            let req_body = {songs: songs_formatted}
-            console.log(req_body);
-            console.log(song_img);
-            console.log(songPicArray);
-            console.log(songnameArray);
-            socket.emit('add to block', {
-                room: lid,
-                socketImageArray: {songPicArray},
-                socketNameArray: {songnameArray}
-            })
             setSongsTerm([]);
             setData([]);
         }else{
@@ -98,30 +106,33 @@ export default function Queue() {
         }
     }
     async function addSongToBlock(song_uri, song_img, song_title){
-        console.log(song_uri);
-        songnameArray.push(song_title);
-        songPicArray.push(song_img);
-        songIDArray.push(song_uri);
+        
+        let parameterDB = {
+            lid: lid,
+            sid: song_uri
+        };
+        const parameters = `?${querystring.stringify(parameterDB)}`;
+        const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
+        const dbresponse = await axios.get(dbSend);
+        block_data.push({
+            title: song_title,
+            img: song_img, 
+            uri: song_uri,
+            vote_total: 0,
+            custom_id: dbresponse.data.code
+        })
+
         const tempArray = []
         tempArray.push(song_uri)
         let songs_formatted = []
         tempArray.forEach(id => songs_formatted.push({
             song: song_uri
-        }))
-        let req_body = {songs: songs_formatted}
-        console.log(req_body);
-        console.log(song_img);
-        console.log(songPicArray);
-        console.log(songnameArray);
-        socket.emit('add to block', {
-            room: lid,
-            socketImageArray: {songPicArray},
-            socketNameArray: {songnameArray}
-        })
+        }));
+
         setSongsTerm([]);
         setData([]);
-
     }
+
     function handlePageChange(direction){
         if(direction === "back"){
             history.goBack();
@@ -130,33 +141,39 @@ export default function Queue() {
         }
     }
 
-    function handleVote(direction) {
+    async function handleVote(direction, uri, custom_id) {
+        let parameterDB;
         if(direction === "up"){
             // use react useState hook to increment votes and push to db
             // make sure to connect to the given song can use dom stuff to retrieve song name/id
             console.log("vote +1");
-            //console.log(location.state);
-              
-                socket.emit('new vote', {vote: 1, name: location.state.user, song: idk, });
-        } else if(direction === "down"){
+            parameterDB = {
+                fname: uid,
+                uid: lid,
+                vote: 1,
+                sid: custom_id
+            };
+        }
+        else if(direction === "down"){
             // use react useState hook to decrement votes and push to db 
             // make sure to connect to the given song can use dom stuff to retrieve song name/id
             console.log("vote -1");
-            socket.emit('new vote', {vote: 1});
+            parameterDB = {
+                fname: uid,
+                uid: lid,
+                vote: -1,
+                sid: custom_id
+            };
         }
+        const parameters = `?${querystring.stringify(parameterDB)}`;
+        console.log(parameters)
+        const dbSend = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters}`
+        const dbresponse = await axios.get(dbSend);
     }
 
     
-    // gonna need to add the songs to song view with a for loop later from database, place holders for now.
-    // gonna need to add the songs to polls div with a for loop later from database, place holders for now.
-    // polls section would probs be scrollable later
-    //  <p>{location.state.song}</p>
     return (
         <section id="queue">
-            <div>
-              
-                <p>"This is an excellent test."</p>
-            </div>  
 
            <div id="header">
                 <ArrowBackCircleOutline onClick={() => handlePageChange("back")}color={'#00000'}  title={"back"} height="40px" width="40px"/>
@@ -173,63 +190,39 @@ export default function Queue() {
   </div>
            <div id="song-view">
                <div class="song-card">
-                    <img class="sc-album-art" src="../data/images/albumcover-placeholder.jpg"/>
-                    <p>Song Name #1</p>
+                    <img class="sc-album-art" src={song1_img}/>
+                    <p>{song1_name}</p>
                </div>
                <div class="song-card">
-                    <img class="sc-album-art" src="../data/images/albumcover-placeholder.jpg"/>
-                    <p>Song Name #2</p>
+                    <img class="sc-album-art" src={song2_img}/>
+                    <p>{song2_name}</p>
                </div>
            </div>
            <React.Fragment>
             <ul>
                 {
-                dataB.map(data => <li key = {data.id}> <img src={data.picUrl} alt="Album Cover"/> Song Name: {data.title} {"\n"} Artist: {data.artist} <Button onClick={()=>addSongToBlock(data.id, data.picUrl, data.title)}> Add me! </Button></li>)
+                dataB.map(data => <div class="vote-card" key = {data.id}> <img src={data.picUrl} alt="Album Cover"/> Song Name: {data.title} {"\n"} Artist: {data.artist} <Button onClick={()=>addSongToBlock(data.id, data.picUrl, data.title)}> Add me! </Button></div>)
 }     
             </ul>
             </React.Fragment>
-           <div id="polls">
-                <div class="vote-card">
-                    <img class="voter-album-art" src={songPicArray[0]}/>
-                    <p>{songnameArray[0]}</p>
-                    <div class="vote-tools">
-                        <ArrowUpCircleOutline onClick={() => handleVote("up")} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
-                        <ArrowDownCircleOutline onClick={() => handleVote("down")} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
-                    </div>
-               </div>
-               <div class="vote-card">
-                    <img class="voter-album-art" src={songPicArray[1]}/>
-                    <p>{songnameArray[1]}</p>
-                    <div class="vote-tools">
-                        <ArrowUpCircleOutline onClick={() => handleVote("up")} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
-                        <ArrowDownCircleOutline onClick={() => handleVote("down")} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
-                    </div>
-               </div>
-               <div class="vote-card">
-                    <img class="voter-album-art" src={songPicArray[2]}/>
-                    <p>{songnameArray[2]}</p>
-                    <div class="vote-tools">
-                        <ArrowUpCircleOutline onClick={() => handleVote("up")} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
-                        <ArrowDownCircleOutline onClick={() => handleVote("down")} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
-                    </div>
-                </div>
-               <div class="vote-card">
-                    <img class="voter-album-art" src={songPicArray[3]}/>
-                    <p>{songnameArray[3]}</p>
-                    <div class="vote-tools">
-                        <ArrowUpCircleOutline onClick={() => handleVote("up")} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
-                        <ArrowDownCircleOutline onClick={() => handleVote("down")} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
-                    </div>
-                </div>
-               <div class="vote-card">
-                    <img class="voter-album-art" src={songPicArray[4]}/>
-                    <p>{songnameArray[4]}</p>
-                    <div class="vote-tools">
-                        <ArrowUpCircleOutline onClick={() => handleVote("up")} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
-                        <ArrowDownCircleOutline onClick={() => handleVote("down")} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
-                    </div>
-        </div>
-           </div>
+
+            <React.Fragment>
+            <div id="polls">
+            {block_data.map((data, index) => {
+              return <div key={index}>
+                        <img class="voter-album-art" src={data.img}/>
+                            <p>{data.title}</p>
+                            <div class="vote-tools">
+                                <ArrowUpCircleOutline onClick={() => handleVote("up", data.uri, data.custom_id)} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
+                                <ArrowDownCircleOutline onClick={() => handleVote("down", data.uri, data.custom_id)} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
+                            </div>
+                        <div>
+                            <p>total: {data.vote_total}</p>
+                        </div> 
+                        </div>
+            })}
+          </div>
+          </React.Fragment>
 
         </section>
     );
