@@ -107,7 +107,8 @@ export default function HostSongSelect() {
             const dbresponse = await axios.get(dbSend);
   
             history.push(`/host${'/'}${uid}${'/'}${lid}`,
-                  {second:  {song_id: songIDArray[1], song_name: songnameArray[1], song_pic : songPicArray[1], song_length: songlengthArray[1]}, third: {song_id: songIDArray.slice(-1)[0], song_name: songnameArray.slice(-1)[0], song_pic : songPicArray.slice(-1)[0], song_length: songlengthArray.slice(-1)[0], custom_id: dbresponse.data.code}});
+                  {second:  {song_id: songIDArray[1], song_name: songnameArray[1], song_pic : songPicArray[1], song_length: songlengthArray[1]}, 
+                  third: {song_id: songIDArray.slice(-1)[0], song_name: songnameArray.slice(-1)[0], song_pic : songPicArray.slice(-1)[0], song_length: songlengthArray.slice(-1)[0], custom_id: dbresponse.data.code}});
         }
     }
 

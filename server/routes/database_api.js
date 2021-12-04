@@ -28,6 +28,10 @@ module.exports = function(app){
     app.route('/db/read/users')
     .get(read_users_API);
 
+
+    app.route('/db/check/user')
+    .get(check_user_API);
+
     app.route('/db/read/song')
     .get(read_song_API);
 
@@ -64,6 +68,12 @@ function create_listening_party_API(request, response){
 
 async function read_users_API(request, response){
     let result = await dbClient.User_Read(request.query.fname, request.query.id);
+    console.log(result);
+    response.json(result);
+}
+
+async function check_user_API(request, response){
+    let result = await dbClient.User_Check(request.query.fname, request.query.id);
     console.log(result);
     response.json(result);
 }
