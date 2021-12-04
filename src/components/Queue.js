@@ -222,6 +222,20 @@ export default function Queue() {
 
     async function handleVote(direction, uri, custom_id) {
         let parameterDB;
+        //check if voting record exists
+        
+        let parameterDB_lookup = {
+            fname: uid,
+            id: lid,
+            songid: custom_id
+        };
+    
+        const parameters_lookup = `?${querystring.stringify(parameterDB_lookup)}`;
+        const dbSend2 = `${'http://localhost:5000/'}${'db/voterecord/lookup'}${parameters_lookup}`;
+        console.log(dbSend2);
+        const dbresponse2 = await axios.get(dbSend2);
+        console.log(dbresponse2.data);
+
         if(direction === "up"){
             // use react useState hook to increment votes and push to db
             // make sure to connect to the given song can use dom stuff to retrieve song name/id

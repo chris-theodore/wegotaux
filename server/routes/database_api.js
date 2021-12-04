@@ -1,5 +1,6 @@
 const dbClient = require('./database_helper_api');
 const dotenv = require('dotenv');
+const { Voting_Record_Lookup } = require('./database_helper_api');
 dotenv.config({ path: '../.env' });
 
 module.exports = function(app){
@@ -47,6 +48,9 @@ module.exports = function(app){
 
     app.route('/db/generate/votingblock')
     .get(generate_voting_block_API);
+
+    app.route('/db/voterecord/lookup')
+    .get(voting_record_lookup_API);
 
 }
 
@@ -142,6 +146,13 @@ async function generate_voting_block_API(request, response){
     console.log("heyyyyyooooooo");
     console.log(result);
     response.send(result);
+}
+
+async function voting_record_lookup_API(request, response){
+    console.log("here we are");
+    let result = await dbClient.Voting_Record_Lookup(request.query.fname, request.query.id, request.query.songid);
+    console.log(result);
+    response.send({exists: result});
 }
 
 

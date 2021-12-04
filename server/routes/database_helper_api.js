@@ -223,6 +223,24 @@ Listening_Party_Lookup: (id) => {
  });
 });
 },
+Voting_Record_Lookup: (fun_name, id, song_id) => {
+  return new Promise((resolve, reject) => {
+    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? AND id = ? AND song_id = ?", [fun_name, parseInt(id), song_id],async (err, result) =>{
+     if (err) {
+       //console.log("error: ", err);
+       return reject(err);
+     }
+     else{
+      if (result && result.length ) {
+        console.log('Case row was found!');
+        return resolve(1);
+      } else {
+          return resolve(0);
+      }
+     }
+ });
+});
+},
 Generate_Voting_Block: async (id) => {
   return new Promise((resolve, reject) => {
     connection.query("SELECT Song.spotify_id AS spotify_uid, Song.song_id AS song_id, SUM(Voting_Record.vote) AS total_votes, Song.img AS img, Song.title AS title FROM Voting_Record, Song WHERE (Voting_Record.id = ? AND Voting_Record.song_id = Song.song_id AND Song.is_removed = 0) GROUP BY Voting_Record.song_id ORDER BY total_votes DESC", [parseInt(id)], async (err, result) =>{
