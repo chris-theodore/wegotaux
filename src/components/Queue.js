@@ -60,35 +60,35 @@ export default function Queue() {
       socket.on("new song", (data) => {
         console.log(data);
     });
-    React.useEffect(()=>{
-        async function refreshBlock(){
-            console.log("in refresh function");
-            const param = {
-                id: lid
-            };
-            console.log(lid);
-            const parameters = `?${querystring.stringify(param)}`;
-            console.log("test in refresh function");
-            console.log(parameters);
-            const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
-            const response = await axios.get(urlWithParameters);
-            console.log(response.data);
-            let block_data_dummy = [];
-            response.data.forEach(song =>{
-                block_data_dummy.push({
-                    title: song.title,
-                    img: song.img, 
-                    uri: song.spotify_uid,
-                    vote_total: song.total_votes,
-                    custom_id: song.song_id
-                })
-            });
-            setBlockData(block_data_dummy);
-            console.log(block_data);
+    // React.useEffect(()=>{
+    //     async function refreshBlock(){
+    //         console.log("in refresh function");
+    //         const param = {
+    //             id: lid
+    //         };
+    //         console.log(lid);
+    //         const parameters = `?${querystring.stringify(param)}`;
+    //         console.log("test in refresh function");
+    //         console.log(parameters);
+    //         const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
+    //         const response = await axios.get(urlWithParameters);
+    //         console.log(response.data);
+    //         let block_data_dummy = [];
+    //         response.data.forEach(song =>{
+    //             block_data_dummy.push({
+    //                 title: song.title,
+    //                 img: song.img, 
+    //                 uri: song.spotify_uid,
+    //                 vote_total: song.total_votes,
+    //                 custom_id: song.song_id
+    //             })
+    //         });
+    //         setBlockData(block_data_dummy);
+    //         console.log(block_data);
             
-        };
-        refreshBlock();
-    }, []);
+    //     };
+    //     refreshBlock();
+    // }, []);
    
     async function refreshBlock2(){
         console.log("in refresh function");

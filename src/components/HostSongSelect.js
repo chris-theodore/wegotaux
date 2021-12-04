@@ -85,7 +85,7 @@ export default function HostSongSelect() {
             song: id
         }))
         let req_body = {songs: songs_formatted}
- 
+
         const urlWithParams = `${'http://localhost:5000/start/playback?device_id='}${Create.deviceID}`;
         let data = await axios.post(urlWithParams,req_body);
          
@@ -102,6 +102,14 @@ export default function HostSongSelect() {
                 img: songPicArray[2],
                 title: songnameArray[2]
             };
+            const userCreateDB = {
+                fname: uid,
+                utype: "host",
+                uid: lid
+            };
+            const createParameters = `?${querystring.stringify(userCreateDB)}`;
+            const createDBSend = `${'http://localhost:5000/'}${'db/create/user'}${createParameters}`
+            const createDBResponse = await axios.get(createDBSend);
             const parameters = `?${querystring.stringify(parameterDB)}`;
             const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
             const dbresponse = await axios.get(dbSend);
