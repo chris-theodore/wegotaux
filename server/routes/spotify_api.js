@@ -1,6 +1,7 @@
 const spotifyClient = require('./spotify_helper_api');
-const dbClient = require('./clara_database');
 const dotenv = require('dotenv');
+const axios = require('axios');
+const querystring = require('querystring');
 dotenv.config({ path: '../.env' });
 
 module.exports = function(app){
@@ -22,14 +23,18 @@ module.exports = function(app){
     app.route('/start/playback')
     .post(start_playbackAPI);
 
-    app.route('/add/queue')
-    .get(enqueueAPI);
+    app.route('/add/queue').
+    get(enqueueAPI);
 
-    app.route('/add/playlist')
-    .get(add_playlistAPI);
+    app.route('/add/playlist').
+    post(add_playlistAPI);
 
-    app.route('/currently/playing')
-    .get(playback_stateAPI);
+    app.route('/currently/playing').
+    get(playback_stateAPI);
+
+    app.route('/skip/song')
+    .post(skip_songAPI);
+
 
 }
 
@@ -37,18 +42,16 @@ function initialAPI(request, response){
     response.json({message: 'we did it'});
 }
 
-
-
 function saveEnv(request, response){
+    console.log("SAVING ENV VARIABLES");
     process.env.DEVICE_ID = request.query.deviceid;
     process.env.PLAYLIST_ID = request.query.playlistid;
-    dbClient.Listening_Party_Create(request.query.playlistname, request.query.deviceid, request.query.userid, request.query.playlistid);
     response.json({message: 'we saved the variable'});
 }
 
+
 async function searchAPI(request, response, next) {
         try {
-            console.log(request.query.type, request.query.search, request.query.artist, request)
             const songData = await spotifyClient.searchAPI(request.query.track, request.query.artist);
             let results = []
             songData.forEach(song => results.push({
@@ -60,6 +63,7 @@ async function searchAPI(request, response, next) {
                 albumName: song.album.name,
                 releaseDate: song.album.release_date,
                 extUrl: song.external_urls,
+                songlength: song.duration_ms,
             }));
             console.log(results);
             response.json(results);
@@ -92,6 +96,7 @@ async function start_playbackAPI(request, response, next) {
         console.log("in playback function");
         console.log("device_id:");
         console.log(request.query.device_id);
+        console.log(request.body.songs);
         const results = await spotifyClient.start_playbackAPI(request.body.songs, request.query.device_id);
         console.log(results);
         response.json(results);
@@ -161,4 +166,32 @@ async function playback_stateAPI(request, response, next) {
         next(err);
     }
 };
+
+async function skip_songAPI(request, response, next) {
+    try {
+        const results = await spotifyClient.skip_songAPI(process.env.DEVICE_ID);
+        response.json(results);
+    }
+    catch (error) {
+        console.log(error);
+        const err = new Error('Error: Check server --- one or more APIs are currently unavailable.');
+        err.status = 503;
+        next(err);
+    }
+};
+
+
+async function getCredentials(id){
+    const param = {
+        id: id
+    };
+    const parameters = `?${querystring.stringify(param)}`;
+    const urlWithParameters = `${'http://localhost:5000'}${'/db/read/listening_party'}${parameters}`;
+    const result = await axios.get(urlWithParameters);
+    return result.data;
+}
+
+
+
+
 

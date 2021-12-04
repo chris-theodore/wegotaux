@@ -1,16 +1,15 @@
 CREATE TABLE Users
 (fun_name VARCHAR(64) NOT NULL,
  user_type VARCHAR(32) NOT NULL CHECK(user_type IN ('host', 'attendee')),
- id INTEGER NOT NULL REFERENCES Listening_Party(id),
+ id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
  PRIMARY KEY (fun_name, id)
 );
 
  
 CREATE TABLE Listening_Party
 (spotify_playlist_name VARCHAR(32),
- id INTEGER NOT NULL PRIMARY KEY,
+ id VARCHAR(5) NOT NULL PRIMARY KEY,
  time_created TIMESTAMP NOT NULL,
- currently_playing INTEGER,
  device_id VARCHAR(64),
  spotify_user_id VARCHAR(64),
  playlist_id VARCHAR(64)
@@ -18,23 +17,23 @@ CREATE TABLE Listening_Party
  
 CREATE TABLE Song
 (spotify_id VARCHAR(32) NOT NULL,
- id INTEGER NOT NULL REFERENCES Listening_Party(id),
- song_length INTEGER NOT NULL,
- time_added TIMESTAMP NOT NULL,
- time_removed TIMESTAMP,
- playlist_position INTEGER, 
-PRIMARY KEY(spotify_id, id, time_added)
+ party_id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
+ song_id VARCHAR(40) DEFAULT uuid(),
+ is_removed INTEGER NOT NULL CHECK (is_removed >= 0 AND is_removed <= 1),
+ img VARCHAR(128) NOT NULL,
+ title VARCHAR(128) NOT NULL,
+ PRIMARY KEY(song_id)
 );
 
 
 CREATE TABLE Voting_Record
 (fun_name VARCHAR(64) NOT NULL REFERENCES Users(fun_name),
- id INTEGER NOT NULL REFERENCES Listening_Party(id),
+ id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
  vote INTEGER NOT NULL CHECK (vote >= -1 AND vote != 0 AND vote <= 1),
  vote_time TIMESTAMP NOT NULL, 
- spotify_id VARCHAR(32) NOT NULL REFERENCES Song(spotify_id),
- time_added TIMESTAMP NOT NULL REFERENCES Song(time_added),
- PRIMARY KEY(fun_name, id, spotify_id, time_added)
+--  spotify_id VARCHAR(32) REFERENCES Song(spotify_id), WE NEED TO RE LOOK AT THIS
+ song_id VARCHAR(40) NOT NULL REFERENCES Song(song_id),
+ PRIMARY KEY(fun_name, id, song_id)
 );
 
 /*
@@ -55,12 +54,12 @@ CREATE TABLE Settings
 */
 
 -- Define a view that lists, for each song on the voting block, the total -- number of votes it currently has.
-CREATE VIEW Voting_Block(spotify_uid, time_added, total_votes) AS
-SELECT Song.spotify_id, Song.time_added, SUM(Voting_Record.vote) AS total_votes
+CREATE VIEW Voting_Block(spotify_uid, song_id, total_votes) AS
+SELECT Song.spotify_id AS spotify_uid, Song.song_id AS song_id, SUM(Voting_Record.vote) AS total_votes, Song.img AS img, Song.title AS title, 
 FROM Voting_Record, Song
-WHERE (Voting_Record.time_added = Song.time_added AND Voting_Record.spotify_id = Song.spotify_id AND Song.time_removed IS NULL)
-GROUP BY Voting_Record.spotify_id, Voting_Record.time_added
-ORDER BY SUM(Voting_Record.vote) DESC;
+WHERE (Voting_Record.song_id = Song.song_id AND Song.is_removed = 0)
+GROUP BY Voting_Record.song_id;
+ORDER BY total_votes DESC;
 
  
 -- Ensure songs added have null time removed and null playlist position when first added 

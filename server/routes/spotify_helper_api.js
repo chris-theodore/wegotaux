@@ -68,7 +68,7 @@ const spotifyClient = {
             });
             const playlistData = await result.data;
             console.log(playlistData);
-                  if(playlistData.status == 200){
+                  if(playlistData.status = 200){
                         return playlistData;
                     }
                     else{
@@ -121,7 +121,7 @@ const spotifyClient = {
             song_uris.push("spotify:track:".concat(selection.song));
         });
         const test = JSON.stringify({
-            uris: song_uris
+            uris: song_uris,  offset: { "position": 0 }
         });
         console.log(test);
         try{
@@ -152,14 +152,18 @@ const spotifyClient = {
         let song_uris = [];
    
         songs.forEach(function(selection) {
-            
-            song_uris.push("spotify:track:".concat(selection));
+            console.log("HERE");
+            console.log(selection.song);
+            song_uris.push("spotify:track:".concat(selection.song));
         });
         const test = JSON.stringify({
             uris: song_uris
         });
-        //const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/'}${pid}${'/tracks'}`;
+        console.log("in playlist function");
+        console.log(test);
+        // const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/'}${pid}${'/tracks'}`;
         const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/'}${process.env.PLAYLIST_ID}${'/tracks'}`;
+
         console.log(urlWithParameters);
         try{
         const res = await axios.post(urlWithParameters, 
@@ -196,6 +200,31 @@ const spotifyClient = {
         } else {
             throw new Error(`API Access Error ${result.status} for URL: ${urlWithParameters}`);
         }
+    },
+    skip_songAPI: async (device) => {
+        const parameterQueue = {
+            device_id: device
+          };
+        const parameters = `?${qs.stringify(parameterQueue)}`;
+        const headers = {
+            headers: {
+                'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+          };
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'next'}${parameters}`;
+        try {
+            const response = await axios.post(
+              urlWithParameters,
+               null,
+               headers
+            );
+            console.log(response.data);
+            return response.data;
+          } catch (error) {
+            console.log(error);
+          }
     }
 }
 module.exports = spotifyClient;
