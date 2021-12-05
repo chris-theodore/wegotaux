@@ -75,13 +75,12 @@ const spotifyClient = {
                         throw new Error(`API Access Error ${result.status} for URL: ${urlWithParameters}`);
                     }
             },
-    enqueueAPI: async (trackuri, device) => {
+    enqueueAPI: async (trackuri) => {
         const parameterQueue = {
             uri: "spotify:track:".concat(trackuri),
-            device_id: device,
           };
         console.log('in queue');
-        const parameters = `?${qs.stringify(parameterQueue)}`;
+        const parameters = `&${qs.stringify(parameterQueue)}`;
         const headers = {
             headers: {
                 'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
@@ -89,7 +88,7 @@ const spotifyClient = {
                 'Content-Type': 'application/json'
             }
           };
-        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'queue'}${parameters}`;
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'queue'}${'?device_id='}${process.env.DEVICE_ID}${parameters}`;
         //const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'queue'}`;
         try {
             const response = await axios.post(

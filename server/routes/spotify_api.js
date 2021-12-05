@@ -24,7 +24,7 @@ module.exports = function(app){
     .post(start_playbackAPI);
 
     app.route('/add/queue').
-    get(enqueueAPI);
+    post(enqueueAPI);
 
     app.route('/add/playlist').
     post(add_playlistAPI);
@@ -125,7 +125,7 @@ async function create_playlistAPI(request, response, next) {
 
 async function enqueueAPI(request, response, next) {
     try {
-        const results = await spotifyClient.enqueueAPI(request.query.trackuri, request.query.device);
+        const results = await spotifyClient.enqueueAPI(request.query.trackuri, request.query.device_id);
         console.log("POST CALL");
         //console.log(results);
         response.json(results);

@@ -181,8 +181,8 @@ Voting_Block_Read: (id) => {
 },
 
 
-Song_Update_Removed: (song_id) => {
-  connection.query("UPDATE Song SET is_removed = ?, on_queue = ? WHERE song_id = ?", [1,1, song_id], (err, result) =>{
+Song_Update_Removed: (spotify_id) => {
+  connection.query("UPDATE Song SET is_removed = ?, on_queue = ? WHERE spotify_id = ?", [1,1, spotify_id], (err, result) =>{
     if (err) {
       console.log("error: ", err);
       return err;

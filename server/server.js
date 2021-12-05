@@ -32,7 +32,7 @@ socket.on('join', ({uid, lid}) => {
   socket.join(lid);
 });
 socket.on('queue room', (room) => {
-  console.log(`Socket ${socket.id} joining queue ${room}`);
+  console.log(`Socket ${socket.id} joining ${room}`);
   socket.join(room)
 })
 socket.on('add to block', (data) => {
