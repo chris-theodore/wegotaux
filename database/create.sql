@@ -20,10 +20,12 @@ CREATE TABLE Song
  party_id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
  song_id VARCHAR(40) DEFAULT uuid(),
  is_removed INTEGER NOT NULL CHECK (is_removed >= 0 AND is_removed <= 1),
+ on_queue INTEGER NOT NULL CHECK (is_removed >= 0 AND is_removed <= 1),
  img VARCHAR(128) NOT NULL,
  title VARCHAR(128) NOT NULL,
  PRIMARY KEY(song_id)
 );
+
 
 
 CREATE TABLE Voting_Record
