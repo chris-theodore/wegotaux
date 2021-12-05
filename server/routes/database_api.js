@@ -34,6 +34,9 @@ module.exports = function(app){
     app.route('/db/read/song')
     .get(read_song_API);
 
+    app.route('/db/read/first_block')
+    .get(read_fblock_API);
+
     app.route('/db/read/voterecord')
     .get(read_vote_record_API);
 
@@ -58,6 +61,10 @@ module.exports = function(app){
     app.route('/db/voterecord/lookup')
     .get(voting_record_lookup_API);
 
+    app.route('/get/queue')
+    .get(voting_record_queue_API);
+    
+
 }
 
 function create_listening_party_API(request, response){
@@ -76,6 +83,12 @@ async function read_users_API(request, response){
 
 async function check_user_API(request, response){
     let result = await dbClient.User_Check(request.query.fname, request.query.id);
+    console.log(result);
+    response.json(result);
+}
+
+async function voting_record_queue_API(request, response){
+    let result = await dbClient.Voting_Record_Queue(request.query.lid);
     console.log(result);
     response.json(result);
 }
@@ -103,6 +116,12 @@ async function read_vote_record_API(request, response){
 
 async function read_queue_API(request, response){
     let result = await dbClient.Queue_Read(request.query.id);
+    console.log(result);
+    response.json(result);
+}
+
+async function read_fblock_API(request, response){
+    let result = await dbClient.First_block_Read(request.query.id);
     console.log(result);
     response.json(result);
 }

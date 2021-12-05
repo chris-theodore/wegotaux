@@ -132,7 +132,7 @@ User_Check: (fun_name, id) => {
 
 Song_Read: (song_id) => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT * FROM Song WHERE song_id = ?", [song_id], async (err, result) =>{
+    connection.query("SELECT * FROM Song WHERE song_id = '?'", [song_id], async (err, result) =>{
      if (err) {
        return reject(err);
      }
@@ -152,11 +152,24 @@ Queue_Read: (id) => {
 });  
 },
 
+
+
+First_block_Read: (id) => {
+  return new Promise((resolve, reject) => {
+    connection.query("SELECT * FROM Song WHERE party_id = ? AND on_queue = 0 AND is_removed = 0", [id], async (err, result) =>{
+     if (err) {
+       return reject(err);
+     }
+     return resolve(result[0]);
+ });
+});  
+},
+
 //SINGLE VOTING RECORD READ
 Voting_Read: (fun_name, id, song_id) => {
   return new Promise((resolve, reject) => {
 
-    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? and id = ? and song_id = ?", [fun_name, parseInt(id), song_id], async (err, result) =>{
+    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? and id = ? and song_id = '?'", [fun_name, parseInt(id), song_id], async (err, result) =>{
      if (err) {
        return reject(err);
      }
@@ -170,7 +183,7 @@ Voting_Read: (fun_name, id, song_id) => {
 Voting_Block_Read: (id) => {
   return new Promise((resolve, reject) => {
    
-    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? and id = ? and song_id = ?", [parseInt(id)], async (err, result) =>{
+    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? and id = ? and song_id = '?'", [parseInt(id)], async (err, result) =>{
      if (err) {
        return reject(err);
      }
@@ -181,8 +194,8 @@ Voting_Block_Read: (id) => {
 },
 
 
-Song_Update_Removed: (spotify_id) => {
-  connection.query("UPDATE Song SET is_removed = ?, on_queue = ? WHERE spotify_id = ?", [1,1, spotify_id], (err, result) =>{
+Song_Update_Removed: (song_id) => {
+  connection.query("UPDATE Song SET is_removed = ?, on_queue = ? WHERE song_id = ?", [1,1, song_id], (err, result) =>{
     if (err) {
       console.log("error: ", err);
       return err;
@@ -191,7 +204,7 @@ Song_Update_Removed: (spotify_id) => {
 });
 },
 Voting_Record_Update_Vote: (vote, fun_name, id, song_id) => {
-  connection.query("UPDATE Voting_Record SET vote = ?, vote_time = ? WHERE fun_name = ? and id = ? and song_id = ?", [vote, new Date().toISOString().slice(0, 19).replace('T', ' '), fun_name, parseInt(id), song_id], (err, result) =>{
+  connection.query("UPDATE Voting_Record SET vote = ?, vote_time = ? WHERE fun_name = ? and id = ? and song_id = '?'", [vote, new Date().toISOString().slice(0, 19).replace('T', ' '), fun_name, parseInt(id), song_id], (err, result) =>{
     if (err) {
       console.log("error: ", err);
       return err;
@@ -224,11 +237,12 @@ User_Delete_Indiv: (fun_name, id) => {
 },
 Song_Delete_Indiv: (song_id) => {
   return new Promise((resolve, reject) => {
-    connection.query("DELETE FROM Song WHERE song_id = ?", [song_id], async (err, result) =>{
+    connection.query("DELETE FROM Song WHERE song_id = '?' ", [song_id], async (err, result) =>{
      if (err) {
        return reject(err);
      }
-     return resolve(result[0]);
+     console.log(result[0]);
+     return resolve(result);
  });
 });  
 },
@@ -249,7 +263,7 @@ Listening_Party_Lookup: (id) => {
 },
 Voting_Record_Lookup: (fun_name, id, song_id) => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? AND id = ? AND song_id = ?", [fun_name, parseInt(id), song_id],async (err, result) =>{
+    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? AND id = ? AND song_id = '?'", [fun_name, parseInt(id), song_id],async (err, result) =>{
      if (err) {
        //console.log("error: ", err);
        return reject(err);
@@ -267,7 +281,7 @@ Voting_Record_Lookup: (fun_name, id, song_id) => {
 },
 Generate_Voting_Block: async (id) => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT Song.spotify_id AS spotify_uid, Song.song_id AS song_id, SUM(Voting_Record.vote) AS total_votes, Song.img AS img, Song.title AS title FROM Voting_Record, Song WHERE (Voting_Record.id = ? AND Voting_Record.song_id = Song.song_id AND Song.is_removed = 0) GROUP BY Voting_Record.song_id ORDER BY total_votes DESC", [parseInt(id)], async (err, result) =>{
+    connection.query("SELECT Song.spotify_id AS spotify_uid, Song.song_id AS song_id, SUM(Voting_Record.vote) AS total_votes, Song.img AS img, Song.title AS title FROM Voting_Record, Song WHERE (Voting_Record.id = ? AND Voting_Record.song_id = Song.song_id AND Song.is_removed = 0 AND Song.on_queue = 0) GROUP BY Voting_Record.song_id ORDER BY total_votes DESC", [parseInt(id)], async (err, result) =>{
      if (err) {
        return reject(err);
      }
