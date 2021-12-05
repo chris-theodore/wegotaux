@@ -34,7 +34,7 @@ export default function Queue() {
     let {uid, lid} = useParams();
     let {utype} =useParams();
     React.useEffect(() => {
-        socket.emit('queue room', lid);
+        socket.emit('queue room', "queue");
         console.log("upon init!!");
         getPlaybackOnOpen();
         // console.log(location.state.song_id, location.state.song_pic, location.state.song_name)
@@ -111,7 +111,14 @@ async function getPlayback(){
     incoming_songid = response.data.item.id; 
     console.log(incoming_songid)
     console.log(queue_id)
+    socket.emit('song change', {
+        lid: lid,
+        socketSong: incoming_songid,
+        socketImage: response.data.item.album.images[1].url,
+        socketName: response.data.item.name
+    })
     if(incoming_songid !== oldincoming){
+        
         oldincoming = incoming_songid;
         setNewSong(true);
     }
@@ -119,6 +126,7 @@ async function getPlayback(){
 }
     //IF THE SONG CHANGED, WE NEED TO CHANGE THE QUEUE FORM AND CALL UP THE VOTE
     async function bigBoyTime(){
+
         //GET LISTENING PARTY PLAYLIST ID
         const param = {
             id: lid
@@ -139,6 +147,11 @@ async function getPlayback(){
         const deleteSong = await axios.get(urlSongDelete);
         //GET SONG OFF VOTING BLOCK
         console.log("block check")
+        // if (block_data.length == 0){
+        //     alert("queue is empty! Add songs!")
+        //     setNewSong(false);
+        //     return;
+        // }
         console.log(block_data[0].uri);
         // console.log(block_data[0].uri);
         const blockparam = {
@@ -147,7 +160,9 @@ async function getPlayback(){
         const blockParameters = `?${querystring.stringify(blockparam)}`;
         const urlSongOffBlock = `${'http://localhost:5000/db/alter/song'}${blockParameters}`;
         const songOffBlock = await axios.get(urlSongOffBlock);
-        setQueueName(block_data[0].title);
+        console.log(songOffBlock)
+        console.log("song changing in alter")
+;       setQueueName(block_data[0].title);
         setQueueImg(block_data[0].img);
         //ADD SONG TO PLAYLIST HERE
         const tempArray = []
@@ -160,8 +175,19 @@ async function getPlayback(){
         // console.log(req_body);
         const urlOther = `${'http://localhost:5000/add/playlist?playlist_id='}${playlist_id}`;
         let addSong = await axios.post(urlOther, req_body);
+        console.log("adding to queue")
+                //ADD SONG TO QUEUE
+                const queueparam = {
+                    trackuri: block_data[0].uri
+                };
+                const queueParameters = `?${querystring.stringify(queueparam)}`;
+                const urlQueue = `${'http://localhost:5000/add/queue'}${queueParameters}`;
+                const queueSong = await axios.post(urlQueue);
+                console.log(queueSong);
         setQueueID(block_data[0].uri);
         setNewSong(false);
+
+
     }
     
     async function refreshBlock2(){
