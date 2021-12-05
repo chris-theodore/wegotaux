@@ -53,6 +53,13 @@ export default function Create() {
             playlistname: values.party_name,
             id: codeB.code
         };
+        const userCreateDB = {
+            fname: values.party_host_name,
+            utype: "host",
+            uid: codeB.code
+        };
+        const userParameters = `?${querystring.stringify(userCreateDB)}`;
+        const userdbSend = `${'http://localhost:5000/'}${'db/create/user'}${userParameters}`
         console.log('in send');
         const parameters = `?${querystring.stringify(parameterDB)}`;
         console.log(parameters)
@@ -60,6 +67,7 @@ export default function Create() {
         const dbSend = `${'http://localhost:5000/'}${'db/create/party'}${parameters}`
         const response = await axios.get(urlWithParameters);
         const dbresponse = await axios.get(dbSend);
+        const userdbresponse = await axios.get(userdbSend);
         console.log(response);
         console.log(dbresponse);
     }

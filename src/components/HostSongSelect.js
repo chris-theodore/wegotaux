@@ -64,6 +64,7 @@ export default function HostSongSelect() {
         let req_body = {songs: songs_formatted}
         console.log(req_body);
         // const parameters = `?${querystring.stringify(parametersDB)}`;
+        if (songnameArray.length < 3){
         const urlOther = `${'http://localhost:5000/add/playlist?playlist_id='}${Create.playlistid}`;
         let otherdata = await axios.post(urlOther, req_body);
         // const dbSend = `${'http://localhost:5000/'}${'db/add/song'}${parameters}`
@@ -72,6 +73,7 @@ export default function HostSongSelect() {
         console.log(song_img);
         console.log(songPicArray);
         console.log(songnameArray);
+        }
         // alert("Song added!");
         setSongsTerm([]);
     }
@@ -100,11 +102,25 @@ export default function HostSongSelect() {
                 lid: lid,
                 sid: songIDArray[2],
                 img: songPicArray[2],
-                title: songnameArray[2]
+                title: songnameArray[2],
+                is_removed: 0,
+                on_queue: 0
+            };
+            let parameterDB2 = {
+                lid: lid,
+                sid: songIDArray[1],
+                img: songPicArray[1],
+                title: songnameArray[1],
+                is_removed: 1,
+                on_queue: 1
+
             };
             const parameters = `?${querystring.stringify(parameterDB)}`;
+            const parameters2 = `?${querystring.stringify(parameterDB2)}`;
             const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
+            const dbSend2 = `${'http://localhost:5000/'}${'db/create/song'}${parameters2}`;
             const dbresponse = await axios.get(dbSend);
+            const dbresponse2 = await axios.get(dbSend2);
   
             history.push(`/host${'/'}${uid}${'/'}${lid}`,
                   {second:  {song_id: songIDArray[1], song_name: songnameArray[1], song_pic : songPicArray[1], song_length: songlengthArray[1]}, 

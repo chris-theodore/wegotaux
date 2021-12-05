@@ -7,18 +7,11 @@ import {Form, Button} from "react-bootstrap";
 import axios from "axios";
 import querystring from 'querystring';
 import * as io from 'socket.io-client';
+import { useEffect } from "react";
 const socket = io.connect(`http://localhost:5000`);
 
 // Search Code
 let songnameArray = [];
-let songIDArray = [];
-let songPicArray = [];
-
-let song1_img;
-let song2_img;
-let song1_name;
-let song2_name;
-
 // HTML Zone 
 export default function Queue() {
     const location = useLocation();
@@ -30,27 +23,35 @@ export default function Queue() {
     const [artistsName, setArtistsTerm] = useState([]);
     const [block_data, setBlockData] = React.useState([]);
     const [errorMsg, setErrorMsg] = useState('');
+    const [queue_img, setQueueImg] = React.useState([]);
+    const [queue_name, setQueueName] = React.useState([]);
+    const [queue_id, setQueueID] = React.useState(null);
+    const [current_id, setCurrentID] = React.useState(null);
+    const [newSong, setNewSong] = React.useState(false);
     const history = useHistory();
     let {uid, lid} = useParams();
     let {utype} =useParams();
     React.useEffect(() => {
         socket.emit('queue room', lid);
         console.log("upon init!!");
+        getPlaybackOnOpen();
         // console.log(location.state.song_id, location.state.song_pic, location.state.song_name)
-        // const interval = setInterval(() => {
-        //    refreshBlock2();
-        //   }, 1000);
         if (utype === "listener"){
             socket.on("receive qdata", (data) => {
                 console.log("receieved data");
                 console.log(data);
                     });
         } else {
-            song1_img = location.state.second.song_pic;
-            song1_name = location.state.second.song_name;
+            setQueueImg(location.state.second.song_pic);
+            setQueueName(location.state.second.song_name);
+            setQueueID(location.state.second.song_id);
             console.log(location.state.third);
             getFirstSong(location.state.third.song_id, location.state.third.song_pic, location.state.third.song_name, location.state.third.custom_id);
         }
+        const interval = setInterval(() => {
+            refreshBlock2();
+            getPlayback();
+           }, 1000);
         return () => {
             // clearInterval(interval);
             socket.emit('leave queue room', lid);
@@ -89,23 +90,90 @@ export default function Queue() {
         };
         refreshBlock();
     }, []);
-   
+//    PLAYBACK LISTENER FUNCTION
+useEffect(() => {
+    bigBoyTime();
+},[newSong]);
+
+async function getPlaybackOnOpen(){
+    const response = await axios.get("http://localhost:5000/currently/playing");
+    console.log("ID CHECK");
+    setCurrentID(response.data.item.id);
+}
+
+async function getPlayback(){
+    const response = await axios.get("http://localhost:5000/currently/playing");
+    setCurrentID(response.data.item.id);
+    if(queue_id == current_id){
+        setNewSong(true);
+    }
+  
+}
+    //IF THE SONG CHANGED, WE NEED TO CHANGE THE QUEUE FORM AND CALL UP THE VOTE
+    async function bigBoyTime(){
+        if(newSong){
+        //GET LISTENING PARTY PLAYLIST ID
+        const param = {
+            id: lid
+        };
+        const parameters = `?${querystring.stringify(param)}`;
+        console.log("test in refresh function");
+        console.log(parameters);
+        const urlWithParameters = `${'http://localhost:5000/db/read/listening_party'}${parameters}`;
+        const response = await axios.get(urlWithParameters);
+        // console.log(response.data);
+        let playlist_id = response.data.playlist_id;
+        //REMOVE QUEUE SONG FROM DB
+        const deleteparam = {
+            sid: queue_id
+        };
+        const deleteParameters = `?${querystring.stringify(deleteparam)}`;
+        const urlSongDelete = `${'http://localhost:5000/db/delete/song'}${deleteParameters}`;
+        const deleteSong = await axios.get(urlSongDelete);
+        //GET SONG OFF VOTING BLOCK
+        console.log("block check")
+        console.log(block_data[0].uri);
+        // console.log(block_data[0].uri);
+        const blockparam = {
+            sid: block_data[0].uri
+        };
+        const blockParameters = `?${querystring.stringify(blockparam)}`;
+        const urlSongOffBlock = `${'http://localhost:5000/db/alter/song'}${blockParameters}`;
+        const songOffBlock = await axios.get(urlSongOffBlock);
+        setQueueName(block_data[0].title);
+        setQueueImg(block_data[0].img);
+        //ADD SONG TO PLAYLIST HERE
+        const tempArray = []
+        tempArray.push(block_data[0].uri)
+        let songs_formatted = []
+        tempArray.forEach(id => songs_formatted.push({
+            song: block_data[0].uri
+        }))
+        let req_body = {songs: songs_formatted}
+        // console.log(req_body);
+        const urlOther = `${'http://localhost:5000/add/playlist?playlist_id='}${playlist_id}`;
+        let addSong = await axios.post(urlOther, req_body);
+        setQueueID(block_data[0].uri);
+        setNewSong(false);
+}
+    }
+    
     async function refreshBlock2(){
         console.log("in refresh function");
         const param = {
             id: lid
         };
-        console.log(lid);
+        // console.log(lid);
         const parameters = `?${querystring.stringify(param)}`;
-        console.log("test in refresh function");
-        console.log(parameters);
+        // console.log("test in refresh function");
+        // console.log(parameters);
         const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
         const response = await axios.get(urlWithParameters);
-        console.log(response.data);
+        // console.log(response.data);
         let block_data_dummy = [];
         response.data.forEach(song =>{
-            console.log("in loop!");
-            console.log(song);
+            // console.log("in loop!");
+            // console.log(song);
             block_data_dummy.push({
                 title: song.title,
                 img: song.img, 
@@ -119,6 +187,26 @@ export default function Queue() {
         
 
     };
+    React.useEffect(()=>{
+    async function refreshQueue(){
+        console.log("in queue");
+        const param = {
+            id: lid
+        };
+        // console.log(lid);
+        const parameters = `?${querystring.stringify(param)}`;
+        // console.log("test in refresh function");
+        // console.log(parameters);
+        const urlWithParameters = `${'http://localhost:5000/db/read/queue'}${parameters}`;
+        const response = await axios.get(urlWithParameters);
+        console.log("READ QUEUE");
+        console.log(response.data);
+        setQueueImg(response.data.img);
+        setQueueName(response.data.title);
+        setQueueID(response.data.spotify_id);
+    };
+    refreshQueue();
+}, []);
 
     async function getSong(song,artist){
         const parameterSong = {
@@ -175,7 +263,10 @@ export default function Queue() {
             lid: lid,
             sid: song_uri,
             img: song_img,
-            title: song_title
+            title: song_title,
+            is_removed: 0,
+            on_queue: 0
+
         };
         const parameters = `?${querystring.stringify(parameterDB)}`;
         const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
@@ -316,13 +407,10 @@ export default function Queue() {
   </div>
            <div id="song-view">
                <div class="song-card">
-                    <img class="sc-album-art" src={song1_img}/>
-                    <p>{song1_name}</p>
+                    <img class="sc-album-art" src={queue_img}/>
+                    <p>{queue_name}</p>
                </div>
-               <div class="song-card">
-                    <img class="sc-album-art" src={song2_img}/>
-                    <p>{song2_name}</p>
-               </div>
+               <p>Next on the Queue!</p>
            </div>
            <React.Fragment>
             <ul>
@@ -353,4 +441,5 @@ export default function Queue() {
         </section>
     );
 }
+
 

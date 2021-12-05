@@ -89,11 +89,10 @@ export default function HostLanding() {
             // currentlength = response.data.item.duration_ms;
             setCurrentName(response.data.item.name);
         
-        socket.emit('song event', {
-            room: lid,
+        socket.emit('song change', {
+            lid: lid,
             socketSong: incoming_songid,
             socketImage: response.data.item.album.images[1].url,
-            socketLength: response.data.item.duration_ms,
             socketName: response.data.item.name
         })
         
