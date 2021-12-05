@@ -27,9 +27,9 @@ io.on("connection", (socket) =>{
   console.log(`User Connected: ${socket.id}`);
 socket.on('disconnect', () =>
   console.log(`Disconnected: ${socket.id}`));
-socket.on('join', (room) => {
-  console.log(`Socket ${socket.id} joining ${room}`);
-  socket.join(room);
+socket.on('join', ({uid, lid}) => {
+  console.log(`Socket ${socket.id} ${uid} joining ${lid}`);
+  socket.join(lid);
 });
 socket.on('queue room', (room) => {
   console.log(`Socket ${socket.id} joining queue ${room}`);
@@ -52,8 +52,8 @@ socket.on('leave queue room', (room) => {
   socket.leave(room)
 })
 socket.on('song change', (data) =>{
-
-  socket.to(data.room).emit('song update',({data:data}));
+  console.log("data sending");
+  socket.to(data.lid).emit('song update',(data));
 })
 
 
@@ -71,10 +71,10 @@ socket.on('vote', (data) =>{
 });
 
 // socket room connection
-io.on("join", (roomName,socket) => {
-  console.log("join: " + roomName);
-  socket.join(roomName);
-});
+// io.on("join", (roomName,socket) => {
+//   console.log("join: " + roomName);
+//   socket.join(roomName);
+// });
 
 
 

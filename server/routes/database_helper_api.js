@@ -27,14 +27,16 @@ const User = function(fun_name, user_type, id){
   this.id = id;
 }
 
-const Song = function(spotify_id, party_id, song_id, is_removed, img, title){
+const Song = function(spotify_id, party_id, song_id, is_removed, img, title, on_queue){
   this.spotify_id = spotify_id;
   this.party_id = party_id;
   this.song_id = song_id;
   this.is_removed = is_removed;
+  this.on_queue = on_queue;
   this.img = img;
   this.title = title;
 }
+
 
 
 
@@ -44,7 +46,7 @@ const db_client = {
  //CREATE
 
   Listening_Party_Create: (pname, did, uid, pid, id) => {
-    const newParty = new Listening_Party(pname, new Date().toISOString().slice(0, 19).replace('T', ' '), did, uid, pid, parseInt(id))
+    const newParty = new Listening_Party(pname, new Date().toISOString().slice(0, 19).replace('T', ' '), did, uid, pid, id)
     connection.query("INSERT INTO Listening_Party SET ?", newParty, (err, res) =>{
       if (err) {
         console.log("error: ", err);
@@ -78,9 +80,9 @@ Voting_Record_Create: (fun_name, id, vote, song_id) => {
     return result;
   });
 },
-Song_Create: async (spotify_id, party_id, img, title) => {
+Song_Create: async (spotify_id, party_id, img, title, is_removed, on_queue) => {
   let new_sid = uuidv4();
-    const newSong = new Song(spotify_id, party_id, new_sid, 0, img, title);
+    const newSong = new Song(spotify_id, party_id, new_sid, is_removed, img, title, on_queue);
     connection.query("INSERT INTO Song SET ?", newSong, (err, result) =>{
       if (err) {
         console.log("error: ", err);
@@ -97,7 +99,7 @@ Song_Create: async (spotify_id, party_id, img, title) => {
 //READ
 Listening_Party_Read: (id) => {
    return new Promise((resolve, reject) => {
-     connection.query("SELECT * FROM Listening_Party WHERE id = ?", [parseInt(id)], async (err, result) =>{
+     connection.query("SELECT * FROM Listening_Party WHERE id = ?", [id], async (err, result) =>{
       if (err) {
         return reject(err);
       }
@@ -139,6 +141,17 @@ Song_Read: (song_id) => {
 });  
 },
 
+Queue_Read: (id) => {
+  return new Promise((resolve, reject) => {
+    connection.query("SELECT * FROM Song WHERE party_id = ? AND on_queue = 1 AND is_removed = 1", [id], async (err, result) =>{
+     if (err) {
+       return reject(err);
+     }
+     return resolve(result[0]);
+ });
+});  
+},
+
 //SINGLE VOTING RECORD READ
 Voting_Read: (fun_name, id, song_id) => {
   return new Promise((resolve, reject) => {
@@ -169,7 +182,7 @@ Voting_Block_Read: (id) => {
 
 
 Song_Update_Removed: (song_id) => {
-  connection.query("UPDATE Song SET is_removed = ? WHERE song_id = ?", [1, song_id], (err, result) =>{
+  connection.query("UPDATE Song SET is_removed = ?, on_queue = ? WHERE song_id = ?", [1,1, song_id], (err, result) =>{
     if (err) {
       console.log("error: ", err);
       return err;

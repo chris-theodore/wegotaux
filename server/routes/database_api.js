@@ -28,7 +28,6 @@ module.exports = function(app){
     app.route('/db/read/users')
     .get(read_users_API);
 
-
     app.route('/db/check/user')
     .get(check_user_API);
 
@@ -37,6 +36,9 @@ module.exports = function(app){
 
     app.route('/db/read/voterecord')
     .get(read_vote_record_API);
+
+    app.route('/db/read/queue')
+    .get(read_queue_API);
 
     app.route('/db/change/vote')
     .get(change_vote_API);
@@ -67,7 +69,7 @@ function create_listening_party_API(request, response){
 
 
 async function read_users_API(request, response){
-    let result = await dbClient.User_Read(request.query.fname, request.query.id);
+    let result = await dbClient.User_Read(request.query.id);
     console.log(result);
     response.json(result);
 }
@@ -99,10 +101,14 @@ async function read_vote_record_API(request, response){
     response.json(result);
 }
 
+async function read_queue_API(request, response){
+    let result = await dbClient.Queue_Read(request.query.id);
+    console.log(result);
+    response.json(result);
+}
+
 async function create_song_API(request, response){
-    //(spotify_id, id, song_length, new Date().toISOString().slice(0, 19).replace('T', ' '), null, playlist_position)
-    //spotify_id, party_id, song_id, song_length, is_removed, playlist_position
-    let result = await dbClient.Song_Create(request.query.sid, request.query.lid, request.query.img, request.query.title);
+    let result = await dbClient.Song_Create(request.query.sid, request.query.lid, request.query.img, request.query.title, request.query.is_removed, request.query.on_queue);
     console.log(result);
     response.json({code: result});
 }
