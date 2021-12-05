@@ -115,13 +115,28 @@ export default function HostSongSelect() {
                 on_queue: 1
 
             };
+          
             const parameters = `?${querystring.stringify(parameterDB)}`;
             const parameters2 = `?${querystring.stringify(parameterDB2)}`;
+            
             const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
             const dbSend2 = `${'http://localhost:5000/'}${'db/create/song'}${parameters2}`;
+           
+
             const dbresponse = await axios.get(dbSend);
             const dbresponse2 = await axios.get(dbSend2);
-  
+            console.log(dbresponse2)
+           
+
+            let parameterDBvote = {
+                uid: lid,
+                sid: dbresponse.data.code,
+                vote: 0,
+                fname: uid
+            };
+            const parameters_vote = `?${querystring.stringify(parameterDBvote)}`;
+            const dbSend_vote = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters_vote}`;
+            const dbresponse_vote = await axios.get(dbSend_vote);
             history.push(`/host${'/'}${uid}${'/'}${lid}`,
                   {second:  {song_id: songIDArray[1], song_name: songnameArray[1], song_pic : songPicArray[1], song_length: songlengthArray[1]}, 
                   third: {song_id: songIDArray.slice(-1)[0], song_name: songnameArray.slice(-1)[0], song_pic : songPicArray.slice(-1)[0], song_length: songlengthArray.slice(-1)[0], custom_id: dbresponse.data.code}});
