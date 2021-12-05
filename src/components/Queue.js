@@ -12,6 +12,8 @@ const socket = io.connect(`http://localhost:5000`);
 
 // Search Code
 let songnameArray = [];
+let oldincoming = "";
+let incoming_songid = "";
 // HTML Zone 
 export default function Queue() {
     const location = useLocation();
@@ -25,7 +27,7 @@ export default function Queue() {
     const [errorMsg, setErrorMsg] = useState('');
     const [queue_img, setQueueImg] = React.useState([]);
     const [queue_name, setQueueName] = React.useState([]);
-    const [queue_id, setQueueID] = React.useState(null);
+    const [queue_id, setQueueID] = React.useState([]);
     const [current_id, setCurrentID] = React.useState(null);
     const [newSong, setNewSong] = React.useState(false);
     const history = useHistory();
@@ -44,14 +46,13 @@ export default function Queue() {
         } else {
             setQueueImg(location.state.second.song_pic);
             setQueueName(location.state.second.song_name);
-            setQueueID(location.state.second.song_id);
             console.log(location.state.third);
             getFirstSong(location.state.third.song_id, location.state.third.song_pic, location.state.third.song_name, location.state.third.custom_id);
         }
         const interval = setInterval(() => {
             refreshBlock2();
             getPlayback();
-           }, 1000);
+           }, 3000);
         return () => {
             // clearInterval(interval);
             socket.emit('leave queue room', lid);
@@ -92,26 +93,32 @@ export default function Queue() {
     }, []);
 //    PLAYBACK LISTENER FUNCTION
 useEffect(() => {
+    if(newSong){
     bigBoyTime();
+    }
 },[newSong]);
 
 async function getPlaybackOnOpen(){
     const response = await axios.get("http://localhost:5000/currently/playing");
     console.log("ID CHECK");
+    oldincoming = response.data.item.id;
+    console.log(oldincoming)
     setCurrentID(response.data.item.id);
 }
 
 async function getPlayback(){
     const response = await axios.get("http://localhost:5000/currently/playing");
-    setCurrentID(response.data.item.id);
-    if(queue_id == current_id){
+    incoming_songid = response.data.item.id; 
+    console.log(incoming_songid)
+    console.log(queue_id)
+    if(incoming_songid !== oldincoming){
+        oldincoming = incoming_songid;
         setNewSong(true);
     }
   
 }
     //IF THE SONG CHANGED, WE NEED TO CHANGE THE QUEUE FORM AND CALL UP THE VOTE
     async function bigBoyTime(){
-        if(newSong){
         //GET LISTENING PARTY PLAYLIST ID
         const param = {
             id: lid
@@ -155,7 +162,6 @@ async function getPlayback(){
         let addSong = await axios.post(urlOther, req_body);
         setQueueID(block_data[0].uri);
         setNewSong(false);
-}
     }
     
     async function refreshBlock2(){
