@@ -5,7 +5,6 @@ import '../styles/HostSongSelect.css' // CSS imported
 import axios from 'axios';
 import querystring from 'querystring';
 import Create from './Create.js';
-import '../styles/CopySearch.css' // CSS imported
 import CodeContext from "./Create";
 
 
@@ -145,44 +144,53 @@ export default function HostSongSelect() {
 
     return (
         <section id="host-select">
-            <h1> Party Code: {lid} </h1>
-            <h1>Select 3 songs to kick off your party!</h1>
             <div>
-        <div className = "search-inputs">
-        < input
-        type="song"
-        value={songsName}
-        onChange={e => setSongsTerm(e.target.value)}
-        placeholder="Search Song or Artist Name"
-      />
-    </div>
-        <Button onClick={()=>getSong(songsName,artistsName)} variant="info" type="submit">
-          Search!
-        </Button>
+                <h1> Party Code: {lid} </h1>
+                <h1>Select 3 songs to kick off your party!</h1>
+                <div>
+                    <div className = "search-inputs">
+                    <input
+                    type="song"
+                    value={songsName}
+                    onChange={e => setSongsTerm(e.target.value)}
+                    placeholder="Search Song or Artist Name"
+                />
+                    <button class="search-button" onClick={()=>getSong(songsName,artistsName)} variant="info" type="submit">
+                Search!
+                </button>
+                </div>
+            </div>
+        
         <React.Fragment>
-            <ul>
+            <ul class="song-list">
                 {
-                dataB.map(data => <li key = {data.id}> <img src={data.picUrl} alt="Album Cover"/> Song Name: {data.title} {"\n"} Artist: {data.artist} <Button onClick={()=>addSong(data.id, data.picUrl, data.title, data.artist, data.songlength, {lid})}> Add me! </Button></li>)
+                dataB.map(data => 
+                <li key = {data.id}> 
+                    <img src={data.picUrl} alt="Album Cover"/> 
+                    <div class="song-info">
+                        <p class ="title" > {data.title}</p>
+                        <p class="artist">By: {data.artist}</p>
+                    </div>
+                    <button onClick={()=>addSong(data.id, data.picUrl, data.title, data.artist, data.songlength, {lid})}> Add me! </button>
+                </li>)
 }     
             </ul>
             </React.Fragment>
     </div>
-    <Button id="final-submit" onClick={()=>finalAdd(songIDArray)}> Party time! </Button>
 
             <div id="song-view">
-               <div class="song-card">
-                    <img class="sc-album-art" src={songPicArray[0]}></img>
-                    <p>{songnameArray[0]}</p>
-               </div>
-               <div class="song-card">
-                    <img class="sc-album-art" src={songPicArray[1]}/>
-                    <p>{songnameArray[1]}</p>
-               </div>
-               <div class="song-card">
-                    <img class="sc-album-art" src={songPicArray[2]}/>
-                    <p>{songnameArray[2]}</p>
-               </div>
+
+                {songnameArray.map((data, i) =>
+                    <div class="song-card">
+                        <img class="sc-album-art" src={songPicArray[i]}></img>
+                        <p class="song-name">{data}</p>
+                    </div>
+                )}
            </div>
+           
         </section>
     );
 }
+
+
+//  <Button id="final-submit" onClick={()=>finalAdd(songIDArray)}> Party time! </Button>

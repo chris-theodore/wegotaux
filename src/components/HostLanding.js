@@ -105,7 +105,7 @@ export default function HostLanding() {
         
         async function getPlayback(){
             const response = await axios.get("http://localhost:5000/currently/playing");
-            console.log(response);
+            console.log("response from getPlayback", response);
             // setSongLength(response.data.item.duration_ms);
             setCurrentSong(response.data.item.id);
             setCurrentImage(response.data.item.album.images[1].url);

@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { useHistory, useParams, useLocation} from "react-router-dom";
-import '../styles/Code.css' // CSS imported
+import styles from '../styles/Code.module.css' // CSS imported
 import axios from 'axios';
 import querystring from 'querystring';
 import io from "socket.io-client";
@@ -25,7 +25,7 @@ export default function Code() {
         try{
             await checkID();
             console.log(codecheck);
-            alert("Time to Party!")
+            alert("Time to Party!");
             setValues({
                 party_code:''});
         } catch (e){
@@ -64,11 +64,11 @@ export default function Code() {
 
     }
     return (
-        <section id="code">
+        <section className={styles.code}>
             <form onSubmit={handleCodeSubmit}>
-                <input id="id-input" required value={values.party_listener} onChange={set('party_listener')} placeholder="Enter Name..."/>
-                <input id="code-input" type="text" pattern="[0-9]*" required value={values.party_code} maxLength="5" onChange={set('party_code')} placeholder="Enter Party Code..."/>
-                <button class="join-buttons glow-on-hover">Join</button>
+                <input className={styles.idInput} required value={values.party_listener} onChange={set('party_listener')} placeholder="Enter Your Name..."/>
+                <input className={styles.idInput} pattern="[0-9]*" required value={values.party_code} maxLength="5" onChange={set('party_code')} placeholder="Enter Party Code..."/>
+                <button className={styles.joinButtons} type="submit">Join</button>
             </form>
             
         </section>

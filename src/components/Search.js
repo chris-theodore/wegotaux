@@ -82,7 +82,7 @@ export default function Search (){
           Search!
         </Button>
         <React.Fragment>
-            <ul>
+            <ul class="list">
                 {
                 dataB.map(data => <li key = {data.id}> <img src={data.picUrl} alt="Album Cover"/> Song Name: {data.title} {"\n"} Artist: {data.artist} <Button onClick={()=>addSong(data.id, data.picUrl, data.title)}> Add me! </Button></li>)
 }     
