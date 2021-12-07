@@ -249,6 +249,20 @@ Song_Delete_Indiv: (party_id) => {
 });  
 },
 
+Song_Delete_Vote: (party_id, spotify_id) => {
+  return new Promise((resolve, reject) => {
+    connection.query("DELETE FROM Song WHERE party_id = ? AND spotify_id = ?", [party_id, spotify_id], async (err, result) =>{
+     if (err) {
+       return reject(err);
+     }
+     console.log("deleting");
+     console.log(result[0]);
+     console.log(result);
+     return resolve(result);
+ });
+});  
+},
+
 //EXTRA
 Listening_Party_Lookup: (id) => {
   return new Promise((resolve, reject) => {

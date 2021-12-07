@@ -55,6 +55,9 @@ module.exports = function(app){
     app.route('/db/delete/song')
     .get(delete_song_API);
 
+    app.route('/db/delete/song_vote')
+    .get(delete_song_vote_API);
+
     app.route('/db/generate/votingblock')
     .get(generate_voting_block_API);
 
@@ -172,6 +175,11 @@ function delete_user_API(request, response){
 
 function delete_song_API(request, response){
     let result = dbClient.Song_Delete_Indiv(request.query.id);
+    console.log(result);
+    response.json(result);
+}
+function delete_song_vote_API(request, response){
+    let result = dbClient.Song_Delete_Vote(request.query.id, request.query.songid);
     console.log(result);
     response.json(result);
 }
