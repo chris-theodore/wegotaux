@@ -132,7 +132,7 @@ User_Check: (fun_name, id) => {
 
 Song_Read: (song_id) => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT * FROM Song WHERE song_id = '?'", [song_id], async (err, result) =>{
+    connection.query("SELECT * FROM Song WHERE song_id = ?", [song_id], async (err, result) =>{
      if (err) {
        return reject(err);
      }
@@ -169,7 +169,7 @@ First_block_Read: (id) => {
 Voting_Read: (fun_name, id, song_id) => {
   return new Promise((resolve, reject) => {
 
-    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? and id = ? and song_id = '?'", [fun_name, parseInt(id), song_id], async (err, result) =>{
+    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? and id = ? and song_id = ?", [fun_name, parseInt(id), song_id], async (err, result) =>{
      if (err) {
        return reject(err);
      }
@@ -183,7 +183,7 @@ Voting_Read: (fun_name, id, song_id) => {
 Voting_Block_Read: (id) => {
   return new Promise((resolve, reject) => {
    
-    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? and id = ? and song_id = '?'", [parseInt(id)], async (err, result) =>{
+    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? and id = ? and song_id = ?", [parseInt(id)], async (err, result) =>{
      if (err) {
        return reject(err);
      }
@@ -204,7 +204,7 @@ Song_Update_Removed: (song_id) => {
 });
 },
 Voting_Record_Update_Vote: (vote, fun_name, id, song_id) => {
-  connection.query("UPDATE Voting_Record SET vote = ?, vote_time = ? WHERE fun_name = ? and id = ? and song_id = '?'", [vote, new Date().toISOString().slice(0, 19).replace('T', ' '), fun_name, parseInt(id), song_id], (err, result) =>{
+  connection.query("UPDATE Voting_Record SET vote = ?, vote_time = ? WHERE fun_name = ? and id = ? and song_id = ?", [vote, new Date().toISOString().slice(0, 19).replace('T', ' '), fun_name, parseInt(id), song_id], (err, result) =>{
     if (err) {
       console.log("error: ", err);
       return err;
@@ -263,7 +263,7 @@ Listening_Party_Lookup: (id) => {
 },
 Voting_Record_Lookup: (fun_name, id, song_id) => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? AND id = ? AND song_id = '?'", [fun_name, parseInt(id), song_id],async (err, result) =>{
+    connection.query("SELECT * FROM Voting_Record WHERE fun_name = ? AND id = ? AND song_id = ?", [fun_name, parseInt(id), song_id],async (err, result) =>{
      if (err) {
        //console.log("error: ", err);
        return reject(err);
