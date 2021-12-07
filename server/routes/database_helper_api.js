@@ -235,9 +235,9 @@ User_Delete_Indiv: (fun_name, id) => {
  });
 });  
 },
-Song_Delete_Indiv: (spotify_id) => {
+Song_Delete_Indiv: (party_id) => {
   return new Promise((resolve, reject) => {
-    connection.query("DELETE FROM Song WHERE spotify_id = ? ", [spotify_id], async (err, result) =>{
+    connection.query("DELETE FROM Song WHERE party_id = ? AND is_removed = 1 AND on_queue = 1", [party_id], async (err, result) =>{
      if (err) {
        return reject(err);
      }
@@ -283,7 +283,7 @@ Voting_Record_Lookup: (fun_name, id, spotify_id) => {
 },
 Generate_Voting_Block: async (id) => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT Song.spotify_id AS spotify_uid, Song.spotify_id AS spotify_id, SUM(Voting_Record.vote) AS total_votes, Song.img AS img, Song.title AS title FROM Voting_Record, Song WHERE (Voting_Record.id = ? AND Voting_Record.spotify_id = Song.spotify_id AND Song.is_removed = 0 AND Song.on_queue = 0) GROUP BY Voting_Record.spotify_id ORDER BY total_votes DESC", [parseInt(id)], async (err, result) =>{
+    connection.query("SELECT Song.spotify_id AS spotify_id, SUM(Voting_Record.vote) AS total_votes, Song.img AS img, Song.title AS title FROM Voting_Record, Song WHERE (Voting_Record.id = ? AND Voting_Record.spotify_id = Song.spotify_id AND Song.is_removed = 0 AND Song.on_queue = 0) GROUP BY Voting_Record.spotify_id ORDER BY total_votes DESC", [parseInt(id)], async (err, result) =>{
      if (err) {
        return reject(err);
      }

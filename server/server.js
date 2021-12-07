@@ -56,6 +56,10 @@ socket.on('song change', (data) =>{
   socket.to(data.lid).emit('song update',(data));
 })
 
+socket.on('queue change', (data) =>{
+  socket.to(data.lid).emit('queue update',(data));
+})
+
 
 socket.on('add to block', (data) =>{
   //request.query.sid, request.query.lid, request.query.songlength
