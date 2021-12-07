@@ -35,19 +35,19 @@ export default function Queue() {
     let {utype} =useParams();
     React.useEffect(() => {
         socket.emit('queue room', "queue");
-        console.log("upon init!!");
+        //console.log("upon init!!");
         getPlaybackOnOpen();
         // getFirstSong();
-        // console.log(location.state.song_id, location.state.song_pic, location.state.song_name)
+        // //console.log(location.state.song_id, location.state.song_pic, location.state.song_name)
         // if (utype === "listener"){
         //     socket.on("receive qdata", (data) => {
-        //         console.log("receieved data");
-        //         console.log(data);
+        //         //console.log("receieved data");
+        //         //console.log(data);
         //             });
         // } else {
         //     setQueueImg(location.state.second.song_pic);
         //     setQueueName(location.state.second.song_name);
-        //     console.log(location.state.third);
+        //     //console.log(location.state.third);
         //     getFirstSong(location.state.third.song_id, location.state.third.song_pic, location.state.third.song_name, location.state.third.custom_id);
         // }
         const interval = setInterval(() => {
@@ -61,23 +61,23 @@ export default function Queue() {
       }, []);
 
       socket.on("new song", (data) => {
-        console.log(data);
+        //console.log(data);
     });
     React.useEffect(()=>{
         async function refreshBlock(){
-            console.log("in refresh function");
+            //console.log("in refresh function");
             const param = {
                 id: lid
             };
-            console.log(lid);
+            //console.log(lid);
             const parameters = `?${querystring.stringify(param)}`;
-            console.log("test in refresh function");
-            console.log(parameters);
+            //console.log("test in refresh function");
+            //console.log(parameters);
             const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
             const response = await axios.get(urlWithParameters);
-            console.log("output from database");
-            console.log(response.data);
-            console.log(response.data.length);
+            //console.log("output from database");
+            //console.log(response.data);
+            //console.log(response.data.length);
             // let block_data_dummy = [];
             // if(response.data.length === 1){
             //     block_data_dummy.push({
@@ -90,7 +90,7 @@ export default function Queue() {
             // }
             // else{
             //     response.data.forEach(song =>{
-            //         console.log(song);
+            //         //console.log(song);
             //         block_data_dummy.push({
             //             title: song.title,
             //             img: song.img, 
@@ -102,7 +102,7 @@ export default function Queue() {
             // }
             
             setBlockData(response.data);
-            // console.log(block_data);
+            // //console.log(block_data);
             
         };
         refreshBlock();
@@ -116,20 +116,20 @@ useEffect(() => {
 
 async function getPlaybackOnOpen(){
     const response = await axios.get("http://localhost:5000/currently/playing");
-    console.log("ID CHECK");
+    //console.log("ID CHECK");
     oldincoming = response.data.item.id;
-    console.log(oldincoming);
+    //console.log(oldincoming);
 }
 
 async function getPlayback(){
     const response = await axios.get("http://localhost:5000/currently/playing");
     incoming_songid = response.data.item.id; 
-    console.log(incoming_songid)
-    setCurrentID(response.data.song_id)
-    // console.log("ALL BLOCK DATA")
-    // console.log(block_data)
-    // console.log("BLOCK DATA 0")
-    // console.log(block_data[0].uri);
+    //console.log(incoming_songid)
+    setCurrentID(response.data.spotify_id)
+    // //console.log("ALL BLOCK DATA")
+    // //console.log(block_data)
+    // //console.log("BLOCK DATA 0")
+    // //console.log(block_data[0].uri);
     socket.emit('song change', {
         lid: lid,
         socketSong: incoming_songid,
@@ -151,11 +151,11 @@ async function getPlayback(){
             id: lid
         };
         const parameters = `?${querystring.stringify(param)}`;
-        console.log("test in refresh function");
-        console.log(parameters);
+        //console.log("test in refresh function");
+        //console.log(parameters);
         const urlWithParameters = `${'http://localhost:5000/db/read/listening_party'}${parameters}`;
         const response = await axios.get(urlWithParameters);
-        // console.log(response.data);
+        // //console.log(response.data);
         let playlist_id = response.data.playlist_id;
         //REMOVE QUEUE SONG FROM DB
         const deleteparam = {
@@ -164,27 +164,28 @@ async function getPlayback(){
         const deleteParameters = `?${querystring.stringify(deleteparam)}`;
         const urlSongDelete = `${'http://localhost:5000/db/delete/song'}${deleteParameters}`;
         const deleteSong = await axios.get(urlSongDelete);
+        console.log(deleteSong);
         //GET SONG OFF VOTING BLOCK
-        console.log("block check")
+        //console.log("block check")
         if (block_data.length == 0){
             alert("queue is empty! Add songs!")
             setNewSong(false);
             return;
         }
-        console.log("CLARARAAARARAARARA")
-        console.log(block_data);
-        // console.log(block_data[0].);
-        // console.log(block_data[0].uri);
+        //console.log("CLARARAAARARAARARA")
+        //console.log(block_data);
+        // //console.log(block_data[0].);
+        // //console.log(block_data[0].uri);
         const blockparam = {
-            sid: block_data[0].song_id
+            sid: block_data[0].spotify_id
         };
-        console.log("BLOCK SONG ID");
-        console.log(block_data[0].song_id);
+        //console.log("BLOCK SONG ID");
+        //console.log(block_data[0].song_id);
         const blockParameters = `?${querystring.stringify(blockparam)}`;
         const urlSongOffBlock = `${'http://localhost:5000/db/alter/song'}${blockParameters}`;
         const songOffBlock = await axios.get(urlSongOffBlock);
-        console.log(songOffBlock)
-        console.log("song changing in alter");       
+        //console.log(songOffBlock)
+        //console.log("song changing in alter");       
         setQueueName(block_data[0].title);
         setQueueImg(block_data[0].img);
         //ADD SONG TO PLAYLIST HERE
@@ -195,10 +196,10 @@ async function getPlayback(){
             song: block_data[0].spotify_uid
         }))
         let req_body = {songs: songs_formatted}
-        // console.log(req_body);
+        // //console.log(req_body);
         const urlOther = `${'http://localhost:5000/add/playlist?playlist_id='}${playlist_id}`;
         let addSong = await axios.post(urlOther, req_body);
-        console.log("adding to queue")
+        //console.log("adding to queue")
                 //ADD SONG TO QUEUE
                 const queueparam = {
                     trackuri: block_data[0].spotify_uid
@@ -206,7 +207,7 @@ async function getPlayback(){
                 const queueParameters = `?${querystring.stringify(queueparam)}`;
                 const urlQueue = `${'http://localhost:5000/add/queue'}${queueParameters}`;
                 const queueSong = await axios.post(urlQueue);
-                console.log(queueSong);
+                //console.log(queueSong);
         setQueueID(block_data[0].spotify_uid);
         setNewSong(false);
 
@@ -214,21 +215,21 @@ async function getPlayback(){
     }
     
     async function refreshBlock2(){
-        console.log("in refresh function");
+        //console.log("in refresh function");
         const param = {
             id: lid
         };
-        // console.log(lid);
+        // //console.log(lid);
         const parameters = `?${querystring.stringify(param)}`;
-        // console.log("test in refresh function");
-        // console.log(parameters);
+        // //console.log("test in refresh function");
+        // //console.log(parameters);
         const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
         const response = await axios.get(urlWithParameters);
-        // console.log(response.data);
+        // //console.log(response.data);
         // let block_data_dummy = [];
         // response.data.forEach(song =>{
-        //     // console.log("in loop!");
-        //     // console.log(song);
+        //     // //console.log("in loop!");
+        //     // //console.log(song);
         //     block_data_dummy.push({
         //         title: song.title,
         //         img: song.img, 
@@ -238,25 +239,25 @@ async function getPlayback(){
         //     })
         // });
         setBlockData(response.data);
-        // console.log(block_data);
+        // //console.log(block_data);
         
 
     };
     React.useEffect(()=>{
     async function refreshQueue(){
-        console.log("in queue");
+        //console.log("in queue");
         const param = {
             id: lid
         };
-        // console.log(lid);
+        // //console.log(lid);
         const parameters = `?${querystring.stringify(param)}`;
-        // console.log("test in refresh function");
-        // console.log(parameters);
+        // //console.log("test in refresh function");
+        // //console.log(parameters);
         const urlWithParameters = `${'http://localhost:5000/db/read/queue'}${parameters}`;
         const response = await axios.get(urlWithParameters);
-        console.log("READ QUEUE");
-        console.log(response.data);
-        setCurrentID(response.data.song_id)
+        //console.log("READ QUEUE");
+        //console.log(response.data);
+        setCurrentID(response.data.spotify_id)
         setQueueImg(response.data.img);
         setQueueName(response.data.title);
         setQueueID(response.data.spotify_id);
@@ -276,18 +277,18 @@ async function getPlayback(){
         }
         setData(response.data);
         socket.emit("new song", {data: response.data, id: lid});
-        console.log(setData);
+        //console.log(setData);
     }
     // React.useEffect(()=>{
     //     async function readFirstSong(){
-    //         console.log("song on block");
+    //         //console.log("song on block");
     //         const param = {
     //             id: lid
     //         };
-    //         // console.log(lid);
+    //         // //console.log(lid);
     //         const parameters = `?${querystring.stringify(param)}`;
-    //         // console.log("test in refresh function");
-    //         // console.log(parameters);
+    //         // //console.log("test in refresh function");
+    //         // //console.log(parameters);
     //         const urlWithParameters = `${'http://localhost:5000/db/read/first_block'}${parameters}`;
     //         const response = await axios.get(urlWithParameters);
 
@@ -304,8 +305,8 @@ async function getPlayback(){
     // }, []);
     // async function getFirstSong(song_uri,song_img, song_title, custom_id){
     //     if (songnameArray.length == 0){
-    //         console.log("This is the first song being added")
-    //         console.log(song_img);
+    //         //console.log("This is the first song being added")
+    //         //console.log(song_img);
     //         let dummyArray = []
     //         dummyArray.push({
     //             title: song_title,
@@ -407,7 +408,7 @@ async function getPlayback(){
         const parameters_modify = `?${querystring.stringify(parameterDB_modify)}`;
         const dbSend2 = `${'http://localhost:5000/'}${'db/change/vote'}${parameters_modify}`;
         const dbresponse2 = await axios.get(dbSend2);
-        console.log(dbresponse2);
+        //console.log(dbresponse2);
         const test = await refreshBlock2();
 
     }
@@ -424,9 +425,9 @@ async function getPlayback(){
     
         const parameters_lookup = `?${querystring.stringify(parameterDB_lookup)}`;
         const dbSend2 = `${'http://localhost:5000/'}${'db/voterecord/lookup'}${parameters_lookup}`;
-        console.log(dbSend2);
+        //console.log(dbSend2);
         const dbresponse2 = await axios.get(dbSend2);
-        console.log(dbresponse2.data);
+        //console.log(dbresponse2.data);
         if(dbresponse2.data.exists === 1){
             updateExistingVote(uid, lid, custom_id, direction);
             return;
@@ -435,7 +436,7 @@ async function getPlayback(){
             if(direction === "up"){
                 // use react useState hook to increment votes and push to db
                 // make sure to connect to the given song can use dom stuff to retrieve song name/id
-                console.log("vote +1");
+                //console.log("vote +1");
                 parameterDB = {
                     fname: uid,
                     uid: lid,
@@ -447,7 +448,7 @@ async function getPlayback(){
             else if(direction === "down"){
                 // use react useState hook to decrement votes and push to db 
                 // make sure to connect to the given song can use dom stuff to retrieve song name/id
-                console.log("vote -1");
+                //console.log("vote -1");
                 parameterDB = {
                     fname: uid,
                     uid: lid,
@@ -457,10 +458,10 @@ async function getPlayback(){
             }
         }
         
-        console.log("in helper");
-        console.log(lid);
+        //console.log("in helper");
+        //console.log(lid);
         const parameters = `?${querystring.stringify(parameterDB)}`;
-        console.log(parameters)
+        //console.log(parameters)
         const dbSend = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters}`
         const dbresponse = await axios.get(dbSend);
         const test = await refreshBlock2();
@@ -506,8 +507,8 @@ async function getPlayback(){
                         <img class="voter-album-art" src={data.img}/>
                             <p>{data.title}</p>
                             <div class="vote-tools">
-                                <ArrowUpCircleOutline onClick={() => handleVote("up", data.spotify_uid, data.song_id)} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
-                                <ArrowDownCircleOutline onClick={() => handleVote("down", data.spotify_uid, data.song_id)} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
+                                <ArrowUpCircleOutline onClick={() => handleVote("up", data.spotify_uid, data.spotify_id)} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
+                                <ArrowDownCircleOutline onClick={() => handleVote("down", data.spotify_uid, data.spotify_id)} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
                             </div>
                         <div>
                             <p>total: {data.total_votes}</p>
