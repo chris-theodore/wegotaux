@@ -1,7 +1,7 @@
 CREATE TABLE Users
 (fun_name VARCHAR(64) NOT NULL,
  user_type VARCHAR(32) NOT NULL CHECK(user_type IN ('host', 'attendee')),
- id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
+ id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id) ON DELETE CASCADE,
  PRIMARY KEY (fun_name, id)
 );
 
@@ -17,25 +17,24 @@ CREATE TABLE Listening_Party
  
 CREATE TABLE Song
 (spotify_id VARCHAR(32) NOT NULL,
- party_id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
- song_id VARCHAR(40) DEFAULT uuid(),
+ party_id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id) ON DELETE CASCADE,
+--  song_id VARCHAR(40) DEFAULT uuid(),
  is_removed INTEGER NOT NULL CHECK (is_removed >= 0 AND is_removed <= 1),
  on_queue INTEGER NOT NULL CHECK (is_removed >= 0 AND is_removed <= 1),
  img VARCHAR(128) NOT NULL,
  title VARCHAR(128) NOT NULL,
- PRIMARY KEY(song_id)
+ PRIMARY KEY(spotify_id)
 );
 
 
-
 CREATE TABLE Voting_Record
-(fun_name VARCHAR(64) NOT NULL REFERENCES Users(fun_name),
- id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
+(fun_name VARCHAR(64) NOT NULL REFERENCES Users(fun_name) ON DELETE CASCADE,
+ id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id) ON DELETE CASCADE,
  vote INTEGER NOT NULL CHECK (vote >= -1 AND vote <= 1),
  vote_time TIMESTAMP NOT NULL, 
 --  spotify_id VARCHAR(32) REFERENCES Song(spotify_id), WE NEED TO RE LOOK AT THIS
- song_id VARCHAR(40) NOT NULL REFERENCES Song(song_id),
- PRIMARY KEY(fun_name, id, song_id)
+ spotify_id VARCHAR(32) NOT NULL REFERENCES Song(spotify_id) ON DELETE CASCADE,
+ PRIMARY KEY(fun_name, id, spotify_id)
 );
 
 /*
@@ -203,7 +202,4 @@ CREATE TRIGGER TG_Majority_Dislikes
 
   END
  //
-
-
-
 

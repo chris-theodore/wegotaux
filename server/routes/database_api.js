@@ -68,8 +68,8 @@ module.exports = function(app){
 }
 
 function create_listening_party_API(request, response){
-    console.log("in call!");
-    console.log(request.query);
+    //console.log("in call!");
+    //console.log(request.query);
     let result = dbClient.Listening_Party_Create(request.query.playlistname, request.query.deviceid, request.query.userid, request.query.playlistid, request.query.id);
     response.json(result);
 }
@@ -77,58 +77,58 @@ function create_listening_party_API(request, response){
 
 async function read_users_API(request, response){
     let result = await dbClient.User_Read(request.query.id);
-    console.log(result);
+    //console.log(result);
     response.json(result);
 }
 
 async function check_user_API(request, response){
     let result = await dbClient.User_Check(request.query.fname, request.query.id);
-    console.log(result);
+    //console.log(result);
     response.json(result);
 }
 
 async function voting_record_queue_API(request, response){
     let result = await dbClient.Voting_Record_Queue(request.query.lid);
-    console.log(result);
+    //console.log(result);
     response.json(result);
 }
 
 async function read_song_API(request, response){
     let result = await dbClient.Song_Read(request.query.sid);
-    //console.log(result);
-    console.log(JSON.parse(JSON.stringify(result)));
+    ////console.log(result);
+    //console.log(JSON.parse(JSON.stringify(result)));
     response.json(result);
 }
 
 
 async function read_listening_party_API(request, response){
     let result = await dbClient.Listening_Party_Read(request.query.id);
-    console.log("back");
-    console.log(result);
+    //console.log("back");
+    //console.log(result);
     response.json(result);
 }
 
 async function read_vote_record_API(request, response){
     let result = await dbClient.Voting_Read(request.query.fname, request.query.id, request.query.sid);
-    console.log(result);
+    //console.log(result);
     response.json(result);
 }
 
 async function read_queue_API(request, response){
     let result = await dbClient.Queue_Read(request.query.id);
-    console.log(result);
+    //console.log(result);
     response.json(result);
 }
 
 async function read_fblock_API(request, response){
     let result = await dbClient.First_block_Read(request.query.id);
-    console.log(result);
+    //console.log(result);
     response.json(result);
 }
 
 async function create_song_API(request, response){
     let result = await dbClient.Song_Create(request.query.sid, request.query.lid, request.query.img, request.query.title, request.query.is_removed, request.query.on_queue);
-    console.log(result);
+    //console.log(result);
     response.json({code: result});
 }
 
@@ -171,22 +171,23 @@ function delete_user_API(request, response){
 }
 
 function delete_song_API(request, response){
-    let result = dbClient.Song_Delete_Indiv(request.query.sid);
+    let result = dbClient.Song_Delete_Indiv(request.query.id);
+    console.log(result);
     response.json(result);
 }
 
 
 async function generate_voting_block_API(request, response){
     let result = await dbClient.Generate_Voting_Block(request.query.id);
-    console.log("heyyyyyooooooo");
-    console.log(result);
+    // //console.log("heyyyyyooooooo");
+    // //console.log(result);
     response.send(result);
 }
 
 async function voting_record_lookup_API(request, response){
-    console.log("here we are");
+    //console.log("here we are");
     let result = await dbClient.Voting_Record_Lookup(request.query.fname, request.query.id, request.query.songid);
-    console.log(result);
+    //console.log(result);
     response.send({exists: result});
 }
 
