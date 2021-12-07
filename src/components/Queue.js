@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import '../styles/Queue.css' // CSS imported
-import { ArrowBackCircleOutline, ArrowUpCircleOutline,ArrowDownCircleOutline, ReturnUpBackOutline } from 'react-ionicons'
+import { Trash, ArrowBackCircleOutline, ArrowUpCircleOutline,ArrowDownCircleOutline, ReturnUpBackOutline } from 'react-ionicons'
 import { useHistory, useParams, useLocation } from "react-router-dom";
 import {Form, Button, ResponsiveEmbed} from "react-bootstrap";
 
@@ -415,7 +415,20 @@ async function getPlayback(){
         const test = await refreshBlock2();
 
     }
+    async function handleDelete(lid, spotify_id) {
+        let parameterDB;
+        //check if voting record exists
+        
+        let parameterDB_delete = {
+            id: lid,
+            songid: spotify_id
+        };
 
+        const parameters_delete= `?${querystring.stringify(parameterDB_delete)}`;
+        const dbSend2 = `${'http://localhost:5000/'}${'db/delete/song_vote'}${parameters_delete}`;
+        //console.log(dbSend2);
+        const dbresponse2 = await axios.get(dbSend2);
+    }
     async function handleVote(direction, uri, custom_id) {
         let parameterDB;
         //check if voting record exists
@@ -506,6 +519,20 @@ async function getPlayback(){
             <React.Fragment>
             <div id="polls">
             {block_data.map((data, index) => {
+                if(utype === "host"){
+                    return <div key={index}>
+                        <img class="voter-album-art" src={data.img}/>
+                            <p>{data.title}</p>
+                            <div class="vote-tools">
+                                <ArrowUpCircleOutline onClick={() => handleVote("up", data.spotify_uid, data.spotify_id)} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
+                                <ArrowDownCircleOutline onClick={() => handleVote("down", data.spotify_uid, data.spotify_id)} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
+                                <Trash onClick={() => handleDelete(lid, data.spotify_id)} color={'#00000'}  title={"trash"} height="25px" width="25px"/>
+                            </div>
+                        <div>
+                            <p>total: {data.total_votes}</p>
+                        </div> 
+                        </div>   
+                                                }else{
               return <div key={index}>
                         <img class="voter-album-art" src={data.img}/>
                             <p>{data.title}</p>
@@ -517,7 +544,7 @@ async function getPlayback(){
                             <p>total: {data.total_votes}</p>
                         </div> 
                         </div>
-            })}
+}})}
           </div>
           </React.Fragment>
 
