@@ -269,18 +269,24 @@ async function getPlayback(){
     };
 
     async function getSong(song,artist){
+        console.log("made it here from search button")
         const parameterSong = {
             track: song,
         };
+        console.log("the songs from search api", song);
         const parameters = `?${querystring.stringify(parameterSong)}`;
         const urlWithParameters = `${'http://localhost:5000/song/search'}${parameters}`;
         const response = await axios.get(urlWithParameters);
         if (setData != []) {
             setData([])
         }
+        console.log("maybe", response.data);
+    
+
+
         setData(response.data);
         socket.emit("new song", {data: response.data, id: lid});
-        //console.log(setData);
+        console.log("the songs from search api", dataB);
     }
     // React.useEffect(()=>{
     //     async function readFirstSong(){
@@ -341,6 +347,7 @@ async function getPlayback(){
     //     }
     // }
     async function addSongToBlock(song_uri, song_img, song_title){
+        console.log("calling from add me");
         
         let parameterDB = {
             lid: lid,
@@ -384,6 +391,7 @@ async function getPlayback(){
 
         setSongsTerm([]);
         setData([]);
+        console.log("check if song was added", block_data);
     }
 
     function handlePageChange(direction){
@@ -508,10 +516,19 @@ async function getPlayback(){
                </div>
                <p>Next on the Queue!</p>
            </div>
+
            <React.Fragment>
-            <ul>
+            <ul id="q-list">
                 {
-                dataB.map(data => <div class="vote-card" key = {data.id}> <img src={data.picUrl} alt="Album Cover"/> Song Name: {data.title} {"\n"} Artist: {data.artist} <Button onClick={()=>addSongToBlock(data.id, data.picUrl, data.title)}> Add me! </Button></div>)
+                dataB.map(data => 
+                <li class="vote-card" key = {data.id}> 
+                    <img class ="q-image" src={data.picUrl} alt="Album Cover"/> 
+                    <div class="song-data">
+                        <p class ="title" > {data.title}</p>
+                        <p class="artist">By: {data.artist}</p>
+                    </div>
+                    <button class="AddMe" onClick={()=>addSongToBlock(data.id, data.picUrl, data.title)}> Add me! </button>
+                </li>)
 }     
             </ul>
             </React.Fragment>

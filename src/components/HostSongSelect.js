@@ -177,6 +177,7 @@ export default function HostSongSelect() {
             </ul>
             </React.Fragment>
     </div>
+    <Button id="final-submit" onClick={()=>finalAdd(songIDArray)}> Party time! </Button>
 
             <div id="song-view">
 
