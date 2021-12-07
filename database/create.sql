@@ -27,7 +27,6 @@ CREATE TABLE Song
 );
 
 
-
 CREATE TABLE Voting_Record
 (fun_name VARCHAR(64) NOT NULL REFERENCES Users(fun_name),
  id VARCHAR(5) NOT NULL REFERENCES Listening_Party(id),
@@ -203,7 +202,4 @@ CREATE TRIGGER TG_Majority_Dislikes
 
   END
  //
-
-
-
 
