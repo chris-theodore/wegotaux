@@ -27,7 +27,7 @@ const User = function(fun_name, user_type, id){
   this.id = id;
 }
 
-const Song = function(spotify_id, party_id, is_removed, img, title, on_queue){
+const Song = function(spotify_id, party_id, is_removed, img, title, on_queue, time_added){
   this.spotify_id = spotify_id;
   this.party_id = party_id;
   // this.song_id = song_id;
@@ -35,6 +35,7 @@ const Song = function(spotify_id, party_id, is_removed, img, title, on_queue){
   this.on_queue = on_queue;
   this.img = img;
   this.title = title;
+  this.time_added = time_added
 }
 
 
@@ -82,7 +83,7 @@ Voting_Record_Create: (fun_name, id, vote, spotify_id) => {
 },
 Song_Create: async (spotify_id, party_id, img, title, is_removed, on_queue) => {
   // let new_sid = uuidv4();
-    const newSong = new Song(spotify_id, party_id, is_removed, img, title, on_queue);
+    const newSong = new Song(spotify_id, party_id, is_removed, img, title, on_queue, new Date().toISOString().slice(0, 19).replace('T', ' '));
     connection.query("INSERT INTO Song SET ?", newSong, (err, result) =>{
       if (err) {
         //console.log("error: ", err);
@@ -194,8 +195,8 @@ Voting_Block_Read: (id) => {
 },
 
 
-Song_Update_Removed: (spotify_id) => {
-  connection.query("UPDATE Song SET is_removed = ?, on_queue = ? WHERE spotify_id = ?", [1,1, spotify_id], (err, result) =>{
+Song_Update_Removed: (spotify_id, party_id) => {
+  connection.query("UPDATE Song SET is_removed = ?, on_queue = ? WHERE spotify_id = ? AND party_id = ?", [1,1, spotify_id, party_id], (err, result) =>{
     if (err) {
       //console.log("error: ", err);
       return err;
@@ -297,7 +298,7 @@ Voting_Record_Lookup: (fun_name, id, spotify_id) => {
 },
 Generate_Voting_Block: async (id) => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT Song.spotify_id AS spotify_id, SUM(Voting_Record.vote) AS total_votes, Song.img AS img, Song.title AS title FROM Voting_Record, Song WHERE (Voting_Record.id = ? AND Voting_Record.spotify_id = Song.spotify_id AND Song.is_removed = 0 AND Song.on_queue = 0) GROUP BY Voting_Record.spotify_id ORDER BY total_votes DESC", [parseInt(id)], async (err, result) =>{
+    connection.query("SELECT Song.spotify_id AS spotify_id, SUM(Voting_Record.vote) AS total_votes, Song.img AS img, Song.title AS title, Song.time_added AS time_added FROM Voting_Record, Song WHERE (Voting_Record.id = ? AND Voting_Record.spotify_id = Song.spotify_id AND Song.is_removed = 0 AND Song.on_queue = 0) GROUP BY Voting_Record.spotify_id ORDER BY total_votes DESC, time_added ASC", [parseInt(id)], async (err, result) =>{
      if (err) {
        return reject(err);
      }
