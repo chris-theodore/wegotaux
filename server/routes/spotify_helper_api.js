@@ -35,6 +35,28 @@ const spotifyClient = {
                 console.log(error);
             }
         },
+    party_playlistAPI: async (song, artistq) => {
+        const parameterSong = {
+            market: 'US'
+        };
+        const parameters = `?${querystring.stringify(parameterSong)}`;
+        const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'playlists/37i9dQZF1DXa2PvUpywmrr'}${parameters}`;
+        try{
+            const result = await axios.get(urlWithParameters, {
+                headers: {
+                    'Authorization' : `Bearer ${process.env.ACCESS_TOKEN}`
+                }  
+            });
+            const currSong = await result.data;
+            const playlist_length = currSong.tracks.items.length;
+            const random_index = Math.random() * (playlist_length - 0) + 0;
+            const random_song = currSong.tracks.items[random_index];
+            return random_song;
+        }
+        catch(error){
+            console.log(error);
+        }
+    },
     deviceAPI: async () => {
         const urlWithParameters = `${process.env.SPOTIFY_API_BASE_URL}${'me/'}${'player/'}${'devices'}`;
         const result = await axios.get(urlWithParameters, {

@@ -153,7 +153,7 @@ function change_listening_party_API(request, response){
 }
 
 function change_song_API(request, response){
-    let result = dbClient.Song_Update_Removed(request.query.sid);
+    let result = dbClient.Song_Update_Removed(request.query.sid, request.query.id);
     response.json(result);
 }
 

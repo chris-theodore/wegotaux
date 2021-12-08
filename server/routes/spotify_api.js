@@ -35,6 +35,9 @@ module.exports = function(app){
     app.route('/skip/song')
     .post(skip_songAPI);
 
+    app.route('/get/party/playlist')
+    .get(party_playlistAPI);
+
 
 
 
@@ -77,6 +80,32 @@ async function searchAPI(request, response, next) {
             next(err);
         }
     };
+
+async function party_playlistAPI(request, response, next) {
+    try {
+        const song = await spotifyClient.party_playlistAPI();
+        console.log(song);
+        let result = {
+            id: song.id,
+            title: song.name,
+            artist: song.artists[0].name,
+            picUrl: song.album.images[1].url,
+            songType: song.album.album_type,
+            albumName: song.album.name,
+            releaseDate: song.album.release_date,
+            extUrl: song.external_urls,
+            songlength: song.duration_ms,
+        };
+        console.log(results);
+        response.json(results);
+    }
+    catch (error) {
+        console.log(error);
+        const err = new Error('Error: Check server --- one or more APIs are currently unavailable.');
+        err.status = 503;
+        next(err);
+    }
+};   
 
 async function deviceAPI(request, response, next) {
     try {
