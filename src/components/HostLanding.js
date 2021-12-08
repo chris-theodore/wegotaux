@@ -158,7 +158,8 @@ useEffect(() => {
             console.log(block_data[0]);
             // //console.log(block_data[0].uri);
             const blockparam = {
-                sid: block_data[0].spotify_id
+                sid: block_data[0].spotify_id,
+                id: lid
             };
             //console.log("BLOCK SONG ID");
             //console.log(block_data[0].song_id);

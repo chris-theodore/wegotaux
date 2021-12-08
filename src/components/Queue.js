@@ -144,7 +144,36 @@ async function getPlayback(){
         //GET SONG OFF VOTING BLOCK
         //console.log("block check")
         if (block_data.length == 0){
-            alert("queue is empty! Add songs!")
+            const urlWithParameters = `${'http://localhost:5000/get/party/playlist'}`;
+            const response = await axios.get(urlWithParameters);
+            console.log(response);
+
+        
+
+            let parameterDB = {
+                lid: lid,
+                sid: response.id,
+                img: response.album.images[1].url,
+                title: response.name,
+                is_removed: 0,
+                on_queue: 0
+            };
+            const parameters = `?${querystring.stringify(parameterDB)}`;
+            const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
+            const dbresponse = await axios.get(dbSend);
+
+
+            let parameterDB2 = {
+                fname: uid,
+                uid: lid,
+                vote: 0,
+                sid: response.id
+            };
+            const parameters2 = `?${querystring.stringify(parameterDB2)}`;
+            const dbSend2 = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters2}`
+            const dbresponse2 = await axios.get(dbSend2);
+            //add song to voting block 
+            alert("queue is empty! We added a random song for you!")
             setNewSong(false);
             return;
         }
@@ -153,7 +182,8 @@ async function getPlayback(){
         console.log(block_data[0]);
         // //console.log(block_data[0].uri);
         const blockparam = {
-            sid: block_data[0].spotify_id
+            sid: block_data[0].spotify_id,
+            id: lid
         };
         //console.log("BLOCK SONG ID");
         //console.log(block_data[0].song_id);
