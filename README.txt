@@ -8,6 +8,20 @@ Kenny Moore
 Clara Savchik
 Chris Theodore
 
+Final Project Video: https://www.youtube.com/watch?v=FYDo2qzewR0
+Final Project Updates: 
+Clara
+-I transitioned to work on the frontend with Chris to solve some of the nagging issues with the multi user functionality of the application. This week was all about debugging and attempting to fix any remaining issues particularly with the multi user functionality. 
+Chris
+ While working alongside Clara, I was able to create both frontend and backend functionalities needed to complete our app. I worked heavily on creating sockets to allow multi-user functionality, as well as creating proper database calls to allow our app to work as intended. Clara and I also worked heavily on a big code chunk for the voting block functionality to be maintained throughout the app. I also helped clean up some of our database schema to make sure it was exactly what we needed and also worked on allowing delete on cascade. The final days leading up to this has been debugging and fixing lingering issues
+Preston
+I worked in our SQL file, changing the schema as design decisions necessitated them. I worked with Clara and Kenny to work out various design problems, ex. how we would know when state changes occurred, and the logic for how to update the tables when songs changed. I wrote triggers to enforce voting behavior, ex. A user cannot vote on the same song twice.  
+Kenny
+Worked on functions to allow the user to join the listening party.  Also worked on web design through the css files.  Created an outline for the final report.  
+Ezra
+ Worked on UI functionality and styling so that each component looks as intended. Worked on cleaning up code in documents. 
+
+
 Milestone 3: 
 Kenny: During this milestone, I worked with the group to make progress on the
 back end.  We had many meetings to move forward and get on the same page.  
