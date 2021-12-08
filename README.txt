@@ -8,8 +8,9 @@ Kenny Moore
 Clara Savchik
 Chris Theodore
 
-Final Project Video: https://www.youtube.com/watch?v=FYDo2qzewR0
+Final Project Video: https://www.youtube.com/watch?v=5acc2cqQTUc
 Final project currently being run off EzraCSS gitlab branch.
+We would like to be included in the voting.
 Final Project Updates: 
 Clara
 -I transitioned to work on the frontend with Chris to solve some of the nagging issues with the multi user functionality of the application. This week was all about debugging and attempting to fix any remaining issues particularly with the multi user functionality. 
