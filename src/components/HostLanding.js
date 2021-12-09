@@ -14,6 +14,8 @@ let oldincoming='';
 export default function HostLanding() {
     const location = useLocation();
     const pathname = "host";
+    const[dataB, setData] = React.useState([]);
+    const [songsName, setSongsTerm] = React.useState([]);
     const [currentImage, setCurrentImage] = React.useState(null);
     const [currentSongID, setCurrentSong] = React.useState(null);
     const [currentSongName, setCurrentName] = React.useState(null);
@@ -166,10 +168,14 @@ useEffect(() => {
             console.log(deleteSong);
             //GET SONG OFF VOTING BLOCK
             //console.log("block check")
-            if (block_data.length == 0){
-                alert("queue is empty! Add songs!")
-                setNewSong(false);
-                return;
+            if (block_data.length ===1){
+                const getRandomSong = `${'http://localhost:5000/get/party/playlist'}`;
+                const chosenSong = await axios.get(getRandomSong);
+                console.log("accessing randomly selected song data");
+                console.log(chosenSong);
+                if(chosenSong){
+                    const test = await addSongToBlock(chosenSong.data.id, chosenSong.data.picUrl, chosenSong.data.title);
+                }
             }
             console.log("CLARARAAARARAARARA")
             console.log(block_data);
@@ -218,6 +224,53 @@ useEffect(() => {
             // refreshQueue();
         }
         setNewSong(false);
+    }
+    async function addSongToBlock(song_uri, song_img, song_title){
+        console.log("calling from add me");
+        
+        let parameterDB = {
+            lid: lid,
+            sid: song_uri,
+            img: song_img,
+            title: song_title,
+            is_removed: 0,
+            on_queue: 0
+
+        };
+        const parameters = `?${querystring.stringify(parameterDB)}`;
+        const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
+        const dbresponse = await axios.get(dbSend);
+
+        let parameterDB2 = {
+            fname: uid,
+            uid: lid,
+            vote: 0,
+            sid: dbresponse.data.code
+        };
+    
+        const parameters2 = `?${querystring.stringify(parameterDB2)}`;
+        const dbSend2 = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters2}`
+        const dbresponse2 = await axios.get(dbSend2);
+
+        let block_data_dummy = block_data;
+        block_data_dummy.push({
+            title: song_title,
+            img: song_img, 
+            uri: song_uri,
+            vote_total: 0,
+            custom_id: dbresponse.data.code
+        })
+        setBlockData(block_data_dummy);
+        const tempArray = []
+        tempArray.push(song_uri)
+        let songs_formatted = []
+        tempArray.forEach(id => songs_formatted.push({
+            song: song_uri
+        }));
+
+        setSongsTerm([]);
+        setData([]);
+        console.log("check if song was added", block_data);
     }
     async function refreshBlock2(){
         //console.log("in refresh function");
@@ -311,11 +364,8 @@ useEffect(() => {
                     {currentSongName}
                 </div>
                 <div id="player-actions">
-                    <PlaySkipBackOutline class="p-action" color={'#00000'} title={"back"} height="25px" width="25px"/>
-                    <PauseOutline onClick={() => pauseSong() }  class="p-action" color={'#00000'} title={"pause"} height="25px" width="25px"/>
-                    <button name= 'skip' onClick={() => skipSong() } >
-                    <PlaySkipForwardOutline  class="p-action" color={'#00000'} title={"forwards"} onClick={() => skipSong() } height="25px" width="25px"/>
-                    </button>
+                    <PauseOutline onClick={() => pauseSong()} color={'#00000'} title={"pause"} height="25px" width="25px"/>
+                    <PlaySkipForwardOutline  onClick={() => skipSong()} color={'#00000'} title={"forwards"} height="25px" width="25px"/>
                 </div>
             </div>
 
@@ -328,10 +378,10 @@ useEffect(() => {
                     <PeopleOutline color={'#00000'} title={"view-listeners"} height="25px" width="25px"/>
                     <p>Listeners</p>
                 </div>
-                <div class="u-action" onClick={() => handleSubmit("details")}>
+                {/* <div class="u-action" onClick={() => handleSubmit("details")}>
                     <InformationCircleOutline color={'#00000'}  title={"party-details"} height="25px" width="25px"/>                    
                     <p>Party Details</p>
-                </div>
+                </div> */}
                 <div class="u-action" onClick={() => handleHostLeave()}>
                 <ExitOutline color={'#00000'}  title={"exit"} height="25px" width="25px"
 />

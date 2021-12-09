@@ -102,10 +102,10 @@ export default function ListenerLanding() {
                     <PeopleOutline color={'#00000'} title={"view-listeners"} height="25px" width="25px"/>
                     <p>Listeners</p>
                 </div>
-                <div class="u-action" onClick={() => handleSubmit("details")}>
+                {/* <div class="u-action" onClick={() => handleSubmit("details")}>
                     <InformationCircleOutline color={'#00000'}  title={"party-details"} height="25px" width="25px"/>                    
                     <p>Party Details</p>
-                </div>
+                </div> */}
                 <div class="u-action" onClick={() => handleUserLeave()}>
                 <ExitOutline color={'#00000'}  title={"exit"} height="25px" width="25px"
 />
