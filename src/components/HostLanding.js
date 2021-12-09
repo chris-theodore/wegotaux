@@ -22,6 +22,7 @@ export default function HostLanding() {
     const [queue_name, setQueueName] = React.useState([]);
     const [queue_id, setQueueID] = React.useState([]);
     const [block_data, setBlockData] = React.useState([]);
+    const [is_playing, setIsPlaying] = React.useState([]);
     const [current_id, setCurrentID] = React.useState(null);
    const history = useHistory();
    let {lid} = useParams();
@@ -29,11 +30,28 @@ export default function HostLanding() {
    const utype = "host";
    React.useEffect(() => {
        socket.emit('join', {uid, lid});
+       setIsPlaying(true);
      }, []);
      async function skipSong(){
-         //need to post this with unique id of the listening party as query parameter
+
          const response = await axios.post("http://localhost:5000/skip/song")
      }
+
+     async function pauseSong(){
+
+        //if music is playing, pause it
+        if(is_playing){
+            const response_pause = await axios.post("http://localhost:5000/pause/playback");
+            setIsPlaying(false);
+            return;
+        }
+        //if music is paused, resume play
+        else{
+            const response_resume = await axios.post("http://localhost:5000/resume/playback");
+            setIsPlaying(true);
+            return;
+        }
+    }
      function handleSubmit(direction){
         if(direction === "queue"){
             history.push(`/queue${'/'}${utype}${'/'}${uid}${'/'}${lid}`, 
@@ -294,7 +312,7 @@ useEffect(() => {
                 </div>
                 <div id="player-actions">
                     <PlaySkipBackOutline class="p-action" color={'#00000'} title={"back"} height="25px" width="25px"/>
-                    <PauseOutline  class="p-action" color={'#00000'} title={"pause"} height="25px" width="25px"/>
+                    <PauseOutline onClick={() => pauseSong() }  class="p-action" color={'#00000'} title={"pause"} height="25px" width="25px"/>
                     <button name= 'skip' onClick={() => skipSong() } >
                     <PlaySkipForwardOutline  class="p-action" color={'#00000'} title={"forwards"} onClick={() => skipSong() } height="25px" width="25px"/>
                     </button>

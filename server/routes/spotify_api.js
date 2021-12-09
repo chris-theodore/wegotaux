@@ -38,7 +38,14 @@ module.exports = function(app){
     app.route('/get/party/playlist')
     .get(party_playlistAPI);
 
+    app.route('/pause/playback')
+    .post(pause_playbackAPI);
 
+    app.route('/resume/playback')
+    .post(resume_playbackAPI);
+
+    app.route('/previous/playback')
+    .post(previous_playbackAPI);
 
 
 }
@@ -81,31 +88,32 @@ async function searchAPI(request, response, next) {
         }
     };
 
-async function party_playlistAPI(request, response, next) {
-    try {
-        const song = await spotifyClient.party_playlistAPI();
-        console.log(song);
-        let result = {
-            id: song.id,
-            title: song.name,
-            artist: song.artists[0].name,
-            picUrl: song.album.images[1].url,
-            songType: song.album.album_type,
-            albumName: song.album.name,
-            releaseDate: song.album.release_date,
-            extUrl: song.external_urls,
-            songlength: song.duration_ms,
-        };
-        console.log(results);
-        response.json(results);
-    }
-    catch (error) {
-        console.log(error);
-        const err = new Error('Error: Check server --- one or more APIs are currently unavailable.');
-        err.status = 503;
-        next(err);
-    }
-};   
+    async function party_playlistAPI(request, response, next) {
+        try {
+            const song = await spotifyClient.party_playlistAPI();
+            console.log(song);
+            //response.json(song);
+            let result = {
+                id: song.track.id,
+                title: song.track.name,
+                artist: song.track.artists[0].name,
+                picUrl: song.track.album.images[1].url,
+                songType: song.track.album.album_type,
+                albumName: song.track.album.name,
+                releaseDate: song.track.album.release_date,
+                songlength: song.track.duration_ms,
+            };
+            //console.log(results);
+            response.json(result);
+        }
+        catch (error) {
+            console.log(error);
+            const err = new Error('Error: Check server --- one or more APIs are currently unavailable.');
+            err.status = 503;
+            next(err);
+        }
+    };   
+     
 
 async function deviceAPI(request, response, next) {
     try {
@@ -120,6 +128,45 @@ async function deviceAPI(request, response, next) {
     }
 };
 
+async function pause_playbackAPI(request, response, next) {
+    try {
+        console.log("we got the pause");
+        const results = await spotifyClient.pause_playbackAPI();
+        response.json(results);
+    }
+    catch (error) {
+        console.log(error);
+        const err = new Error('Error: Check server --- one or more APIs are currently unavailable.');
+        err.status = 503;
+        next(err);
+    }
+};
+async function resume_playbackAPI(request, response, next) {
+    try {
+        console.log("we got the resume playback");
+        const results = await spotifyClient.resume_playbackAPI();
+        response.json(results);
+    }
+    catch (error) {
+        console.log(error);
+        const err = new Error('Error: Check server --- one or more APIs are currently unavailable.');
+        err.status = 503;
+        next(err);
+    }
+};
+async function previous_playbackAPI(request, response, next) {
+    try {
+        console.log("we got the resume playback");
+        const results = await spotifyClient.previous_playbackAPI();
+        response.json(results);
+    }
+    catch (error) {
+        console.log(error);
+        const err = new Error('Error: Check server --- one or more APIs are currently unavailable.');
+        err.status = 503;
+        next(err);
+    }
+};
 async function start_playbackAPI(request, response, next) {
     try {
         //request.body.songs is an array of track uris that the 

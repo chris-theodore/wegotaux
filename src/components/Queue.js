@@ -125,76 +125,48 @@ async function getPlayback(){
     //IF THE SONG CHANGED, WE NEED TO CHANGE THE QUEUE FORM AND CALL UP THE VOTE
     async function bigBoyTime(){
         if (utype === "host"){
+
         //GET LISTENING PARTY PLAYLIST ID
         const param = {
             id: lid
         };
         const parameters = `?${querystring.stringify(param)}`;
-        //console.log("test in refresh function");
-        //console.log(parameters);
         const urlWithParameters = `${'http://localhost:5000/db/read/listening_party'}${parameters}`;
         const response = await axios.get(urlWithParameters);
-        // //console.log(response.data);
         let playlist_id = response.data.playlist_id;
+
+        //ADD RANDOM SONG TO VOTING BLOCK IF VOTING BLOCK IS ABOUT TO BE EMPTY
+        if (block_data.length ===1){
+            const getRandomSong = `${'http://localhost:5000/get/party/playlist'}`;
+            const chosenSong = await axios.get(getRandomSong);
+            console.log("accessing randomly selected song data");
+            console.log(chosenSong);
+            if(chosenSong){
+                const test = await addSongToBlock(chosenSong.id, chosenSong.picUrl, chosenSong.title);
+            }
+        }
+
         //REMOVE QUEUE SONG FROM DB
         const urlSongDelete = `${'http://localhost:5000/db/delete/song'}${parameters}`;
         console.log(urlSongDelete);
         const deleteSong = await axios.get(urlSongDelete);
-        console.log(deleteSong);
-        //GET SONG OFF VOTING BLOCK
-        //console.log("block check")
-        if (block_data.length == 0){
-            const urlWithParameters = `${'http://localhost:5000/get/party/playlist'}`;
-            const response = await axios.get(urlWithParameters);
-            console.log(response);
-
         
-
-            let parameterDB = {
-                lid: lid,
-                sid: response.id,
-                img: response.album.images[1].url,
-                title: response.name,
-                is_removed: 0,
-                on_queue: 0
-            };
-            const parameters = `?${querystring.stringify(parameterDB)}`;
-            const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
-            const dbresponse = await axios.get(dbSend);
-
-
-            let parameterDB2 = {
-                fname: uid,
-                uid: lid,
-                vote: 0,
-                sid: response.id
-            };
-            const parameters2 = `?${querystring.stringify(parameterDB2)}`;
-            const dbSend2 = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters2}`
-            const dbresponse2 = await axios.get(dbSend2);
-            //add song to voting block 
-            alert("queue is empty! We added a random song for you!")
-            setNewSong(false);
-            return;
-        }
-        console.log("CLARARAAARARAARARA")
-        console.log(block_data);
-        console.log(block_data[0]);
-        // //console.log(block_data[0].uri);
+    
+      
+        //GET SONG OFF VOTING BLOCK AND TRANSFER TO QUEUE POSITION
         const blockparam = {
             sid: block_data[0].spotify_id,
             id: lid
         };
-        //console.log("BLOCK SONG ID");
-        //console.log(block_data[0].song_id);
+     
         const blockParameters = `?${querystring.stringify(blockparam)}`;
         const urlSongOffBlock = `${'http://localhost:5000/db/alter/song'}${blockParameters}`;
         const songOffBlock = await axios.get(urlSongOffBlock);
-        //console.log(songOffBlock)
-        //console.log("song changing in alter");       
+          
         setQueueName(block_data[0].title);
         setQueueImg(block_data[0].img);
-        //ADD SONG TO PLAYLIST HERE
+
+        //ADD SONG TO SPOTIFY PLAYLIST HERE
         const tempArray = []
         tempArray.push(block_data[0].spotify_id)
         let songs_formatted = []
@@ -202,19 +174,19 @@ async function getPlayback(){
             song: block_data[0].spotify_id
         }))
         let req_body = {songs: songs_formatted}
-        // //console.log(req_body);
         const urlOther = `${'http://localhost:5000/add/playlist?playlist_id='}${playlist_id}`;
         let addSong = await axios.post(urlOther, req_body);
-        //console.log("adding to queue")
-                //ADD SONG TO QUEUE
-                const queueparam = {
-                    trackuri: block_data[0].spotify_id
-                };
-                const queueParameters = `?${querystring.stringify(queueparam)}`;
-                const urlQueue = `${'http://localhost:5000/add/queue'}${queueParameters}`;
-                const queueSong = await axios.post(urlQueue);
-                //console.log(queueSong);
+     
+        //ADD SONG TO SPOTIFY QUEUE
+        const queueparam = {
+            trackuri: block_data[0].spotify_id
+        };
+        const queueParameters = `?${querystring.stringify(queueparam)}`;
+        const urlQueue = `${'http://localhost:5000/add/queue'}${queueParameters}`;
+        const queueSong = await axios.post(urlQueue);
+     
         setQueueID(block_data[0].spotify_id);
+        //EMIT DATA CHANGE EVENT TO NON HOST USERS OF LISTENING PARTY
         socket.emit('queue change',{
             lid: lid,
             socketSong: block_data[0].spotify_id,
