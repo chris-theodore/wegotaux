@@ -1,24 +1,19 @@
 import React, {useState} from "react";
 import '../styles/Queue.css' // CSS imported
-import { ArrowBackCircleOutline, ArrowUpCircleOutline,ArrowDownCircleOutline, ReturnUpBackOutline } from 'react-ionicons'
+import { Trash, ArrowBackCircleOutline, ArrowUpCircleOutline,ArrowDownCircleOutline, ReturnUpBackOutline } from 'react-ionicons'
 import { useHistory, useParams, useLocation } from "react-router-dom";
-import {Form, Button} from "react-bootstrap";
+import {Form, Button, ResponsiveEmbed} from "react-bootstrap";
 
 import axios from "axios";
 import querystring from 'querystring';
 import * as io from 'socket.io-client';
+import { useEffect } from "react";
 const socket = io.connect(`http://localhost:5000`);
 
 // Search Code
 let songnameArray = [];
-let songIDArray = [];
-let songPicArray = [];
-
-let song1_img;
-let song2_img;
-let song1_name;
-let song2_name;
-
+let oldincoming = "";
+let incoming_songid = "";
 // HTML Zone 
 export default function Queue() {
     const location = useLocation();
@@ -30,152 +25,340 @@ export default function Queue() {
     const [artistsName, setArtistsTerm] = useState([]);
     const [block_data, setBlockData] = React.useState([]);
     const [errorMsg, setErrorMsg] = useState('');
+    const [queue_img, setQueueImg] = React.useState([]);
+    const [queue_name, setQueueName] = React.useState([]);
+    const [queue_id, setQueueID] = React.useState([]);
+    const [current_id, setCurrentID] = React.useState(null);
+    const [newSong, setNewSong] = React.useState(false);
     const history = useHistory();
     let {uid, lid} = useParams();
     let {utype} =useParams();
     React.useEffect(() => {
         socket.emit('queue room', lid);
-        console.log("upon init!!");
-        // console.log(location.state.song_id, location.state.song_pic, location.state.song_name)
-        // const interval = setInterval(() => {
-        //    refreshBlock2();
-        //   }, 1000);
-        if (utype === "listener"){
-            socket.on("receive qdata", (data) => {
-                console.log("receieved data");
-                console.log(data);
-                    });
-        } else {
-            song1_img = location.state.second.song_pic;
-            song1_name = location.state.second.song_name;
-            console.log(location.state.third);
-            getFirstSong(location.state.third.song_id, location.state.third.song_pic, location.state.third.song_name, location.state.third.custom_id);
-        }
+        //console.log("upon init!!");
+
+        //We want to see what song is playing at the start of opening the page to see if the song is about to change.
+        getPlaybackOnOpen();
+
+        const interval = setInterval(() => {
+            //This function refreshes the voting block every 3 seconds and updates the block_data state variable with the current voting block.
+            refreshBlock2();
+            //This function gets the current song playing and sets the incoming song id and currentID to that song.
+            getPlayback();
+           }, 3000);
         return () => {
             // clearInterval(interval);
             socket.emit('leave queue room', lid);
         }
       }, []);
-
+      socket.on("queue update", (data) => {
+        // console.log(data);
+        setQueueID(data.socketSong);
+        setQueueImg(data.socketImage);
+        setQueueName(data.socketName);
+            });
       socket.on("new song", (data) => {
-        console.log(data);
+        //console.log(data);
     });
-    // React.useEffect(()=>{
-    //     async function refreshBlock(){
-    //         console.log("in refresh function");
-    //         const param = {
-    //             id: lid
-    //         };
-    //         console.log(lid);
-    //         const parameters = `?${querystring.stringify(param)}`;
-    //         console.log("test in refresh function");
-    //         console.log(parameters);
-    //         const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
-    //         const response = await axios.get(urlWithParameters);
-    //         console.log(response.data);
-    //         let block_data_dummy = [];
-    //         response.data.forEach(song =>{
-    //             block_data_dummy.push({
-    //                 title: song.title,
-    //                 img: song.img, 
-    //                 uri: song.spotify_uid,
-    //                 vote_total: song.total_votes,
-    //                 custom_id: song.song_id
-    //             })
-    //         });
-    //         setBlockData(block_data_dummy);
-    //         console.log(block_data);
+    React.useEffect(()=>{
+        async function refreshBlock(){
+            //console.log("in refresh function");
+            const param = {
+                id: lid
+            };
+            //console.log(lid);
+            const parameters = `?${querystring.stringify(param)}`;
+            //console.log("test in refresh function");
+            //console.log(parameters);
+            const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
+            const response = await axios.get(urlWithParameters);
+            const lengthvar = response.data.length -1;
+            if(response.data[lengthvar].total_votes <= -5 && response.data.length > 1){
+                //delete song if threshold is met.
+                handleDelete(lid, response.data[lengthvar].spotify_id)
+            }
+            console.log("RESPONSE DATA 1")
+            console.log(response.data)
+            setBlockData(response.data);
+            console.log("Init refresh")
+            console.log(block_data);
             
-    //     };
-    //     refreshBlock();
-    // }, []);
-   
-    async function refreshBlock2(){
-        console.log("in refresh function");
+        };
+        refreshBlock();
+    }, []);
+//    PLAYBACK LISTENER FUNCTION
+useEffect(() => {
+    if(newSong){
+    bigBoyTime();
+    }
+},[newSong]);
+
+async function getPlaybackOnOpen(){
+    const response = await axios.get("http://localhost:5000/currently/playing");
+    //console.log("ID CHECK");
+    oldincoming = response.data.item.id;
+    //console.log(oldincoming);
+}
+
+async function getPlayback(){
+    const response = await axios.get("http://localhost:5000/currently/playing");
+    incoming_songid = response.data.item.id; 
+    //console.log(incoming_songid)
+    setCurrentID(response.data.item.id)
+    // //console.log("ALL BLOCK DATA")
+    // //console.log(block_data)
+    // //console.log("BLOCK DATA 0")
+    // //console.log(block_data[0].uri);
+    socket.emit('song change', {
+        lid: lid,
+        socketSong: incoming_songid,
+        socketImage: response.data.item.album.images[1].url,
+        socketName: response.data.item.name
+    })
+    //This is when a song change occurs and the old song does not match the new song. 
+    if(incoming_songid !== oldincoming){
+        oldincoming = incoming_songid;
+        setNewSong(true);
+        socket.emit('big boy time', {
+            lid: lid,
+            queue_id: queue_id,
+            block_data: block_data
+        });
+    }
+  
+}
+    //IF THE SONG CHANGED, WE NEED TO CHANGE THE QUEUE FORM AND CALL UP THE VOTE
+    async function bigBoyTime(){
+        if (utype === "host"){
+        //GET LISTENING PARTY PLAYLIST ID
         const param = {
             id: lid
         };
-        console.log(lid);
         const parameters = `?${querystring.stringify(param)}`;
-        console.log("test in refresh function");
-        console.log(parameters);
+        //console.log("test in refresh function");
+        //console.log(parameters);
+        const urlWithParameters = `${'http://localhost:5000/db/read/listening_party'}${parameters}`;
+        const response = await axios.get(urlWithParameters);
+        // //console.log(response.data);
+        let playlist_id = response.data.playlist_id;
+        //REMOVE QUEUE SONG FROM DB
+        const urlSongDelete = `${'http://localhost:5000/db/delete/song'}${parameters}`;
+        console.log(urlSongDelete);
+        const deleteSong = await axios.get(urlSongDelete);
+        console.log(deleteSong);
+        //GET SONG OFF VOTING BLOCK
+        //console.log("block check")
+        if (block_data.length ===1){
+            const getRandomSong = `${'http://localhost:5000/get/party/playlist'}`;
+            const chosenSong = await axios.get(getRandomSong);
+            console.log("accessing randomly selected song data");
+            console.log(chosenSong);
+            if(chosenSong){
+                const test = await addSongToBlock(chosenSong.data.id, chosenSong.data.picUrl, chosenSong.data.title);
+            }
+        }
+        console.log("CLARARAAARARAARARA")
+        console.log(block_data);
+        console.log(block_data[0]);
+        // //console.log(block_data[0].uri);
+        const blockparam = {
+            sid: block_data[0].spotify_id,
+            id: lid
+        };
+        //console.log("BLOCK SONG ID");
+        //console.log(block_data[0].song_id);
+        const blockParameters = `?${querystring.stringify(blockparam)}`;
+        const urlSongOffBlock = `${'http://localhost:5000/db/alter/song'}${blockParameters}`;
+        const songOffBlock = await axios.get(urlSongOffBlock);
+        //console.log(songOffBlock)
+        //console.log("song changing in alter");       
+        setQueueName(block_data[0].title);
+        setQueueImg(block_data[0].img);
+        //ADD SONG TO PLAYLIST HERE
+        const tempArray = []
+        tempArray.push(block_data[0].spotify_id)
+        let songs_formatted = []
+        tempArray.forEach(id => songs_formatted.push({
+            song: block_data[0].spotify_id
+        }))
+        let req_body = {songs: songs_formatted}
+        // //console.log(req_body);
+        const urlOther = `${'http://localhost:5000/add/playlist?playlist_id='}${playlist_id}`;
+        let addSong = await axios.post(urlOther, req_body);
+        //console.log("adding to queue")
+                //ADD SONG TO QUEUE
+                const queueparam = {
+                    trackuri: block_data[0].spotify_id
+                };
+                const queueParameters = `?${querystring.stringify(queueparam)}`;
+                const urlQueue = `${'http://localhost:5000/add/queue'}${queueParameters}`;
+                const queueSong = await axios.post(urlQueue);
+                //console.log(queueSong);
+        setQueueID(block_data[0].spotify_id);
+        socket.emit('queue change',{
+            lid: lid,
+            socketSong: block_data[0].spotify_id,
+            socketImage: block_data[0].img,
+            socketName: block_data[0].title
+        })
+        // refreshQueue();
+    }
+    setNewSong(false);
+}
+    async function refreshBlock2(){
+        //console.log("in refresh function");
+        const param = {
+            id: lid
+        };
+        // //console.log(lid);
+        const parameters = `?${querystring.stringify(param)}`;
+        // //console.log("test in refresh function");
+        // //console.log(parameters);
         const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
         const response = await axios.get(urlWithParameters);
+        const lengthvar = response.data.length-1
+        if(response.data[lengthvar].total_votes <= -5 && response.data.length > 1){
+            //delete song if threshold is met.
+            handleDelete(lid, response.data[lengthvar].spotify_id)
+        }
+        console.log("RESPONSE DATA 2")
         console.log(response.data);
-        let block_data_dummy = [];
-        response.data.forEach(song =>{
-            console.log("in loop!");
-            console.log(song);
-            block_data_dummy.push({
-                title: song.title,
-                img: song.img, 
-                uri: song.spotify_uid,
-                vote_total: song.total_votes,
-                custom_id: song.song_id
-            })
-        });
-        setBlockData(block_data_dummy);
+        setBlockData(response.data);
+        console.log("Constant refresh")
         console.log(block_data);
         
 
     };
+    React.useEffect(()=>{
+    async function refreshQueue(){
+        //console.log("in queue");
+        const param = {
+            id: lid
+        };
+        // //console.log(lid);
+        const parameters = `?${querystring.stringify(param)}`;
+        // //console.log("test in refresh function");
+        // //console.log(parameters);
+        const urlWithParameters = `${'http://localhost:5000/db/read/queue'}${parameters}`;
+        const response = await axios.get(urlWithParameters);
+        //console.log("READ QUEUE");
+        //console.log(response.data);
+        // setCurrentID(response.data.spotify_id)
+        setQueueImg(response.data.img);
+        setQueueName(response.data.title);
+        setQueueID(response.data.spotify_id);
+    };
+    refreshQueue();
+}, []);
+
+    async function refreshQueue(){
+        //console.log("in queue");
+        const param = {
+            id: lid
+        };
+        // //console.log(lid);
+        const parameters = `?${querystring.stringify(param)}`;
+        // //console.log("test in refresh function");
+        // //console.log(parameters);
+        const urlWithParameters = `${'http://localhost:5000/db/read/queue'}${parameters}`;
+        const response = await axios.get(urlWithParameters);
+        //console.log("READ QUEUE");
+        //console.log(response.data);
+        // setCurrentID(response.data.spotify_id)
+        setQueueImg(response.data.img);
+        setQueueName(response.data.title);
+        setQueueID(response.data.spotify_id);
+    };
 
     async function getSong(song,artist){
+        console.log("made it here from search button")
         const parameterSong = {
             track: song,
         };
+        console.log("the songs from search api", song);
         const parameters = `?${querystring.stringify(parameterSong)}`;
         const urlWithParameters = `${'http://localhost:5000/song/search'}${parameters}`;
         const response = await axios.get(urlWithParameters);
         if (setData != []) {
             setData([])
         }
+        console.log("maybe", response.data);
+    
+
+
         setData(response.data);
         socket.emit("new song", {data: response.data, id: lid});
-        console.log(setData);
+        console.log("the songs from search api", dataB);
     }
+    // React.useEffect(()=>{
+    //     async function readFirstSong(){
+    //         //console.log("song on block");
+    //         const param = {
+    //             id: lid
+    //         };
+    //         // //console.log(lid);
+    //         const parameters = `?${querystring.stringify(param)}`;
+    //         // //console.log("test in refresh function");
+    //         // //console.log(parameters);
+    //         const urlWithParameters = `${'http://localhost:5000/db/read/first_block'}${parameters}`;
+    //         const response = await axios.get(urlWithParameters);
 
-    async function getFirstSong(song_uri,song_img, song_title, custom_id){
-        if (songnameArray.length == 0){
-            console.log("This is the first song being added")
-            console.log(song_img);
-            let dummyArray = []
-            dummyArray.push({
-                title: song_title,
-                img: song_img, 
-                uri: song_uri,
-                vote_total: 0,
-                custom_id : custom_id
-            })
-            let parameterDB2 = {
-                fname: uid,
-                uid: lid,
-                vote: 0,
-                sid: custom_id
-            };
-            const parameters2 = `?${querystring.stringify(parameterDB2)}`;
-            const dbSend2 = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters2}`
-            const dbresponse2 = await axios.get(dbSend2);
-            setBlockData(dummyArray);
-            const tempArray = []
-            tempArray.push(song_uri)
-            let songs_formatted = []
-            tempArray.forEach(id => songs_formatted.push({
-                song: song_uri
-            }))
-            setSongsTerm([]);
-            setData([]);
-        }else{
-            return;
-        }
-    }
+    //         dummyArray.push({
+    //             title: response.data.title,
+    //             img: response.data.img,
+    //             uri: response.data.spotify_id,
+    //             vote_total: 0,
+    //             custom_id : response.data.song_id
+    //         })
+    //         setBlockData(dummyArray);
+    //     };
+    //     readFirstSong();
+    // }, []);
+    // async function getFirstSong(song_uri,song_img, song_title, custom_id){
+    //     if (songnameArray.length == 0){
+    //         //console.log("This is the first song being added")
+    //         //console.log(song_img);
+    //         let dummyArray = []
+    //         dummyArray.push({
+    //             title: song_title,
+    //             img: song_img, 
+    //             uri: song_uri,
+    //             vote_total: 0,
+    //             custom_id : custom_id
+    //         })
+    //         let parameterDB2 = {
+    //             fname: uid,
+    //             uid: lid,
+    //             vote: 0,
+    //             sid: custom_id
+    //         };
+    //         const parameters2 = `?${querystring.stringify(parameterDB2)}`;
+    //         const dbSend2 = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters2}`
+    //         const dbresponse2 = await axios.get(dbSend2);
+    //         setBlockData(dummyArray);
+    //         const tempArray = []
+    //         tempArray.push(song_uri)
+    //         let songs_formatted = []
+    //         tempArray.forEach(id => songs_formatted.push({
+    //             song: song_uri
+    //         }))
+    //         setSongsTerm([]);
+    //         setData([]);
+    //     }else{
+    //         return;
+    //     }
+    // }
     async function addSongToBlock(song_uri, song_img, song_title){
+        console.log("calling from add me");
         
         let parameterDB = {
             lid: lid,
             sid: song_uri,
             img: song_img,
-            title: song_title
+            title: song_title,
+            is_removed: 0,
+            on_queue: 0
+
         };
         const parameters = `?${querystring.stringify(parameterDB)}`;
         const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
@@ -210,6 +393,7 @@ export default function Queue() {
 
         setSongsTerm([]);
         setData([]);
+        console.log("check if song was added", block_data);
     }
 
     function handlePageChange(direction){
@@ -237,11 +421,24 @@ export default function Queue() {
         const parameters_modify = `?${querystring.stringify(parameterDB_modify)}`;
         const dbSend2 = `${'http://localhost:5000/'}${'db/change/vote'}${parameters_modify}`;
         const dbresponse2 = await axios.get(dbSend2);
-        console.log(dbresponse2);
+        //console.log(dbresponse2);
         const test = await refreshBlock2();
 
     }
+    async function handleDelete(lid, spotify_id) {
+        let parameterDB;
+        //check if voting record exists
+        
+        let parameterDB_delete = {
+            id: lid,
+            songid: spotify_id
+        };
 
+        const parameters_delete= `?${querystring.stringify(parameterDB_delete)}`;
+        const dbSend2 = `${'http://localhost:5000/'}${'db/delete/song_vote'}${parameters_delete}`;
+        //console.log(dbSend2);
+        const dbresponse2 = await axios.get(dbSend2);
+    }
     async function handleVote(direction, uri, custom_id) {
         let parameterDB;
         //check if voting record exists
@@ -254,9 +451,9 @@ export default function Queue() {
     
         const parameters_lookup = `?${querystring.stringify(parameterDB_lookup)}`;
         const dbSend2 = `${'http://localhost:5000/'}${'db/voterecord/lookup'}${parameters_lookup}`;
-        console.log(dbSend2);
+        //console.log(dbSend2);
         const dbresponse2 = await axios.get(dbSend2);
-        console.log(dbresponse2.data);
+        //console.log(dbresponse2.data);
         if(dbresponse2.data.exists === 1){
             updateExistingVote(uid, lid, custom_id, direction);
             return;
@@ -265,7 +462,7 @@ export default function Queue() {
             if(direction === "up"){
                 // use react useState hook to increment votes and push to db
                 // make sure to connect to the given song can use dom stuff to retrieve song name/id
-                console.log("vote +1");
+                //console.log("vote +1");
                 parameterDB = {
                     fname: uid,
                     uid: lid,
@@ -277,7 +474,7 @@ export default function Queue() {
             else if(direction === "down"){
                 // use react useState hook to decrement votes and push to db 
                 // make sure to connect to the given song can use dom stuff to retrieve song name/id
-                console.log("vote -1");
+                //console.log("vote -1");
                 parameterDB = {
                     fname: uid,
                     uid: lid,
@@ -287,10 +484,10 @@ export default function Queue() {
             }
         }
         
-        console.log("in helper");
-        console.log(lid);
+        //console.log("in helper");
+        //console.log(lid);
         const parameters = `?${querystring.stringify(parameterDB)}`;
-        console.log(parameters)
+        //console.log(parameters)
         const dbSend = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters}`
         const dbresponse = await axios.get(dbSend);
         const test = await refreshBlock2();
@@ -316,18 +513,24 @@ export default function Queue() {
   </div>
            <div id="song-view">
                <div class="song-card">
-                    <img class="sc-album-art" src={song1_img}/>
-                    <p>{song1_name}</p>
+                    <img class="sc-album-art" src={queue_img}/>
+                    <p>{queue_name}</p>
                </div>
-               <div class="song-card">
-                    <img class="sc-album-art" src={song2_img}/>
-                    <p>{song2_name}</p>
-               </div>
+               <p>Next on the Queue!</p>
            </div>
+
            <React.Fragment>
-            <ul>
+            <ul id="q-list">
                 {
-                dataB.map(data => <div class="vote-card" key = {data.id}> <img src={data.picUrl} alt="Album Cover"/> Song Name: {data.title} {"\n"} Artist: {data.artist} <Button onClick={()=>addSongToBlock(data.id, data.picUrl, data.title)}> Add me! </Button></div>)
+                dataB.map(data => 
+                <li class="vote-card" key = {data.id}> 
+                    <img class ="q-image" src={data.picUrl} alt="Album Cover"/> 
+                    <div class="song-data">
+                        <p class ="title" > {data.title}</p>
+                        <p class="artist">By: {data.artist}</p>
+                    </div>
+                    <button class="AddMe" onClick={()=>addSongToBlock(data.id, data.picUrl, data.title)}> Add me! </button>
+                </li>)
 }     
             </ul>
             </React.Fragment>
@@ -335,22 +538,37 @@ export default function Queue() {
             <React.Fragment>
             <div id="polls">
             {block_data.map((data, index) => {
+                if(utype === "host"){
+                    return <div key={index}>
+                        <img class="voter-album-art" src={data.img}/>
+                            <p>{data.title}</p>
+                            <div class="vote-tools">
+                                <ArrowUpCircleOutline onClick={() => handleVote("up", data.spotify_uid, data.spotify_id)} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
+                                <ArrowDownCircleOutline onClick={() => handleVote("down", data.spotify_uid, data.spotify_id)} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
+                                <Trash onClick={() => handleDelete(lid, data.spotify_id)} color={'#00000'}  title={"trash"} height="25px" width="25px"/>
+                            </div>
+                        <div>
+                            <p>total: {data.total_votes}</p>
+                        </div> 
+                        </div>   
+                                                }else{
               return <div key={index}>
                         <img class="voter-album-art" src={data.img}/>
                             <p>{data.title}</p>
                             <div class="vote-tools">
-                                <ArrowUpCircleOutline onClick={() => handleVote("up", data.uri, data.custom_id)} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
-                                <ArrowDownCircleOutline onClick={() => handleVote("down", data.uri, data.custom_id)} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
+                                <ArrowUpCircleOutline onClick={() => handleVote("up", data.spotify_uid, data.spotify_id)} color={'#00000'}  title={"upvote"} height="25px" width="25px"/>
+                                <ArrowDownCircleOutline onClick={() => handleVote("down", data.spotify_uid, data.spotify_id)} color={'#00000'}  title={"downvote"} height="25px" width="25px"/>
                             </div>
                         <div>
-                            <p>total: {data.vote_total}</p>
+                            <p>total: {data.total_votes}</p>
                         </div> 
                         </div>
-            })}
+}})}
           </div>
           </React.Fragment>
 
         </section>
     );
 }
+
 

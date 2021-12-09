@@ -15,7 +15,6 @@ const socket = io.connect(`http://localhost:5000`);
 export default function ListenerLanding() {
     const [currentImage, setCurrentImage] = React.useState(null);
     const [currentSongID, setCurrentSong] = React.useState(null);
-    const [songLength, setSongLength] = React.useState(0);
     const [currentSongName, setCurrentName] = React.useState(null);
     const location = useLocation();
     const history = useHistory();
@@ -24,22 +23,20 @@ export default function ListenerLanding() {
     const utype = "listener";
     React.useEffect(() => {
         socket.emit('join', {uid, lid});
-        
       }, []);
     socket.on("user kick", (data) => {
         handleUserLeave();
     });
-    socket.on("receive code", (data) => {
+    socket.on("song update", (data) => {
             // console.log(data);
             setCurrentImage(data.socketImage);
             setCurrentSong(data.socketSong);
             setCurrentName(data.socketName);
-            setSongLength(data.socketLength);
                 });
     function handleSubmit(direction){
         if(direction === "queue"){
             // console.log(location.state.path_name)
-            history.push(`/queue${'/'}${utype}${'/'}${lid}`);
+            history.push(`/queue${'/'}${utype}${'/'}${uid}${'/'}${lid}`);
         } else if(direction === "listeners"){
             history.push(`/listeners${'/'}${lid}`, {utype: "listener"});
         } else if(direction === "/details"){
@@ -105,10 +102,10 @@ export default function ListenerLanding() {
                     <PeopleOutline color={'#00000'} title={"view-listeners"} height="25px" width="25px"/>
                     <p>Listeners</p>
                 </div>
-                <div class="u-action" onClick={() => handleSubmit("details")}>
+                {/* <div class="u-action" onClick={() => handleSubmit("details")}>
                     <InformationCircleOutline color={'#00000'}  title={"party-details"} height="25px" width="25px"/>                    
                     <p>Party Details</p>
-                </div>
+                </div> */}
                 <div class="u-action" onClick={() => handleUserLeave()}>
                 <ExitOutline color={'#00000'}  title={"exit"} height="25px" width="25px"
 />

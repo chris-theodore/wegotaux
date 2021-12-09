@@ -1,10 +1,13 @@
-#host-landing {
-    height: 100vh;
-    width: 100%;
+.code {
+    height: fit-content;
+    width: fit-content;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    border: 2px solid black;
+    padding: 20px;
+    border-radius:  10px;
 }
 
 form {
@@ -13,7 +16,7 @@ form {
     align-items: center;
     justify-content: center;
 }
-#id-input{
+.idInput{
     width: 10em;
     padding: 10px;
     margin-bottom: 10px;
@@ -28,7 +31,7 @@ form {
     border: 1px solid black;
 }
 
-.join-buttons {
+.joinButtons {
     text-decoration: none;
 
     border: 1px solid black;
@@ -42,7 +45,7 @@ form {
     background: none;
 }
 
-.join-buttons:hover{
+.joinButtons:hover{
     cursor: pointer;
     border: 1px solid rgba(0, 0, 255, .5);
     box-shadow: 0 0 10px 0 #3498db inset, 0 0 10px 4px #3498db;

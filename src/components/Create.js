@@ -5,7 +5,7 @@ import {Button} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import querystring from "query-string";
-import '../styles/Create.css' // CSS imported
+import styles from '../styles/Create.module.css' // CSS imported
 
 // Javascript Zone
 
@@ -53,6 +53,13 @@ export default function Create() {
             playlistname: values.party_name,
             id: codeB.code
         };
+        const userCreateDB = {
+            fname: values.party_host_name,
+            utype: "host",
+            uid: codeB.code
+        };
+        const userParameters = `?${querystring.stringify(userCreateDB)}`;
+        const userdbSend = `${'http://localhost:5000/'}${'db/create/user'}${userParameters}`
         console.log('in send');
         const parameters = `?${querystring.stringify(parameterDB)}`;
         console.log(parameters)
@@ -60,6 +67,7 @@ export default function Create() {
         const dbSend = `${'http://localhost:5000/'}${'db/create/party'}${parameters}`
         const response = await axios.get(urlWithParameters);
         const dbresponse = await axios.get(dbSend);
+        const userdbresponse = await axios.get(userdbSend);
         console.log(response);
         console.log(dbresponse);
     }
@@ -94,25 +102,42 @@ export default function Create() {
         }
     if (!codeB) return "No chris!"
     if (!deviceB) return "No devices!"
+    console.log("deviceB", deviceB)
     return (
-        <section id="create">
-            <h1>Party Code: {codeB.code}</h1>
+        
+        <section className={styles.create}>
+            <div className={styles.back}>
+                <button className={styles.createPageButtons} onClick={history.goBack}>Go Back</button>
+            </div>
+            
+            <p className={styles.deviceListHeader}> Select a device from the list below to use to play your music</p>
             <React.Fragment>
-            <ul>
-                {deviceB.map(data => <li key = {data.id}> Device Name: {data.name} <Button id="device-button" onClick={()=>sendDevice(codeB.code, data.id, data.name)}> Use me! </Button></li>)}
+            <ul className={styles.deviceList}> 
+                {deviceB.map(data => <li className={styles.device} key = {data.id}><p>{data.name}</p><button className={styles.createPageButtons} onClick={()=>sendDevice(codeB.code, data.id, data.name)}> Use me! </button></li>)}
             </ul>
             </React.Fragment>
             <h1 id="device-selected"> Device Selected: {deviceName}</h1>
-                <form onSubmit={handlePartySubmit}>
-                    <label htmlFor="party-name-input"></label>
-                <input id="party-name-input" required value={values.party_name} onChange={set('party_name')} placeholder="Enter Party Name..."/>
-                <label htmlFor="party-host-input"></label>
-                <input id="party-host-input" type="text" required value={values.party_host_name} onChange={set('party_host_name')} placeholder="Enter Host Name..."/>
-                <button onClick={sendPlaylist} type="submit" class="start-button glow-on-hover">Let's Start The Party</button>
-                </form>
-                {/* <button onClick={getCode()}>Test</button> */}
-                {/* <a class="sign-in-button change-on-hover" href="http://localhost:5000/create/party"> Code</a> */}
-                <button onClick={history.goBack}>Go Back</button>
+            <form className={styles.createForm} onSubmit={handlePartySubmit}>
+
+                    <div className={styles.formRow}>
+                        <input className={styles.formInput} required value={values.party_name} onChange={set('party_name')} placeholder="Enter Party Name..."/>
+                    </div>
+
+                    <div className={styles.formRow}>
+                        <input className={styles.formInput} required value={values.party_host_name} onChange={set('party_host_name')} placeholder="Enter Host Name..."/>
+                    </div>
+                
+                    <div className={styles.formRow}>
+                        <h1>Party Code: {codeB.code}</h1>
+                    </div>
+
+                    <div className={styles.formRow}>
+                        <button className={styles.createPageButtons} onClick={sendPlaylist} type="submit">Let's Start The Party</button>
+                    </div>
+            </form>
+            {/* <button onClick={getCode()}>Test</button> */}
+            {/* <a class="sign-in-button change-on-hover" href="http://localhost:5000/create/party"> Code</a> */}
+                
         </section>
     );
 }

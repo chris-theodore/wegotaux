@@ -1,18 +1,26 @@
 #queue{
-    height: 100vh;
+    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow-y: scroll;
+    padding: 15px;
 } 
 
 #header {
     display: flex;
+    padding: 15px;
+   
 }
 
 #header:hover {
     cursor: pointer;
+}
+
+.search-box {
+    padding: 15px;
 }
 input[type=text] {
   width: 130px;
@@ -71,21 +79,37 @@ input[type=text]:focus {
 }
 
 #polls {
+    max-height: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+
+#q-list {
+    padding: 0;
+    width: 45%;
+}
+
+.AddMe {
+    height: max-content;
+    height: 100px;
+    width: 100px;
 }
 
 .vote-card {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 5px;
-    width: 100%;
-    height: 30px;
-    padding: 10px;
+    height: 100px;
     margin-bottom: 10px;
+    padding: 10px;
+
 }
 
 .voter-album-art {
@@ -95,4 +119,10 @@ input[type=text]:focus {
 
 .vote-tools:hover{
     cursor: pointer;
+}
+
+.song-data {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
 }

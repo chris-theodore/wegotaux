@@ -7,7 +7,7 @@ body {
 	font-family: spotify-circular,Helvetica Neue,Helvetica,Arial,Hiragino Kaku Gothic Pro,Meiryo,MS Gothic,sans-serif;
 }
 
-ul {
+.list {
     display: grid; 
     grid-auto-columns: 1fr; 
     grid-auto-rows: 1fr; 

@@ -5,7 +5,7 @@ import {Button} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import querystring from "query-string";
-import { ArrowBackCircleOutline} from 'react-ionicons'
+import { ArrowBackCircleOutline, Exit} from 'react-ionicons'
 import '../styles/Listeners.css' // CSS imported
 
 // Javascript Zone
@@ -19,7 +19,7 @@ export default function Listeners() {
     
     async function getUsers2(){
         const parameterDB = {
-            id: lid
+            id: parseInt(lid)
         };
         const parameters = `?${querystring.stringify(parameterDB)}`;
         console.log(parameters)
@@ -33,7 +33,11 @@ export default function Listeners() {
             history.goBack();
     }
 }
-    async function kickUser(uid, lid){
+    async function kickUser(uid, lid, utype){
+        if(utype == "host"){
+            alert("You can't kick yourself!")
+            return;
+        }
         const parameterDB = {
             fname: uid,
             id: lid
@@ -49,7 +53,7 @@ export default function Listeners() {
         
         async function getUsers(){
             const parameterDB = {
-                id: lid
+                id: parseInt(lid)
             };
             const parameters = `?${querystring.stringify(parameterDB)}`;
             console.log(parameters)
@@ -76,9 +80,9 @@ export default function Listeners() {
                 </h1>
                 {users.map(user => {
                     if(location.state.utype !== "host"){
-  return <h2 key={user.id}>{user.fun_name}</h2>
+  return <h2 key={user.id}>{user.fun_name} ({user.user_type})</h2>
                 }else {
-                    return <h2 key={user.id}>{user.fun_name}<Button onClick={()=>kickUser(user.fun_name, user.id)}> Kick User! </Button></h2>
+                    return <h2 key={user.id}>{user.fun_name} ({user.user_type}) <Button onClick={()=>kickUser(user.fun_name, user.id, user.user_type)}> Kick User! </Button></h2>
                 }})}
         </section>
     );
