@@ -86,7 +86,7 @@ export default function HostSongSelect() {
             song: id
         }))
         let req_body = {songs: songs_formatted}
- 
+
         const urlWithParams = `${'http://localhost:5000/start/playback?device_id='}${Create.deviceID}`;
         let data = await axios.post(urlWithParams,req_body);
          
