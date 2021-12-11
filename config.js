@@ -6,13 +6,13 @@ config = {
     database: "heroku_41a437d65392f6c",
     password: "8ed2ec7b"
 }
-var connection =mysql.createConnection(config);
-connection.connect(function(err){
-  if (err){
-    console.log('error connecting:' + err.stack);
-  }
-  console.log('connected successfully to DB.');
-});
+// var connection =mysql.createConnection(config);
+// connection.connect(function(err){
+//   if (err){
+//     console.log('error connecting:' + err.stack);
+//   }
+//   console.log('connected successfully to DB.');
+// });
 
 function handleDisconnect() {
   connection = mysql.createConnection(config); // Recreate the connection, since
@@ -44,13 +44,13 @@ handleDisconnect();
 //     password: "8ed2ec7b"
 //   });
   
-  connection.connect(function(err) {
-  if (err) {
-    console.error('Error connecting: ' + err.stack);
-    return;
-  }
-  console.log('MySql connected');
-  });
+  // connection.connect(function(err) {
+  // if (err) {
+  //   console.error('Error connecting: ' + err.stack);
+  //   return;
+  // }
+  // console.log('MySql connected');
+  // });
 
 module.exports ={
      connection : mysql.createConnection(config) 
