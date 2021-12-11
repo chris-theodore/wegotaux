@@ -17,7 +17,7 @@ const {Server}= require("socket.io");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "wegotaux.netlify.app",
+    origin: "https://wegotaux.netlify.app",
     methods: ["GET", "POST"]
   }
 });
