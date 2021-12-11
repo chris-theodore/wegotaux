@@ -17,7 +17,7 @@ const {Server}= require("socket.io");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "wegotaux.netlify.app",
     methods: ["GET", "POST"]
   }
 });
@@ -149,7 +149,7 @@ app.get('/auth/spotify',
 app.get('/auth/spotify/redirect',
   passport.authenticate('spotify'),
   function (req, res) {
-      res.redirect('http://localhost:3000/create');
+      res.redirect('wegotaux.netlify.app');
   }
 );
 
