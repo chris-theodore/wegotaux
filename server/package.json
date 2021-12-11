@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "engines": {
+    "node": "16.13.0",
+    "npm": "8.1.0"
+  },
   "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,8 +29,6 @@
     "qs": "^6.10.1",
     "querystring": "^0.2.1",
     "socket.io": "^4.4.0",
-    "uuid": "^8.3.2",
-    "node": "16.13.0",
-    "npm": "8.1.0"
+    "uuid": "^8.3.2"
   }
 }
