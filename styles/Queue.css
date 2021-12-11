@@ -1,0 +1,128 @@
+#queue{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-y: scroll;
+    padding: 15px;
+} 
+
+#header {
+    display: flex;
+    padding: 15px;
+   
+}
+
+#header:hover {
+    cursor: pointer;
+}
+
+.search-box {
+    padding: 15px;
+}
+input[type=text] {
+  width: 130px;
+  -webkit-transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease-in-out;
+}
+
+/* When the input field gets focus, change its width to 100% */
+input[type=text]:focus {
+  width: 100%;
+}
+#q-song {
+    text-decoration: none;
+
+    border: 1px solid black;
+    border-radius: 10px;
+
+    padding: 10px;
+    width: 12em;
+    margin-bottom: 10px;
+    
+    color: black;
+    background: none;
+}
+
+#q-song:hover{
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 255, .5);
+    box-shadow: 0 0 10px 0 #3498db inset, 0 0 10px 4px #3498db;
+}
+
+#song-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.song-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px;
+    width: 100%;
+    border: 1px solid black;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.sc-album-art {
+    height: 50px;
+    width: 50px;
+}
+
+#polls {
+    max-height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+
+#q-list {
+    padding: 0;
+    width: 45%;
+}
+
+.AddMe {
+    height: max-content;
+    height: 100px;
+    width: 100px;
+}
+
+.vote-card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100px;
+    margin-bottom: 10px;
+    padding: 10px;
+
+}
+
+.voter-album-art {
+    height: 60px;
+    width: 60px;
+}
+
+.vote-tools:hover{
+    cursor: pointer;
+}
+
+.song-data {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+}

@@ -1,0 +1,52 @@
+.code {
+    height: fit-content;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid black;
+    padding: 20px;
+    border-radius:  10px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.idInput{
+    width: 10em;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid black;  
+}
+#party-name-input {
+    width: 10em;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid black;
+}
+
+.joinButtons {
+    text-decoration: none;
+
+    border: 1px solid black;
+    border-radius: 10px;
+
+    padding: 10px;
+    width: 12em;
+    margin-bottom: 10px;
+    
+    color: black;
+    background: none;
+}
+
+.joinButtons:hover{
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 255, .5);
+    box-shadow: 0 0 10px 0 #3498db inset, 0 0 10px 4px #3498db;
+}
