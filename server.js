@@ -161,6 +161,6 @@ require('./routes/database_api')(app);
 
 
 //start server
-server.listen(process.env.PORT || port, () => console.log(`Listening on port ${port}`));
+server.listen(process.env.PORT || 5000, () => console.log(`Listening on port ${this.address().port}`));
 // app.listen(port, () => console.log("Backend server live on " + port));
 
