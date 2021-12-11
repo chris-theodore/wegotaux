@@ -15,14 +15,14 @@ connection.connect(function(err){
 });
 
 
-const db = mysql.createConnection({
-    host: "us-cdbr-east-05.cleardb.net",
-    user: "bfa453b94451ca",
-    database: "heroku_41a437d65392f6c",
-    password: "8ed2ec7b"
-  });
+// const db = mysql.createConnection({
+//     host: "us-cdbr-east-05.cleardb.net",
+//     user: "bfa453b94451ca",
+//     database: "heroku_41a437d65392f6c",
+//     password: "8ed2ec7b"
+//   });
   
-  db.connect(function(err) {
+  connection.connect(function(err) {
   if (err) {
     console.error('Error connecting: ' + err.stack);
     return;
