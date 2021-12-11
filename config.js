@@ -1,10 +1,10 @@
 const mysql = require('mysql');
 require('dotenv').config();
 config = {
-    host: "us-cdbr-east-05.cleardb.net" || process.env.DB_HOST,
-    user: "bfa453b94451ca" || process.env.DB_USER,
-    database: "heroku_41a437d65392f6c" || process.env.DB_INSTANCE,
-    password: "8ed2ec7b"|| ''
+    host: "us-cdbr-east-05.cleardb.net",
+    user: "bfa453b94451ca" ,
+    database: "heroku_41a437d65392f6c",
+    password: "8ed2ec7b"
 }
 var connection =mysql.createConnection(config);
 connection.connect(function(err){
@@ -16,10 +16,10 @@ connection.connect(function(err){
 
 
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    database: process.env.DB_INSTANCE,
-    password: ''
+    host: "us-cdbr-east-05.cleardb.net",
+    user: "bfa453b94451ca",
+    database: "heroku_41a437d65392f6c",
+    password: "8ed2ec7b"
   });
   
   db.connect(function(err) {
