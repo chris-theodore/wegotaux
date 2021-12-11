@@ -264,7 +264,7 @@ async function getCredentials(id){
         id: id
     };
     const parameters = `?${querystring.stringify(param)}`;
-    const urlWithParameters = `${'http://localhost:5000'}${'/db/read/listening_party'}${parameters}`;
+    const urlWithParameters = `${'https://we-got-aux.herokuapp.com'}${'/db/read/listening_party'}${parameters}`;
     const result = await axios.get(urlWithParameters);
     return result.data;
 }
