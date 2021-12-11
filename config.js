@@ -5,7 +5,8 @@ config = {
     user: "bfa453b94451ca" || process.env.DB_USER,
     database: "heroku_41a437d65392f6c" || process.env.DB_INSTANCE,
     password: "8ed2ec7b"|| ''
-},
+}
+var connection =mysql.createConnection(config);
 connection.connect(function(err){
   if (err){
     console.log('error connecting:' + err.stack);
