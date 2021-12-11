@@ -9,7 +9,7 @@ import * as io from 'socket.io-client';
 
 
 // Javascript Zone
-const socket = io.connect(`http://localhost:5000`);
+const socket = io.connect(`https://we-got-aux.herokuapp.com`);
 
 // HTML Zone 
 export default function ListenerLanding() {
@@ -58,7 +58,7 @@ export default function ListenerLanding() {
         };
         const parameters = `?${querystring.stringify(parameterDB)}`;
         console.log(parameters)
-        const dbSend = `${'http://localhost:5000/'}${'db/check/user'}${parameters}`
+        const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/check/user'}${parameters}`
         const dbresponse = await axios.get(dbSend);
         console.log(dbresponse);
         if(dbresponse.data.length == 0){
@@ -73,7 +73,7 @@ export default function ListenerLanding() {
             };
             const parameters = `?${querystring.stringify(parameterDB)}`;
             console.log(parameters)
-            const dbSend = `${'http://localhost:5000/'}${'db/delete/user'}${parameters}`
+            const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/delete/user'}${parameters}`
             const dbresponse = await axios.get(dbSend);
             console.log(dbresponse);
             history.push(`/`);

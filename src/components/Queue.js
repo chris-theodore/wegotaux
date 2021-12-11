@@ -8,7 +8,7 @@ import axios from "axios";
 import querystring from 'querystring';
 import * as io from 'socket.io-client';
 import { useEffect } from "react";
-const socket = io.connect(`http://localhost:5000`);
+const socket = io.connect(`https://we-got-aux.herokuapp.com`);
 
 // Search Code
 let songnameArray = [];
@@ -70,7 +70,7 @@ export default function Queue() {
             const parameters = `?${querystring.stringify(param)}`;
             //console.log("test in refresh function");
             //console.log(parameters);
-            const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
+            const urlWithParameters = `${'https://we-got-aux.herokuapp.com/db/generate/votingblock'}${parameters}`;
             const response = await axios.get(urlWithParameters);
             if (response.data.length === 0){
                 return;
@@ -97,14 +97,14 @@ useEffect(() => {
 },[newSong]);
 
 async function getPlaybackOnOpen(){
-    const response = await axios.get("http://localhost:5000/currently/playing");
+    const response = await axios.get("https://we-got-aux.herokuapp.com/currently/playing");
     //console.log("ID CHECK");
     oldincoming = response.data.item.id;
     //console.log(oldincoming);
 }
 
 async function getPlayback(){
-    const response = await axios.get("http://localhost:5000/currently/playing");
+    const response = await axios.get("https://we-got-aux.herokuapp.com/currently/playing");
     incoming_songid = response.data.item.id; 
     //console.log(incoming_songid)
     setCurrentID(response.data.item.id)
@@ -140,19 +140,19 @@ async function getPlayback(){
         const parameters = `?${querystring.stringify(param)}`;
         //console.log("test in refresh function");
         //console.log(parameters);
-        const urlWithParameters = `${'http://localhost:5000/db/read/listening_party'}${parameters}`;
+        const urlWithParameters = `${'https://we-got-aux.herokuapp.com/db/read/listening_party'}${parameters}`;
         const response = await axios.get(urlWithParameters);
         // //console.log(response.data);
         let playlist_id = response.data.playlist_id;
         //REMOVE QUEUE SONG FROM DB
-        const urlSongDelete = `${'http://localhost:5000/db/delete/song'}${parameters}`;
+        const urlSongDelete = `${'https://we-got-aux.herokuapp.com/db/delete/song'}${parameters}`;
         console.log(urlSongDelete);
         const deleteSong = await axios.get(urlSongDelete);
         console.log(deleteSong);
         //GET SONG OFF VOTING BLOCK
         //console.log("block check")
         if (block_data.length ===1){
-            const getRandomSong = `${'http://localhost:5000/get/party/playlist'}`;
+            const getRandomSong = `${'https://we-got-aux.herokuapp.com/get/party/playlist'}`;
             const chosenSong = await axios.get(getRandomSong);
             console.log("accessing randomly selected song data");
             console.log(chosenSong);
@@ -171,7 +171,7 @@ async function getPlayback(){
         //console.log("BLOCK SONG ID");
         //console.log(block_data[0].song_id);
         const blockParameters = `?${querystring.stringify(blockparam)}`;
-        const urlSongOffBlock = `${'http://localhost:5000/db/alter/song'}${blockParameters}`;
+        const urlSongOffBlock = `${'https://we-got-aux.herokuapp.com/db/alter/song'}${blockParameters}`;
         const songOffBlock = await axios.get(urlSongOffBlock);
         //console.log(songOffBlock)
         //console.log("song changing in alter");       
@@ -186,7 +186,7 @@ async function getPlayback(){
         }))
         let req_body = {songs: songs_formatted}
         // //console.log(req_body);
-        const urlOther = `${'http://localhost:5000/add/playlist?playlist_id='}${playlist_id}`;
+        const urlOther = `${'https://we-got-aux.herokuapp.com/add/playlist?playlist_id='}${playlist_id}`;
         let addSong = await axios.post(urlOther, req_body);
         //console.log("adding to queue")
                 //ADD SONG TO QUEUE
@@ -194,7 +194,7 @@ async function getPlayback(){
                     trackuri: block_data[0].spotify_id
                 };
                 const queueParameters = `?${querystring.stringify(queueparam)}`;
-                const urlQueue = `${'http://localhost:5000/add/queue'}${queueParameters}`;
+                const urlQueue = `${'https://we-got-aux.herokuapp.com/add/queue'}${queueParameters}`;
                 const queueSong = await axios.post(urlQueue);
                 //console.log(queueSong);
         setQueueID(block_data[0].spotify_id);
@@ -217,7 +217,7 @@ async function getPlayback(){
         const parameters = `?${querystring.stringify(param)}`;
         // //console.log("test in refresh function");
         // //console.log(parameters);
-        const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
+        const urlWithParameters = `${'https://we-got-aux.herokuapp.com/db/generate/votingblock'}${parameters}`;
         const response = await axios.get(urlWithParameters);
         if (response.data.length === 0){
             return;
@@ -245,7 +245,7 @@ async function getPlayback(){
         const parameters = `?${querystring.stringify(param)}`;
         // //console.log("test in refresh function");
         // //console.log(parameters);
-        const urlWithParameters = `${'http://localhost:5000/db/read/queue'}${parameters}`;
+        const urlWithParameters = `${'https://we-got-aux.herokuapp.com/db/read/queue'}${parameters}`;
         const response = await axios.get(urlWithParameters);
         //console.log("READ QUEUE");
         //console.log(response.data);
@@ -266,7 +266,7 @@ async function getPlayback(){
         const parameters = `?${querystring.stringify(param)}`;
         // //console.log("test in refresh function");
         // //console.log(parameters);
-        const urlWithParameters = `${'http://localhost:5000/db/read/queue'}${parameters}`;
+        const urlWithParameters = `${'https://we-got-aux.herokuapp.com/db/read/queue'}${parameters}`;
         const response = await axios.get(urlWithParameters);
         //console.log("READ QUEUE");
         //console.log(response.data);
@@ -283,7 +283,7 @@ async function getPlayback(){
         };
         console.log("the songs from search api", song);
         const parameters = `?${querystring.stringify(parameterSong)}`;
-        const urlWithParameters = `${'http://localhost:5000/song/search'}${parameters}`;
+        const urlWithParameters = `${'https://we-got-aux.herokuapp.com/song/search'}${parameters}`;
         const response = await axios.get(urlWithParameters);
         if (setData != []) {
             setData([])
@@ -306,7 +306,7 @@ async function getPlayback(){
     //         const parameters = `?${querystring.stringify(param)}`;
     //         // //console.log("test in refresh function");
     //         // //console.log(parameters);
-    //         const urlWithParameters = `${'http://localhost:5000/db/read/first_block'}${parameters}`;
+    //         const urlWithParameters = `${'https://we-got-aux.herokuapp.com/db/read/first_block'}${parameters}`;
     //         const response = await axios.get(urlWithParameters);
 
     //         dummyArray.push({
@@ -339,7 +339,7 @@ async function getPlayback(){
     //             sid: custom_id
     //         };
     //         const parameters2 = `?${querystring.stringify(parameterDB2)}`;
-    //         const dbSend2 = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters2}`
+    //         const dbSend2 = `${'https://we-got-aux.herokuapp.com/'}${'db/create/voterecord'}${parameters2}`
     //         const dbresponse2 = await axios.get(dbSend2);
     //         setBlockData(dummyArray);
     //         const tempArray = []
@@ -367,7 +367,7 @@ async function getPlayback(){
 
         };
         const parameters = `?${querystring.stringify(parameterDB)}`;
-        const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
+        const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/create/song'}${parameters}`;
         const dbresponse = await axios.get(dbSend);
 
         let parameterDB2 = {
@@ -378,7 +378,7 @@ async function getPlayback(){
         };
     
         const parameters2 = `?${querystring.stringify(parameterDB2)}`;
-        const dbSend2 = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters2}`
+        const dbSend2 = `${'https://we-got-aux.herokuapp.com/'}${'db/create/voterecord'}${parameters2}`
         const dbresponse2 = await axios.get(dbSend2);
 
         let block_data_dummy = block_data;
@@ -425,7 +425,7 @@ async function getPlayback(){
             vote: decision
         };
         const parameters_modify = `?${querystring.stringify(parameterDB_modify)}`;
-        const dbSend2 = `${'http://localhost:5000/'}${'db/change/vote'}${parameters_modify}`;
+        const dbSend2 = `${'https://we-got-aux.herokuapp.com/'}${'db/change/vote'}${parameters_modify}`;
         const dbresponse2 = await axios.get(dbSend2);
         //console.log(dbresponse2);
         const test = await refreshBlock2();
@@ -441,7 +441,7 @@ async function getPlayback(){
         };
 
         const parameters_delete= `?${querystring.stringify(parameterDB_delete)}`;
-        const dbSend2 = `${'http://localhost:5000/'}${'db/delete/song_vote'}${parameters_delete}`;
+        const dbSend2 = `${'https://we-got-aux.herokuapp.com/'}${'db/delete/song_vote'}${parameters_delete}`;
         //console.log(dbSend2);
         const dbresponse2 = await axios.get(dbSend2);
     }
@@ -456,7 +456,7 @@ async function getPlayback(){
         };
     
         const parameters_lookup = `?${querystring.stringify(parameterDB_lookup)}`;
-        const dbSend2 = `${'http://localhost:5000/'}${'db/voterecord/lookup'}${parameters_lookup}`;
+        const dbSend2 = `${'https://we-got-aux.herokuapp.com/'}${'db/voterecord/lookup'}${parameters_lookup}`;
         //console.log(dbSend2);
         const dbresponse2 = await axios.get(dbSend2);
         //console.log(dbresponse2.data);
@@ -494,7 +494,7 @@ async function getPlayback(){
         //console.log(lid);
         const parameters = `?${querystring.stringify(parameterDB)}`;
         //console.log(parameters)
-        const dbSend = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters}`
+        const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/create/voterecord'}${parameters}`
         const dbresponse = await axios.get(dbSend);
         const test = await refreshBlock2();
         return;

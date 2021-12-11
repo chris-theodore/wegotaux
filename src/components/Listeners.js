@@ -23,7 +23,7 @@ export default function Listeners() {
         };
         const parameters = `?${querystring.stringify(parameterDB)}`;
         console.log(parameters)
-        const dbSend = `${'http://localhost:5000/'}${'db/read/users'}${parameters}`
+        const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/read/users'}${parameters}`
         const dbresponse = await axios.get(dbSend);
         console.log(dbresponse);
         setUsers(dbresponse.data);
@@ -44,7 +44,7 @@ export default function Listeners() {
         };
         const parameters = `?${querystring.stringify(parameterDB)}`;
         console.log(parameters)
-        const dbSend = `${'http://localhost:5000/'}${'db/delete/user'}${parameters}`
+        const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/delete/user'}${parameters}`
         const dbresponse = await axios.get(dbSend);
         console.log(dbresponse);
         //need to kick off the user with their socket also.
@@ -57,7 +57,7 @@ export default function Listeners() {
             };
             const parameters = `?${querystring.stringify(parameterDB)}`;
             console.log(parameters)
-            const dbSend = `${'http://localhost:5000/'}${'db/read/users'}${parameters}`
+            const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/read/users'}${parameters}`
             const dbresponse = await axios.get(dbSend);
             console.log(dbresponse);
             setUsers(dbresponse.data);
