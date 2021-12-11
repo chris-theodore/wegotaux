@@ -72,6 +72,9 @@ export default function Queue() {
             //console.log(parameters);
             const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
             const response = await axios.get(urlWithParameters);
+            if (response.data.length === 0){
+                return;
+            }
             const lengthvar = response.data.length -1;
             if(response.data[lengthvar].total_votes <= -5 && response.data.length > 1){
                 //delete song if threshold is met.
@@ -216,6 +219,9 @@ async function getPlayback(){
         // //console.log(parameters);
         const urlWithParameters = `${'http://localhost:5000/db/generate/votingblock'}${parameters}`;
         const response = await axios.get(urlWithParameters);
+        if (response.data.length === 0){
+            return;
+        }
         const lengthvar = response.data.length-1
         if(response.data[lengthvar].total_votes <= -5 && response.data.length > 1){
             //delete song if threshold is met.

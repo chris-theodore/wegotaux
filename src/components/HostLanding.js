@@ -100,6 +100,11 @@ export default function HostLanding() {
             const dbSend = `${'http://localhost:5000/'}${'db/delete/listening_party'}${parameters}`
             const dbresponse = await axios.get(dbSend);
             console.log(dbresponse);
+            if(is_playing){
+                const response_pause = await axios.post("http://localhost:5000/pause/playback");
+                setIsPlaying(false);
+                history.push(`/`);
+            }
             history.push(`/`);
     }
     async function getPlayback2(){
