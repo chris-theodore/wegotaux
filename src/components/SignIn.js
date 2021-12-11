@@ -10,7 +10,7 @@ export default function SignIn(){
         <section id="sign-in">
         <img src={gif} alt="We Got Aux!"/>
         {/* <img src='../assets/wegotauxSignIn.png'/> */}
-        <a class="sign-in-button change-on-hover" href="http://localhost:5000/auth/Spotify"> Login to Spotify</a>
+        <a class="sign-in-button change-on-hover" href="https://we-got-aux.herokuapp.com/auth/Spotify"> Login to Spotify</a>
         </section>
     );
 }

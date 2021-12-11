@@ -42,7 +42,7 @@ export default function Code() {
         };
         const parameters = `?${querystring.stringify(parameterDB)}`;
         console.log(parameters)
-        const dbSend = `${'http://localhost:5000/'}${'db/read/listening_party'}${parameters}`
+        const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/read/listening_party'}${parameters}`
         const dbresponse = await axios.get(dbSend);
         console.log(dbresponse.data.id);
         if (typeof(dbresponse.data.id) == "undefined"){
@@ -57,7 +57,7 @@ export default function Code() {
             };
             const parameters = `?${querystring.stringify(userCreateDB)}`;
             console.log(parameters)
-            const dbSend = `${'http://localhost:5000/'}${'db/create/user'}${parameters}`
+            const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/create/user'}${parameters}`
             const createDBResponse = await axios.get(dbSend);
             history.push(`/listener${'/'}${values.party_listener}${'/'}${values.party_code}`);
         }

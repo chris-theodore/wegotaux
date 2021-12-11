@@ -44,7 +44,7 @@ export default function Search (){
             // artist: artist
         };
         const parameters = `?${querystring.stringify(parameterSong)}`;
-        const urlWithParameters = `${'http://localhost:5000/song/search'}${parameters}`;
+        const urlWithParameters = `${'https://we-got-aux.herokuapp.com/song/search'}${parameters}`;
         console.log(urlWithParameters);
         const response = await axios.get(urlWithParameters);
         console.log(response)

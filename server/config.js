@@ -1,12 +1,11 @@
 const mysql = require('mysql');
 require('dotenv').config();
 config = {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    database: process.env.DB_INSTANCE,
-    password: ''
-}
-var connection =mysql.createConnection(config); //added the line
+    host: "us-cdbr-east-05.cleardb.net" || process.env.DB_HOST,
+    user: "bfa453b94451ca" || process.env.DB_USER,
+    database: "heroku_41a437d65392f6c" || process.env.DB_INSTANCE,
+    password: "8ed2ec7b"|| ''
+},
 connection.connect(function(err){
   if (err){
     console.log('error connecting:' + err.stack);

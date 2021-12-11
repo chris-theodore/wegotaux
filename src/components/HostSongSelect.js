@@ -31,7 +31,7 @@ export default function HostSongSelect() {
             // artist: artist
         };
         const parameters = `?${querystring.stringify(parameterSong)}`;
-        const urlWithParameters = `${'http://localhost:5000/song/search'}${parameters}`;
+        const urlWithParameters = `${'https://we-got-aux.herokuapp.com/song/search'}${parameters}`;
         console.log(urlWithParameters);
         const response = await axios.get(urlWithParameters);
         console.log(response)
@@ -64,9 +64,9 @@ export default function HostSongSelect() {
         console.log(req_body);
         // const parameters = `?${querystring.stringify(parametersDB)}`;
         if (songnameArray.length < 3){
-        const urlOther = `${'http://localhost:5000/add/playlist?playlist_id='}${Create.playlistid}`;
+        const urlOther = `${'https://we-got-aux.herokuapp.com/add/playlist?playlist_id='}${Create.playlistid}`;
         let otherdata = await axios.post(urlOther, req_body);
-        // const dbSend = `${'http://localhost:5000/'}${'db/add/song'}${parameters}`
+        // const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/add/song'}${parameters}`
         // const dbAddSong = await axios.get(dbSend);
         // console.log(dbAddSong);
         console.log(song_img);
@@ -87,7 +87,7 @@ export default function HostSongSelect() {
         }))
         let req_body = {songs: songs_formatted}
 
-        const urlWithParams = `${'http://localhost:5000/start/playback?device_id='}${Create.deviceID}`;
+        const urlWithParams = `${'https://we-got-aux.herokuapp.com/start/playback?device_id='}${Create.deviceID}`;
         let data = await axios.post(urlWithParams,req_body);
          
         handleSubmit();
@@ -118,8 +118,8 @@ export default function HostSongSelect() {
             const parameters = `?${querystring.stringify(parameterDB)}`;
             const parameters2 = `?${querystring.stringify(parameterDB2)}`;
             
-            const dbSend = `${'http://localhost:5000/'}${'db/create/song'}${parameters}`;
-            const dbSend2 = `${'http://localhost:5000/'}${'db/create/song'}${parameters2}`;
+            const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/create/song'}${parameters}`;
+            const dbSend2 = `${'https://we-got-aux.herokuapp.com/'}${'db/create/song'}${parameters2}`;
            
 
             const dbresponse = await axios.get(dbSend);
@@ -134,7 +134,7 @@ export default function HostSongSelect() {
                 fname: uid
             };
             const parameters_vote = `?${querystring.stringify(parameterDBvote)}`;
-            const dbSend_vote = `${'http://localhost:5000/'}${'db/create/voterecord'}${parameters_vote}`;
+            const dbSend_vote = `${'https://we-got-aux.herokuapp.com/'}${'db/create/voterecord'}${parameters_vote}`;
             const dbresponse_vote = await axios.get(dbSend_vote);
             history.push(`/host${'/'}${uid}${'/'}${lid}`,
                   {second:  {song_id: songIDArray[1], song_name: songnameArray[1], song_pic : songPicArray[1], song_length: songlengthArray[1]}, 
