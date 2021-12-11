@@ -42,7 +42,7 @@ export default function Create() {
     }
     async function sendPlaylist(){
         const description = `WeGotAux party hosted by: ${values.party_host_name}`; 
-        const request = await axios.get(`http://localhost:5000/new/playlist${'?name='}${values.party_name}&${'descrip='}${description}`)
+        const request = await axios.get(`https://we-got-aux.herokuapp.com/new/playlist${'?name='}${values.party_name}&${'descrip='}${description}`)
         setId(request.data.id);
         setUID(request.data.owner.id);
         //set up parameters to send to DB
@@ -59,12 +59,12 @@ export default function Create() {
             uid: codeB.code
         };
         const userParameters = `?${querystring.stringify(userCreateDB)}`;
-        const userdbSend = `${'http://localhost:5000/'}${'db/create/user'}${userParameters}`
+        const userdbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/create/user'}${userParameters}`
         console.log('in send');
         const parameters = `?${querystring.stringify(parameterDB)}`;
         console.log(parameters)
-        const urlWithParameters = `${'http://localhost:5000/'}${'init/party'}${parameters}`;
-        const dbSend = `${'http://localhost:5000/'}${'db/create/party'}${parameters}`
+        const urlWithParameters = `${'https://we-got-aux.herokuapp.com/'}${'init/party'}${parameters}`;
+        const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/create/party'}${parameters}`
         const response = await axios.get(urlWithParameters);
         const dbresponse = await axios.get(dbSend);
         const userdbresponse = await axios.get(userdbSend);
@@ -73,7 +73,7 @@ export default function Create() {
     }
     React.useEffect(()=>{
         async function getCode(){
-            const response = await axios.get("http://localhost:5000/create/party");
+            const response = await axios.get("https://we-got-aux.herokuapp.com/create/party");
             console.log(response)
             console.log(response.data)
             setCode(response.data);
@@ -82,7 +82,7 @@ export default function Create() {
     }, []);    
     React.useEffect(()=>{
         async function getDevice(){
-            const response = await axios.get("http://localhost:5000/find/device");
+            const response = await axios.get("https://we-got-aux.herokuapp.com/find/device");
             console.log(response)
             console.log(response.data)
             if (setDevice != []) {
@@ -96,12 +96,12 @@ export default function Create() {
         async function sendDevice(party_id, device_id,device_name){
             setDeviceName(device_name);
             setDeviceID(device_id);
-            // const request = await axios.post(`http://localhost:5000/chosen/device${'?device_id='}${device_id}&${'party_id='}${party_id}`)
+            // const request = await axios.post(`https://we-got-aux.herokuapp.com/chosen/device${'?device_id='}${device_id}&${'party_id='}${party_id}`)
             // console.log(request)
             // console.log(request.data)
         }
-    if (!codeB) return "No chris!"
-    if (!deviceB) return "No devices!"
+    // if (!codeB) return "No chris!"
+    // if (!deviceB) return "No devices!"
     console.log("deviceB", deviceB)
     return (
         
@@ -136,7 +136,7 @@ export default function Create() {
                     </div>
             </form>
             {/* <button onClick={getCode()}>Test</button> */}
-            {/* <a class="sign-in-button change-on-hover" href="http://localhost:5000/create/party"> Code</a> */}
+            {/* <a class="sign-in-button change-on-hover" href="https://we-got-aux.herokuapp.com/create/party"> Code</a> */}
                 
         </section>
     );

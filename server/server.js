@@ -149,7 +149,8 @@ app.get('/auth/spotify',
 app.get('/auth/spotify/redirect',
   passport.authenticate('spotify'),
   function (req, res) {
-      res.redirect('wegotaux.netlify.app');
+      const url = "https://wegotaux.netlify.app/create"
+      res.redirect(url);
   }
 );
 
