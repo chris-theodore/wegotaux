@@ -100,8 +100,8 @@ export default function Create() {
             // console.log(request)
             // console.log(request.data)
         }
-    // if (!codeB) return "No chris!"
-    // if (!deviceB) return "No devices!"
+    if (!codeB) return "No chris!"
+    if (!deviceB) return "No devices!"
     console.log("deviceB", deviceB)
     return (
         
