@@ -401,7 +401,9 @@ async function getPlayback(){
         tempArray.forEach(id => songs_formatted.push({
             song: song_uri
         }));
-
+        socket.emit('block change',{
+            lid:lid
+        })
         setSongsTerm([]);
         setData([]);
         console.log("check if song was added", block_data);

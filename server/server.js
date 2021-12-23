@@ -55,6 +55,7 @@ socket.on('song change', (data) =>{
   console.log("data sending");
   socket.to(data.lid).emit('song update',(data));
 })
+//update to socket
 socket.on('block change', (data) =>{
   console.log("data sending");
   socket.to(data.lid).emit('block update',(data));
