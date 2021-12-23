@@ -42,7 +42,7 @@ export default function Queue() {
 
         const interval = setInterval(() => {
             //This function refreshes the voting block every 3 seconds and updates the block_data state variable with the current voting block.
-            refreshBlock2();
+            // refreshBlock2();
             //This function gets the current song playing and sets the incoming song id and currentID to that song.
             getPlayback();
            }, 3000);
@@ -56,6 +56,9 @@ export default function Queue() {
         setQueueID(data.socketSong);
         setQueueImg(data.socketImage);
         setQueueName(data.socketName);
+            });
+    socket.on("block update", (data) => {
+        refreshBlock2(data.lid)
             });
       socket.on("new song", (data) => {
         //console.log(data);
@@ -203,12 +206,15 @@ async function getPlayback(){
             socketSong: block_data[0].spotify_id,
             socketImage: block_data[0].img,
             socketName: block_data[0].title
+        }),
+        socket.emit('block change', {
+            lid: lid
         })
         // refreshQueue();
     }
     setNewSong(false);
 }
-    async function refreshBlock2(){
+    async function refreshBlock2(lid){
         //console.log("in refresh function");
         const param = {
             id: lid
@@ -232,7 +238,6 @@ async function getPlayback(){
         setBlockData(response.data);
         console.log("Constant refresh")
         console.log(block_data);
-        
 
     };
     React.useEffect(()=>{
@@ -429,6 +434,9 @@ async function getPlayback(){
         const dbresponse2 = await axios.get(dbSend2);
         //console.log(dbresponse2);
         const test = await refreshBlock2();
+        socket.emit('block change',{
+            lid:lid
+        })
 
     }
     async function handleDelete(lid, spotify_id) {
@@ -497,6 +505,9 @@ async function getPlayback(){
         const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/create/voterecord'}${parameters}`
         const dbresponse = await axios.get(dbSend);
         const test = await refreshBlock2();
+        socket.emit('block change',{
+            lid:lid
+        });
         return;
     }
 

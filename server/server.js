@@ -17,7 +17,7 @@ const {Server}= require("socket.io");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://wegotaux.netlify.app",
+    origin: '*',
     methods: ["GET", "POST"]
   }
 });
@@ -54,6 +54,10 @@ socket.on('leave queue room', (room) => {
 socket.on('song change', (data) =>{
   console.log("data sending");
   socket.to(data.lid).emit('song update',(data));
+})
+socket.on('block change', (data) =>{
+  console.log("data sending");
+  socket.to(data.lid).emit('block update',(data));
 })
 
 socket.on('queue change', (data) =>{
