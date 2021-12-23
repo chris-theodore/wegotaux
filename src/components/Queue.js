@@ -206,10 +206,10 @@ async function getPlayback(){
             socketSong: block_data[0].spotify_id,
             socketImage: block_data[0].img,
             socketName: block_data[0].title
-        }),
+        });
         socket.emit('block change', {
             lid: lid
-        })
+        });
         // refreshQueue();
     }
     setNewSong(false);
