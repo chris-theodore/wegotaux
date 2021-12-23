@@ -433,7 +433,7 @@ async function getPlayback(){
         const dbSend2 = `${'https://we-got-aux.herokuapp.com/'}${'db/change/vote'}${parameters_modify}`;
         const dbresponse2 = await axios.get(dbSend2);
         //console.log(dbresponse2);
-        const test = await refreshBlock2();
+        const test = await refreshBlock2(lid);
         socket.emit('block change',{
             lid:lid
         })
@@ -504,7 +504,7 @@ async function getPlayback(){
         //console.log(parameters)
         const dbSend = `${'https://we-got-aux.herokuapp.com/'}${'db/create/voterecord'}${parameters}`
         const dbresponse = await axios.get(dbSend);
-        const test = await refreshBlock2();
+        const test = await refreshBlock2(lid);
         socket.emit('block change',{
             lid:lid
         });
