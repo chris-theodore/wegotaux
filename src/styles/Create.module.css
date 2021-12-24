@@ -8,8 +8,8 @@
     border: 2px solid black;
     border-radius: 10px;
     margin: 0;
-    padding: 20px;
-    
+    padding-bottom: 10px;
+    padding-top: 25px;
 }
 
 .back {
@@ -93,13 +93,14 @@
 
 .formInput{
 	width: 75%;
-    padding: 14.5px 0px 14.5px 30px;
+    padding: 14.5px 0px 14.5px 15px;
     border: 2px solid #ccc;
     appearance: unset;
     outline: none;
     border-radius: 27.5px;
     font-size: 16px;
     font-weight: 700;
+    inline-size: 150px;
     background: rgba(255, 255, 255, 0.2)
 }
 

@@ -7,6 +7,7 @@ body {
 	font-family: spotify-circular,Helvetica Neue,Helvetica,Arial,Hiragino Kaku Gothic Pro,Meiryo,MS Gothic,sans-serif;
 }
 
+
 .song-list {
     display: grid; 
     grid-auto-columns: 1fr; 
@@ -48,3 +49,8 @@ li img {
     display: inline-block;
     vertical-align: top;
 }
+
+@media only screen and (max-width: 768px) {
+    /* For mobile phones: */
+    
+  }
