@@ -472,6 +472,9 @@ async function getPlayback(){
         //console.log(dbresponse2.data);
         if(dbresponse2.data.exists === 1){
             updateExistingVote(uid, lid, custom_id, direction);
+            socket.emit('block change',{
+                lid:lid
+            });
             return;
         }
         else{
